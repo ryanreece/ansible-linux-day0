@@ -33,6 +33,14 @@
     when: ansible_facts['os_family'] == 'Debian'
     tags: apt
 
+  - name: Install tmux
+    become: true
+    ansible.builtin.package:
+      name: tmux
+      state: present
+      update_cache: true
+    tags: tmux
+
   - name: Install zsh
     become: true
     ansible.builtin.package:
