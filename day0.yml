@@ -23,7 +23,7 @@
     when: ansible_facts['os_family'] == 'Debian'
     tags: apt
 
-  - name: Ensure dependencies are present.
+  - name: Install apt-transport-https & gnupg2
     become: true
     ansible.builtin.apt:
       name:
@@ -111,25 +111,21 @@
       path: ~/.ssh/id_rsa
     tags: ssh
 
-  - name: Download NVM to "$HOME/nvm-install.sh"
+  - name: Download NVM to "$HOME/.nvm-install.sh"
     ansible.builtin.get_url:
-      url: https://raw.githubusercontent.com/creationix/nvm/v0.39.1/install.sh
-      dest: "$HOME/nvm-install.sh"
+      url: https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh
+      dest: "$HOME/.nvm-install.sh"
       mode: a+x
+    vars:
+      nvm_version: v0.40.1
     tags: nodejs
 
   - name: Install NVM
-    ansible.builtin.shell: "$HOME/nvm-install.sh"
+    ansible.builtin.shell: "$HOME/.nvm-install.sh"
     args:
       executable: /bin/bash
       chdir: "$HOME"
       creates: "$HOME/.nvm/nvm.sh"
-    tags: nodejs
-
-  - name: Remove "$HOME/nvm-install.sh"
-    ansible.builtin.file:
-      path: "$HOME/nvm-install.sh"
-      state: absent
     tags: nodejs
 
   - name: Install NodeJS
@@ -151,6 +147,13 @@
       - zip
       - unzip
     tags: aws
+  
+  - name: Check if the AWS CLI exists
+    become: true
+    ansible.builtin.stat:
+      path: /usr/local/bin/aws
+    register: aws_cli
+    tags: aws
 
   - name: Download and unarchive AWS CLIv2
     become: true
@@ -158,13 +161,7 @@
       src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
       dest: /tmp
       remote_src: true
-    tags: aws
-
-  - name: Check if AWS CLI exists
-    become: true
-    ansible.builtin.stat:
-      path: /usr/local/bin/aws
-    register: aws_cli
+    when: not aws_cli.stat.exists
     tags: aws
 
   - name: Install AWS CLIv2
