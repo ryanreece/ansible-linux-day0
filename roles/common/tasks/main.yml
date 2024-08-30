@@ -9,6 +9,20 @@
   when: ansible_facts['os_family'] == 'Debian'
   tags: apt
 
+- name: Install common packages
+  become: true
+  ansible.builtin.package:
+    name:
+      - net-tools
+      - curl
+      - vim
+      - fzf
+      - whois
+      - wget
+    state: present
+    update_cache: true
+  tags: packages
+
 - name: Install tmux
   become: true
   ansible.builtin.package:
@@ -32,13 +46,6 @@
     name: zsh
     state: present
     update_cache: true
-  tags: zsh
-
-- name: Install fzf (command-line fuzzy finder)
-  become: true
-  ansible.builtin.package:
-    state: present
-    name: fzf
   tags: zsh
 
 - name: Install Oh My Zsh # noqa: latest
@@ -105,7 +112,7 @@
     mode: a+x
   tags: nodejs
 
-- name: Install NVM {{ nvm_version}}
+- name: Install NVM {{ nvm_version }}
   ansible.builtin.shell: "$HOME/.nvm-install.sh"
   args:
     executable: /bin/bash
@@ -113,7 +120,7 @@
     creates: "$HOME/.nvm/nvm.sh"
   tags: nodejs
 
-- name: Install NodeJS v{{ nodejs_version}}
+- name: Install NodeJS v{{ nodejs_version }}
   ansible.builtin.shell: >
     . $HOME/.nvm/nvm.sh && nvm install {{ nodejs_version }}
   args:
