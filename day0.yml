@@ -41,6 +41,12 @@
       update_cache: true
     tags: tmux
 
+  - name: Deploy .tmux.conf 
+    ansible.builtin.template:
+      src: templates/tmux.conf.j2
+      dest: ~/.tmux.conf
+    tags: tmux
+
   - name: Install zsh
     become: true
     ansible.builtin.package:
