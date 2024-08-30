@@ -102,11 +102,9 @@
     url: https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh
     dest: "$HOME/.nvm-install.sh"
     mode: a+x
-  vars:
-    nvm_version: v0.40.1
   tags: nodejs
 
-- name: Install NVM
+- name: Install NVM {{ nvm_version}}
   ansible.builtin.shell: "$HOME/.nvm-install.sh"
   args:
     executable: /bin/bash
@@ -114,15 +112,13 @@
     creates: "$HOME/.nvm/nvm.sh"
   tags: nodejs
 
-- name: Install NodeJS
+- name: Install NodeJS v{{ nodejs_version}}
   ansible.builtin.shell: >
-    . $HOME/.nvm/nvm.sh && nvm install {{ item }}
+    . $HOME/.nvm/nvm.sh && nvm install {{ nodejs_version }}
   args:
     executable: /bin/bash
     chdir: "$HOME"
-    creates: "$HOME/.nvm/versions/node/v{{ item }}"
-  loop:
-    - 20.17.0
+    creates: "$HOME/.nvm/versions/node/v{{ nodejs_version }}"
   tags: nodejs
 
 - name: Install zip & unzip

@@ -15,7 +15,7 @@ ansible-galaxy install -r roles/requirements.yml
 
 2. Run initial playbook to configure system:
 ```bash
-ansible-playbook day0.yml -i inventory/k3s_nodes.yml -K
+ansible-playbook day0-server.yml -i inventory/k3s_nodes.yml -K
 ```
 
 > Playbook assumes you already have an SSH public key on the system specified in the inventory file.
