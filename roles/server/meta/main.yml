@@ -1,0 +1,7 @@
+---
+dependencies:
+  - role: hifis.unattended_upgrades
+    unattended_origins_patterns:
+      - 'origin=Ubuntu,archive=${distro_codename}-security'
+      - 'o=Ubuntu,a=${distro_codename}-updates'
+    become: true

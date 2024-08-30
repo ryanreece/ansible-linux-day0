@@ -1,0 +1,161 @@
+---
+- name: Install apt-transport-https & gnupg2
+  become: true
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - gnupg2
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: apt
+
+- name: Install tmux
+  become: true
+  ansible.builtin.package:
+    name: tmux
+    state: present
+    update_cache: true
+  tags: tmux
+
+- name: Deploy .tmux.conf
+  ansible.builtin.template:
+    src: templates/tmux.conf.j2
+    dest: ~/.tmux.conf
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0640'
+  tags: tmux
+
+- name: Install zsh
+  become: true
+  ansible.builtin.package:
+    name: zsh
+    state: present
+    update_cache: true
+  tags: zsh
+
+- name: Install fzf (command-line fuzzy finder)
+  become: true
+  ansible.builtin.package:
+    state: present
+    name: fzf
+  tags: zsh
+
+- name: Install Oh My Zsh # noqa: latest
+  ansible.builtin.git:
+    repo: https://github.com/ohmyzsh/ohmyzsh.git
+    dest: ~/.oh-my-zsh
+    depth: 1
+  tags: zsh
+
+- name: Install zsh-autosuggestions plugin # noqa: latest
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-autosuggestions
+    dest: ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+    depth: 1
+  tags: zsh
+
+- name: Install zsh-completions plugin # noqa: latest
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-completions
+    dest: ~/.oh-my-zsh/custom/plugins/zsh-completions
+    depth: 1
+  tags: zsh
+
+- name: Install zsh-syntax-highlighting plugin # noqa: latest
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+    dest: ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+    depth: 1
+  tags: zsh
+
+- name: Deploy .zshrc
+  ansible.builtin.template:
+    src: templates/zshrc.j2
+    dest: ~/.zshrc
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0640'
+  tags: zsh
+
+- name: Ensure zsh is default shell
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    shell: "/usr/bin/zsh"
+  tags: zsh
+
+- name: Create ~/.ssh if it doesn't exist
+  ansible.builtin.file:
+    path: ~/.ssh
+    state: directory
+    mode: '0700'
+  tags: ssh
+
+- name: Generate SSH Key
+  community.crypto.openssh_keypair:
+    path: ~/.ssh/id_rsa
+  tags: ssh
+
+- name: Download NVM to "$HOME/.nvm-install.sh"
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh
+    dest: "$HOME/.nvm-install.sh"
+    mode: a+x
+  vars:
+    nvm_version: v0.40.1
+  tags: nodejs
+
+- name: Install NVM
+  ansible.builtin.shell: "$HOME/.nvm-install.sh"
+  args:
+    executable: /bin/bash
+    chdir: "$HOME"
+    creates: "$HOME/.nvm/nvm.sh"
+  tags: nodejs
+
+- name: Install NodeJS
+  ansible.builtin.shell: >
+    . $HOME/.nvm/nvm.sh && nvm install {{ item }}
+  args:
+    executable: /bin/bash
+    chdir: "$HOME"
+    creates: "$HOME/.nvm/versions/node/v{{ item }}"
+  loop:
+    - 20.17.0
+  tags: nodejs
+
+- name: Install zip & unzip
+  become: true
+  ansible.builtin.package:
+    update_cache: true
+    pkg:
+      - zip
+      - unzip
+  tags: aws
+
+- name: Check if the AWS CLI exists
+  become: true
+  ansible.builtin.stat:
+    path: /usr/local/bin/aws
+  register: aws_cli
+  tags: aws
+
+- name: Download and unarchive AWS CLIv2
+  become: true
+  ansible.builtin.unarchive:
+    src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp
+    remote_src: true
+  when: not aws_cli.stat.exists
+  tags: aws
+
+- name: Install AWS CLIv2
+  become: true
+  ansible.builtin.command:
+    cmd: ./aws/install
+    chdir: /tmp
+  register: aws_cli_install
+  changed_when: aws_cli_install.stat.exists
+  when: not aws_cli.stat.exists
+  tags: aws

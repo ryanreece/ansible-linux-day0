@@ -1,0 +1,5 @@
+---
+- name: Reboot system
+  become: true
+  ansible.builtin.reboot:
+    msg: "Reboot initiated by Ansible playbook!"

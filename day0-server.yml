@@ -1,0 +1,11 @@
+---
+- name: Day 0 Config for Servers
+  hosts: linux
+  vars:
+    ansible_user: sysadmin
+    ohmyzsh_theme: jispwoso
+    nvm_version: v0.40.1
+
+  roles:
+    - common
+    - server
