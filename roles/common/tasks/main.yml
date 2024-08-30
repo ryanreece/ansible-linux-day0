@@ -92,9 +92,10 @@
     mode: '0700'
   tags: ssh
 
-- name: Generate SSH Key
+- name: Generate SSH keypair ({{ openssh_keypair_type }})
   community.crypto.openssh_keypair:
-    path: ~/.ssh/id_rsa
+    path: ~/.ssh/id_{{ openssh_keypair_type }}
+    type: "{{ openssh_keypair_type }}"
   tags: ssh
 
 - name: Download NVM to "$HOME/.nvm-install.sh"
