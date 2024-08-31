@@ -160,6 +160,6 @@
     cmd: ./aws/install
     chdir: /tmp
   register: aws_cli_install
-  changed_when: aws_cli_install.stat.exists
+  changed_when: aws_cli.stat.exists
   when: not aws_cli.stat.exists
   tags: aws
