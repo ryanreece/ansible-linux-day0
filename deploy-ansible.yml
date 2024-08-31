@@ -1,5 +1,8 @@
 ---
-- hosts: linux
+- name: Deploy Ansible
+  hosts: linux
+  vars:
+    ansible_user: sysadmin
 
   tasks:
   - name: Ensure dependencies are present.
