@@ -158,6 +158,37 @@
       - alacritty
   tags: alacritty
 
+- name: Find the path of Alacritty
+  ansible.builtin.command:
+    cmd: which alacritty
+  register: alacritty_path
+  tags: alacritty
+
+- name: Debug the Alacritty path
+  ansible.builtin.debug:
+    msg: "Alacritty path is: {{ alacritty_path.stdout }}"
+  tags: alacritty
+
+- name: Add Alacritty to update-alternatives
+  become: true
+  ansible.builtin.command:
+    cmd: update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator {{ alacritty_path.stdout }} 50
+  tags: alacritty
+
+- name: Set Alacritty as the default terminal
+  become: true
+  ansible.builtin.command:
+    cmd: update-alternatives --set x-terminal-emulator {{ alacritty_path.stdout }}
+  tags: alacritty
+
+- name: Install flameshot
+  become: true
+  ansible.builtin.package:
+    name:
+      - flameshot
+    state: present
+  tags: flameshot
+
 - name: Download Regolith GPG key and add to keyring
   become: true
   shell: |
