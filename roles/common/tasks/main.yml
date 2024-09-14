@@ -1,4 +1,10 @@
 ---
+- name: Update the package cache
+  become: true
+  ansible.builtin.package:
+    update_cache: true
+  tags: packages
+
 - name: Install apt-transport-https & gnupg2
   become: true
   ansible.builtin.apt:
@@ -13,6 +19,7 @@
   become: true
   ansible.builtin.package:
     name:
+      - git
       - net-tools
       - curl
       - vim
@@ -35,8 +42,8 @@
   ansible.builtin.template:
     src: templates/tmux.conf.j2
     dest: ~/.tmux.conf
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
     mode: '0640'
   tags: tmux
 
@@ -80,15 +87,15 @@
   ansible.builtin.template:
     src: templates/zshrc.j2
     dest: ~/.zshrc
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
     mode: '0640'
   tags: zsh
 
 - name: Ensure zsh is default shell
   become: true
   ansible.builtin.user:
-    name: "{{ ansible_user }}"
+    name: "{{ ansible_user_id }}"
     shell: "/usr/bin/zsh"
   tags: zsh
 

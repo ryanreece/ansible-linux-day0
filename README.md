@@ -20,3 +20,7 @@ ansible-playbook day0-server.yml -i inventory/k3s_nodes.yml -K
 
 > Playbook assumes you already have an SSH public key on the system specified in the inventory file.
 
+## Running on Workstations
+```bash
+ansible-playbook -i localhost, day0-workstation.yml --connection=local -K
+```

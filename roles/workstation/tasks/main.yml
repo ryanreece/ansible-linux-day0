@@ -1,0 +1,77 @@
+---
+- name: Install compilation packages
+  become: true
+  ansible.builtin.package:
+    name:
+      - ninja-build
+      - gettext
+      - cmake
+    state: present
+    update_cache: true
+  tags: packages
+
+- name: Install python3, pip, and python-is-python3
+  become: true
+  ansible.builtin.package:
+    name:
+      - python3
+      - python3-pip
+      - python-is-python3
+    state: present 
+  tags: python
+
+- name: Create the sources directory if it doesn't exist
+  ansible.builtin.file:
+    path: "{{ sources_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Check if neovim is installed
+  ansible.builtin.command:
+    cmd: nvim --version
+  register: neovim_installed
+  ignore_errors: true
+
+- name: Set the installed neovim version
+  ansible.builtin.set_fact:
+    installed_neovim_version: "{{ neovim_installed.stdout_lines[0] | regex_search('NVIM v([0-9.]+)', '\\1') | first }}"
+  when: neovim_installed.rc == 0
+
+- name: Clone the neovim repository
+  ansible.builtin.git:
+    repo: "{{ neovim_repo }}"
+    dest: "{{ sources_dir }}/neovim"
+    version: stable
+    update: true
+
+- name: Get the latest stable version tag from the neovim repo
+  ansible.builtin.command:
+    cmd: git describe --tags --abbrev=0
+  args:
+    chdir: "{{ sources_dir }}/neovim"
+  register: latest_neovim_version
+
+- name: Remove the leading 'v' from the latest_neovim_version
+  ansible.builtin.set_fact:
+    latest_neovim_version_clean: "{{ latest_neovim_version.stdout | regex_replace('^v', '') }}"
+
+- name: Debug neovim version comparrison
+  ansible.builtin.debug:
+    msg:
+      - "{{ installed_neovim_version }}"
+      - "{{ latest_neovim_version_clean }}"
+
+- name: Build Neovim if not installed or version mismatch
+  community.general.make:
+    chdir: "{{ sources_dir }}/neovim"
+    params:
+      CMAKE_BUILD_TYPE: Release
+  when: installed_neovim_version is not defined or installed_neovim_version != latest_neovim_version_clean
+
+- name: Install Neovim
+  become: true
+  community.general.make:
+    chdir: "{{ sources_dir }}/neovim"
+    target: install
+  when: installed_neovim_version is not defined or installed_neovim_version != latest_neovim_version_clean
+

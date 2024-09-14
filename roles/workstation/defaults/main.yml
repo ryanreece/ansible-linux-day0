@@ -1,0 +1,3 @@
+---
+sources_dir: "{{ ansible_env.HOME }}/sources"
+neovim_repo: "https://github.com/neovim/neovim"

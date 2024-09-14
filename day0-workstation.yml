@@ -1,9 +1,11 @@
 ---
 - name: Day 0 Config for Workstations 
-  hosts: linux
+  hosts: all
   vars:
     nvm_version: v0.40.1
     nodejs_version: 20.17.0
+    ohmyzsh_theme: robbyrussell
 
   roles:
     - common
+    - workstation
