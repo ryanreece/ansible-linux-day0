@@ -3,6 +3,7 @@
   become: true
   ansible.builtin.package:
     name:
+      - build-essential
       - ninja-build
       - gettext
       - cmake
@@ -26,14 +27,14 @@
     mode: '0755'
   tags: neovim
 
-- name: Check if neovim is installed
+- name: Check if Neovim is installed
   ansible.builtin.command:
     cmd: nvim --version
   register: neovim_installed
   ignore_errors: true
   tags: neovim
 
-- name: Set the installed neovim version
+- name: Set the installed Neovim version
   ansible.builtin.set_fact:
     installed_neovim_version: "{{ neovim_installed.stdout_lines[0] | regex_search('NVIM v([0-9.]+)', '\\1') | first }}"
   when: neovim_installed.rc == 0
@@ -48,7 +49,7 @@
   ignore_errors: true
   tags: neovim
 
-- name: Clone the neovim repository
+- name: Clone the Neovim repository
   ansible.builtin.git:
     repo: "{{ neovim_repo }}"
     dest: "{{ sources_dir }}/neovim"
@@ -56,7 +57,7 @@
     update: true
   tags: neovim
 
-- name: Get the latest stable version tag from the neovim repo
+- name: Get the latest stable version tag from the Neovim repo
   ansible.builtin.command:
     cmd: git describe --tags --abbrev=0
   args:
@@ -69,7 +70,7 @@
     latest_neovim_version_clean: "{{ latest_neovim_version.stdout | regex_replace('^v', '') }}"
   tags: neovim
 
-- name: Debug neovim version comparrison
+- name: Debug Neovim version comparrison
   ansible.builtin.debug:
     msg:
       - "{{ installed_neovim_version }}"
@@ -92,7 +93,7 @@
   when: installed_neovim_version is not defined or installed_neovim_version != latest_neovim_version_clean
   tags: neovim
 
-- name: Install more neovim dependencies 
+- name: Install more Neovim dependencies 
   become: true
   ansible.builtin.package:
     name:
@@ -102,7 +103,7 @@
       - gpg-agent
   tags: neovim
 
-- name: Install neovim packer
+- name: Install Neovim packer
   ansible.builtin.git:
     repo: "https://github.com/wbthomason/packer.nvim"
     dest: "{{ ansible_env.HOME }}/.local/share/nvim/site/pack/packer/start/packer.nvim"
@@ -110,11 +111,10 @@
     update: true
   tags: neovim
 
-- name: Install neovim config
+- name: Install Neovim config
   ansible.builtin.git:
     repo: https://github.com/ryanreece/neovim-config.git
     dest: "{{ ansible_env.HOME }}/.config/nvim"
-    depth: 1
     update: true
   tags: neovim
   
@@ -124,7 +124,62 @@
     XDG_CONFIG_HOME: "{{ ansible_env.HOME }}/.config"
   register: packer_sync_result
   ignore_errors: true
+  tags: neovim
 
 - name: Display PackerSync output
   ansible.builtin.debug:
     msg: "{{ packer_sync_result.stdout }}"
+  tags: neovim
+
+- name: Install dotfiles
+  ansible.builtin.git:
+    repo: https://github.com/ryanreece/dotfiles.git
+    dest: "{{ ansible_env.HOME }}/dotfiles"
+    update: true
+  tags: dotfiles
+
+- name: Make the install_dotfiles.sh script executable
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/dotfiles/install_dotfiles.sh"
+    mode: '0755'
+  tags: dotfiles
+
+- name: Run the install_dotfiles.sh script
+  ansible.builtin.command:
+    cmd: "{{ ansible_env.HOME }}/dotfiles/install_dotfiles.sh"
+  args:
+    chdir: "{{ ansible_env.HOME }}/dotfiles"
+  tags: dotfiles
+
+- name: Install Alacritty
+  become: true
+  ansible.builtin.package:
+    name:
+      - alacritty
+  tags: alacritty
+
+- name: Download Regolith GPG key and add to keyring
+  become: true
+  shell: |
+    wget -qO - https://regolith-desktop.org/regolith.key | \
+    gpg --dearmor | sudo tee /usr/share/keyrings/regolith-archive-keyring.gpg > /dev/null
+  args:
+    executable: /bin/bash
+  tags: regolith
+
+- name: Add Regolith repository to sources list
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/regolith-archive-keyring.gpg] https://regolith-desktop.org/release-3_2-ubuntu-noble-amd64 noble main"
+    filename: regolith
+  tags: regolith
+
+- name: Install Regolith desktop and related packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - regolith-desktop
+      - regolith-session-flashback
+      - regolith-look-lascaille
+    state: present
+  tags: regolith
