@@ -7,7 +7,6 @@
       - gettext
       - cmake
     state: present
-    update_cache: true
   tags: packages
 
 - name: Install python3, pip, and python-is-python3
@@ -25,17 +24,29 @@
     path: "{{ sources_dir }}"
     state: directory
     mode: '0755'
+  tags: neovim
 
 - name: Check if neovim is installed
   ansible.builtin.command:
     cmd: nvim --version
   register: neovim_installed
   ignore_errors: true
+  tags: neovim
 
 - name: Set the installed neovim version
   ansible.builtin.set_fact:
     installed_neovim_version: "{{ neovim_installed.stdout_lines[0] | regex_search('NVIM v([0-9.]+)', '\\1') | first }}"
   when: neovim_installed.rc == 0
+  tags: neovim
+
+- name: Fetch tags and force update if Neovim directory exists
+  ansible.builtin.command:
+    cmd: git fetch --tags --force
+  args:
+    chdir: "{{ sources_dir }}/neovim"
+  when: neovim_installed.rc == 0
+  ignore_errors: true
+  tags: neovim
 
 - name: Clone the neovim repository
   ansible.builtin.git:
@@ -43,6 +54,7 @@
     dest: "{{ sources_dir }}/neovim"
     version: stable
     update: true
+  tags: neovim
 
 - name: Get the latest stable version tag from the neovim repo
   ansible.builtin.command:
@@ -50,16 +62,19 @@
   args:
     chdir: "{{ sources_dir }}/neovim"
   register: latest_neovim_version
+  tags: neovim
 
 - name: Remove the leading 'v' from the latest_neovim_version
   ansible.builtin.set_fact:
     latest_neovim_version_clean: "{{ latest_neovim_version.stdout | regex_replace('^v', '') }}"
+  tags: neovim
 
 - name: Debug neovim version comparrison
   ansible.builtin.debug:
     msg:
       - "{{ installed_neovim_version }}"
       - "{{ latest_neovim_version_clean }}"
+  tags: neovim
 
 - name: Build Neovim if not installed or version mismatch
   community.general.make:
@@ -67,6 +82,7 @@
     params:
       CMAKE_BUILD_TYPE: Release
   when: installed_neovim_version is not defined or installed_neovim_version != latest_neovim_version_clean
+  tags: neovim
 
 - name: Install Neovim
   become: true
@@ -74,4 +90,41 @@
     chdir: "{{ sources_dir }}/neovim"
     target: install
   when: installed_neovim_version is not defined or installed_neovim_version != latest_neovim_version_clean
+  tags: neovim
 
+- name: Install more neovim dependencies 
+  become: true
+  ansible.builtin.package:
+    name:
+      - ripgrep
+      - gpg
+      - gnupg
+      - gpg-agent
+  tags: neovim
+
+- name: Install neovim packer
+  ansible.builtin.git:
+    repo: "https://github.com/wbthomason/packer.nvim"
+    dest: "{{ ansible_env.HOME }}/.local/share/nvim/site/pack/packer/start/packer.nvim"
+    depth: 1
+    update: true
+  tags: neovim
+
+- name: Install neovim config
+  ansible.builtin.git:
+    repo: https://github.com/ryanreece/neovim-config.git
+    dest: "{{ ansible_env.HOME }}/.config/nvim"
+    depth: 1
+    update: true
+  tags: neovim
+  
+- name: Run :PackerSync in Neovim
+  ansible.builtin.command: nvim --headless -c "luafile ~/.config/nvim/lua/reece/packer.lua" -c "so" -c "PackerSync" -c "qa"
+  environment:
+    XDG_CONFIG_HOME: "{{ ansible_env.HOME }}/.config"
+  register: packer_sync_result
+  ignore_errors: true
+
+- name: Display PackerSync output
+  ansible.builtin.debug:
+    msg: "{{ packer_sync_result.stdout }}"
