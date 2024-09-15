@@ -118,12 +118,6 @@
     creates: "$HOME/.nvm/versions/node/v{{ nodejs_version }}"
   tags: nodejs
 
-- name: Install yarn using npm
-  community.general.npm:
-    name: yarn
-    global: true
-  tags: yarn
-
 - name: Install zip & unzip
   become: true
   ansible.builtin.package:

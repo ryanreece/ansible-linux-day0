@@ -1,4 +1,10 @@
 ---
+- name: Install yarn using npm
+  community.general.npm:
+    name: yarn
+    global: true
+  tags: typescript
+
 - name: Install typescript
   community.general.yarn:
     name: typescript
