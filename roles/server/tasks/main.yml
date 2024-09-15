@@ -14,3 +14,21 @@
   notify:
     - Reboot system
   tags: apt
+
+- name: Deploy .tmux.conf
+  ansible.builtin.template:
+    src: templates/tmux.conf.j2
+    dest: ~/.tmux.conf
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0640'
+  tags: tmux
+
+- name: Deploy .zshrc
+  ansible.builtin.template:
+    src: templates/zshrc.j2
+    dest: ~/.zshrc
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0640'
+  tags: zsh

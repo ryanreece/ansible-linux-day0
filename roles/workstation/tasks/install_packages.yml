@@ -1,0 +1,13 @@
+---
+- name: Install compilation packages
+  become: true
+  ansible.builtin.package:
+    name:
+      - build-essential
+      - ninja-build
+      - gettext
+      - cmake
+      - gcc
+      - pkg-config
+    state: present
+  tags: packages

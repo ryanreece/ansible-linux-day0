@@ -1,0 +1,27 @@
+---
+- name: Download Regolith GPG key and add to keyring
+  become: true
+  shell: |
+    wget -qO - https://regolith-desktop.org/regolith.key | \
+    gpg --dearmor | sudo tee /usr/share/keyrings/regolith-archive-keyring.gpg > /dev/null
+  args:
+    executable: /bin/bash
+  tags: regolith
+
+- name: Add Regolith repository to sources list
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/regolith-archive-keyring.gpg] https://regolith-desktop.org/release-3_2-ubuntu-noble-amd64 noble main"
+    filename: regolith
+  tags: regolith
+
+- name: Install Regolith desktop and related packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - regolith-desktop
+      - regolith-session-flashback
+      - regolith-look-lascaille
+      - i3xrocks-battery
+    state: present
+  tags: regolith

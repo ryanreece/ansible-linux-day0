@@ -1,0 +1,46 @@
+---
+- name: Install Alacritty
+  become: true
+  ansible.builtin.package:
+    name:
+      - alacritty
+  tags: alacritty
+
+- name: Create the Alacritty themes directory
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.config/alacritty/themes"
+    state: directory
+    mode: '0755'
+  tags: alacritty
+
+- name: Clone the Alacritty themes repository
+  ansible.builtin.git:
+    repo: "https://github.com/alacritty/alacritty-theme"
+    dest: "~/.config/alacritty/themes"
+    version: master
+    update: true
+  tags: alacritty
+
+- name: Find the path of Alacritty
+  ansible.builtin.command:
+    cmd: which alacritty
+  register: alacritty_path
+  changed_when: false
+  tags: alacritty
+
+- name: Debug the Alacritty path
+  ansible.builtin.debug:
+    msg: "Alacritty path is: {{ alacritty_path.stdout }}"
+  tags: alacritty
+
+- name: Add Alacritty to update-alternatives
+  become: true
+  ansible.builtin.command:
+    cmd: update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator {{ alacritty_path.stdout }} 50
+  tags: alacritty
+
+- name: Set Alacritty as the default terminal
+  become: true
+  ansible.builtin.command:
+    cmd: update-alternatives --set x-terminal-emulator {{ alacritty_path.stdout }}
+  tags: alacritty

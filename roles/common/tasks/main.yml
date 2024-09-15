@@ -38,15 +38,6 @@
     update_cache: true
   tags: tmux
 
-- name: Deploy .tmux.conf
-  ansible.builtin.template:
-    src: templates/tmux.conf.j2
-    dest: ~/.tmux.conf
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-    mode: '0640'
-  tags: tmux
-
 - name: Install zsh
   become: true
   ansible.builtin.package:
@@ -81,15 +72,6 @@
     repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
     dest: ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
     depth: 1
-  tags: zsh
-
-- name: Deploy .zshrc
-  ansible.builtin.template:
-    src: templates/zshrc.j2
-    dest: ~/.zshrc
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-    mode: '0640'
   tags: zsh
 
 - name: Ensure zsh is default shell
@@ -135,6 +117,12 @@
     chdir: "$HOME"
     creates: "$HOME/.nvm/versions/node/v{{ nodejs_version }}"
   tags: nodejs
+
+- name: Install yarn using npm
+  community.general.npm:
+    name: yarn
+    global: true
+  tags: yarn
 
 - name: Install zip & unzip
   become: true

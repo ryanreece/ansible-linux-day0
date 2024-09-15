@@ -1,0 +1,12 @@
+---
+- name: Install typescript
+  community.general.yarn:
+    name: typescript
+    global: true
+  tags: typescript
+
+- name: Install typescript language server
+  community.general.yarn:
+    name: typescript-language-server
+    global: true
+  tags: typescript
