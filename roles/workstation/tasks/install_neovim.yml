@@ -57,6 +57,7 @@
     msg:
       - "{{ installed_neovim_version }}"
       - "{{ latest_neovim_version_clean }}"
+  when: installed_neovim_version is defined and latest_neovim_version_clean is defined
   tags: neovim
 
 - name: Build Neovim if not installed or version mismatch
