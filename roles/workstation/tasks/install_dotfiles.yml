@@ -18,3 +18,7 @@
   args:
     chdir: "{{ ansible_env.HOME }}/dotfiles"
   tags: dotfiles
+
+- name: Collect facts and source dotfiles
+  ansible.builtin.setup:
+  tags: dotfiles
