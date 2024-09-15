@@ -11,12 +11,6 @@
   when: install_python | default(true)
   tags: python
 
-- name: Install TypeScript
-  ansible.builtin.include_tasks:
-    file: install_typescript.yml
-  when: install_typescript | default(true)
-  tags: typescript
-
 - name: Install Neovim
   ansible.builtin.include_tasks:
     file: install_neovim.yml
@@ -46,3 +40,9 @@
     file: install_regolith.yml
   when: install_regolith | default(true)
   tags: regolith
+
+- name: Install TypeScript
+  ansible.builtin.include_tasks:
+    file: install_typescript.yml
+  when: install_typescript | default(true)
+  tags: typescript
