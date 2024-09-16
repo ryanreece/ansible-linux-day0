@@ -1,22 +1,29 @@
 ---
+- name: Create the repos directory if it doesn't exist
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/repos"
+    state: directory
+    mode: '0755'
+  tags: dotfiles
+
 - name: Install dotfiles
   ansible.builtin.git:
     repo: https://github.com/ryanreece/dotfiles.git
-    dest: "{{ ansible_env.HOME }}/dotfiles"
+    dest: "{{ ansible_env.HOME }}/repos/dotfiles"
     update: true
   tags: dotfiles
 
 - name: Make the install_dotfiles.sh script executable
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/dotfiles/install_dotfiles.sh"
+    path: "{{ ansible_env.HOME }}/repos/dotfiles/install_dotfiles.sh"
     mode: '0755'
   tags: dotfiles
 
 - name: Run the install_dotfiles.sh script
   ansible.builtin.command:
-    cmd: "{{ ansible_env.HOME }}/dotfiles/install_dotfiles.sh"
+    cmd: "{{ ansible_env.HOME }}/repos/dotfiles/install_dotfiles.sh"
   args:
-    chdir: "{{ ansible_env.HOME }}/dotfiles"
+    chdir: "{{ ansible_env.HOME }}/repos/dotfiles"
   tags: dotfiles
 
 - name: Collect facts and source dotfiles
