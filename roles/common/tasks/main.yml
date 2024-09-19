@@ -1,154 +1,36 @@
 ---
-- name: Update the package cache
-  become: true
-  ansible.builtin.package:
-    update_cache: true
-  tags: packages
-
-- name: Install apt-transport-https & gnupg2
-  become: true
-  ansible.builtin.apt:
-    name:
-      - apt-transport-https
-      - gnupg2
-    state: present
-  when: ansible_facts['os_family'] == 'Debian'
-  tags: apt
-
-- name: Install common packages
-  become: true
-  ansible.builtin.package:
-    name:
-      - git
-      - net-tools
-      - curl
-      - vim
-      - fzf
-      - whois
-      - wget
-    state: present
-    update_cache: true
+- name: Install packages
+  ansible.builtin.include_tasks:
+    file: install_packages.yml
+  when: install_packages | default(true)
   tags: packages
 
 - name: Install tmux
-  become: true
-  ansible.builtin.package:
-    name: tmux
-    state: present
-    update_cache: true
+  ansible.builtin.include_tasks:
+    file: install_tmux.yml
+  when: install_tmux | default(true)
   tags: tmux
 
 - name: Install zsh
-  become: true
-  ansible.builtin.package:
-    name: zsh
-    state: present
-    update_cache: true
+  ansible.builtin.include_tasks:
+    file: install_zsh.yml
+  when: install_zsh | default(true)
   tags: zsh
 
-- name: Install Oh My Zsh # noqa: latest
-  ansible.builtin.git:
-    repo: https://github.com/ohmyzsh/ohmyzsh.git
-    dest: ~/.oh-my-zsh
-    depth: 1
-  tags: zsh
-
-- name: Install zsh-autosuggestions plugin # noqa: latest
-  ansible.builtin.git:
-    repo: https://github.com/zsh-users/zsh-autosuggestions
-    dest: ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
-    depth: 1
-  tags: zsh
-
-- name: Install zsh-completions plugin # noqa: latest
-  ansible.builtin.git:
-    repo: https://github.com/zsh-users/zsh-completions
-    dest: ~/.oh-my-zsh/custom/plugins/zsh-completions
-    depth: 1
-  tags: zsh
-
-- name: Install zsh-syntax-highlighting plugin # noqa: latest
-  ansible.builtin.git:
-    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
-    dest: ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
-    depth: 1
-  tags: zsh
-
-- name: Ensure zsh is default shell
-  become: true
-  ansible.builtin.user:
-    name: "{{ ansible_user_id }}"
-    shell: "/usr/bin/zsh"
-  tags: zsh
-
-- name: Create ~/.ssh if it doesn't exist
-  ansible.builtin.file:
-    path: ~/.ssh
-    state: directory
-    mode: '0700'
+- name: Install SSH key
+  ansible.builtin.include_tasks:
+    file: install_ssh_key.yml
+  when: install_ssh_key | default(true)
   tags: ssh
 
-- name: Generate SSH keypair ({{ openssh_keypair_type }})
-  community.crypto.openssh_keypair:
-    path: ~/.ssh/id_{{ openssh_keypair_type }}
-    type: "{{ openssh_keypair_type }}"
-  tags: ssh
-
-- name: Download NVM to "$HOME/.nvm-install.sh"
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh
-    dest: "$HOME/.nvm-install.sh"
-    mode: a+x
+- name: Install NodeJS via nvm
+  ansible.builtin.include_tasks:
+    file: install_nodejs.yml
+  when: install_nodejs | default(true)
   tags: nodejs
 
-- name: Install NVM {{ nvm_version }}
-  ansible.builtin.shell: "$HOME/.nvm-install.sh"
-  args:
-    executable: /bin/bash
-    chdir: "$HOME"
-    creates: "$HOME/.nvm/nvm.sh"
-  tags: nodejs
-
-- name: Install NodeJS v{{ nodejs_version }}
-  ansible.builtin.shell: >
-    . $HOME/.nvm/nvm.sh && nvm install {{ nodejs_version }}
-  args:
-    executable: /bin/bash
-    chdir: "$HOME"
-    creates: "$HOME/.nvm/versions/node/v{{ nodejs_version }}"
-  tags: nodejs
-
-- name: Install zip & unzip
-  become: true
-  ansible.builtin.package:
-    update_cache: true
-    pkg:
-      - zip
-      - unzip
-  tags: aws
-
-- name: Check if the AWS CLI exists
-  become: true
-  ansible.builtin.stat:
-    path: /usr/local/bin/aws
-  register: aws_cli
-  tags: aws
-
-- name: Download and unarchive AWS CLIv2
-  become: true
-  ansible.builtin.unarchive:
-    src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
-    dest: /tmp
-    remote_src: true
-  when: not aws_cli.stat.exists
-  tags: aws
-
-- name: Install AWS CLIv2
-  become: true
-  ansible.builtin.command:
-    cmd: ./aws/install
-    chdir: /tmp
-  register: aws_cli_install
-  changed_when: aws_cli.stat.exists
-  when: not aws_cli.stat.exists
+- name: Install AWS CLI
+  ansible.builtin.include_tasks:
+    file: install_aws_cli.yml
+  when: install_aws_cli | default(true)
   tags: aws

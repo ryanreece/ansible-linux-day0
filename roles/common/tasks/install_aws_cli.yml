@@ -1,0 +1,26 @@
+---
+- name: Check if the AWS CLI exists
+  become: true
+  ansible.builtin.stat:
+    path: /usr/local/bin/aws
+  register: aws_cli
+  tags: aws
+
+- name: Download and unarchive AWS CLIv2
+  become: true
+  ansible.builtin.unarchive:
+    src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip
+    dest: /tmp
+    remote_src: true
+  when: not aws_cli.stat.exists
+  tags: aws
+
+- name: Install AWS CLIv2
+  become: true
+  ansible.builtin.command:
+    cmd: ./aws/install
+    chdir: /tmp
+  register: aws_cli_install
+  changed_when: aws_cli.stat.exists
+  when: not aws_cli.stat.exists
+  tags: aws

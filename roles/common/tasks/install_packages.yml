@@ -1,0 +1,35 @@
+---
+- name: Update the package cache
+  become: true
+  ansible.builtin.package:
+    update_cache: true
+  tags: packages
+
+- name: Install apt-transport-https & gnupg2
+  become: true
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - gnupg2
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: packages
+
+- name: Install terminal packages
+  become: true
+  ansible.builtin.package:
+    name:
+      - btop
+      - curl
+      - fzf
+      - git
+      - net-tools
+      - ripgrep
+      - unzip
+      - vim
+      - wget
+      - whois
+      - zip
+    state: present
+    update_cache: true
+  tags: packages
