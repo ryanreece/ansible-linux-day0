@@ -1,0 +1,52 @@
+---
+- name: Install compilation tools
+  become: true
+  ansible.builtin.package:
+    name:
+      - autoconf
+      - bison
+      - build-essential
+      - clang
+      - cmake
+      - gcc
+      - gettext
+      - ninja-build
+      - pkg-config
+      - rustc
+    state: present
+  tags: libraries
+
+- name: Install essential libraries
+  become: true
+  ansible.builtin.package:
+    name:
+      - gir1.2-clutter-1.0
+      - gir1.2-gtop-2.0
+      - imagemagick
+      - libffi-dev
+      - libgdbm-dev
+      - libjemalloc2
+      - libmagickwand-dev
+      - libncurses5-dev
+      - libreadline-dev
+      - libssl-dev
+      - libvips
+      - libyaml-dev
+      - mupdf-tools
+      - zlib1g-dev
+    state: present
+  tags: libraries
+
+- name: Install development tools
+  become: true
+  ansible.builtin.package:
+    name:
+      - redis-tools
+      - sqlite3
+      - libsqlite3-0
+      - libmysqlclient-dev
+      - libpq-dev
+      - postgresql-client
+      - postgresql-client-common
+    state: present
+  tags: libraries

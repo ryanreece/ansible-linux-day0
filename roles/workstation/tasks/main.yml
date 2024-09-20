@@ -1,9 +1,14 @@
 ---
-- name: Install compilation packages
+- name: Set workstation system facts
   ansible.builtin.include_tasks:
-    file: install_packages.yml
-  when: install_packages | default(true)
-  tags: packages
+    file: set_facts.yml
+  tags: always
+
+- name: Install essential libraries
+  ansible.builtin.include_tasks:
+    file: install_libraries.yml
+  when: install_libraries | default(true)
+  tags: libraries
 
 - name: Install python
   ansible.builtin.include_tasks:
@@ -34,6 +39,18 @@
     file: install_flameshot.yml
   when: install_flameshot | default(true)
   tags: flameshot
+
+- name: Install fastfetch
+  ansible.builtin.include_tasks:
+    file: install_fastfetch.yml
+  when: install_fastfetch | default(true)
+  tags: fastfetch
+
+- name: Install lazydocker
+  ansible.builtin.include_tasks:
+    file: install_lazydocker.yml
+  when: install_lazydocker | default(true)
+  tags: lazydocker
 
 - name: Install Regolith
   ansible.builtin.include_tasks:

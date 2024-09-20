@@ -1,0 +1,47 @@
+---
+- name: Check if lazydocker is installed
+  ansible.builtin.command:
+    cmd: lazydocker --version
+  register: lazydocker_installed
+  ignore_errors: true
+  changed_when: false
+  tags: lazydocker
+
+- name: Set the installed lazydocker version
+  ansible.builtin.set_fact:
+    installed_lazydocker_version: "{{ lazydocker_installed.stdout_lines[0] | regex_search('Version: ([0-9.]+)', '\\1') | first }}"
+  when: lazydocker_installed.rc == 0
+  tags: lazydocker
+
+- name: Get the latest lazydocker release
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/jesseduffield/lazydocker/releases/latest
+    return_content: true
+  register: lazydocker_release
+  tags: lazydocker
+
+- name: Set the latest lazydocker release tag
+  ansible.builtin.set_fact:
+    lazydocker_tag: "{{ lazydocker_release.json.tag_name | regex_replace('^v', '') }}"
+  tags: lazydocker
+
+- name: Download the latest lazydocker binary
+  ansible.builtin.get_url:
+    url: "https://github.com/jesseduffield/lazydocker/releases/latest/download/lazydocker_{{ lazydocker_tag }}_{{ system_arch }}.tar.gz"
+    dest: /tmp/lazydocker.tar.gz
+  when: installed_lazydocker_version is not defined or installed_lazydocker_version != lazydocker_tag
+  tags: lazydocker
+
+- name: Unarchive and install the lazydocker binary
+  ansible.builtin.unarchive:
+    src: /tmp/lazydocker.tar.gz
+    dest: "$HOME/.local/bin"
+  when: installed_lazydocker_version is not defined or installed_lazydocker_version != lazydocker_tag
+  tags: lazydocker
+
+- name: Remove /tmp/lazydocker.tar.gz
+  ansible.builtin.file:
+    path: /tmp/lazydocker.tar.gz
+    state: absent
+  when: installed_lazydocker_version is not defined or installed_lazydocker_version != lazydocker_tag
+  tags: lazydocker

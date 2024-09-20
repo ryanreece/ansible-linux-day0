@@ -1,0 +1,19 @@
+---
+- name: Get the system kernel name
+  ansible.builtin.command:
+    cmd: uname -s
+  changed_when: false
+  register: system_kernel_name
+  tags: always
+
+- name: Get the machine hardware name
+  ansible.builtin.command:
+    cmd: uname -m
+  changed_when: false
+  register: machine_hardware_name
+  tags: always
+
+- name: Set the system_arch fact
+  ansible.builtin.set_fact:
+    system_arch: "{{ system_kernel_name.stdout }}_{{ machine_hardware_name.stdout }}"
+  tags: always
