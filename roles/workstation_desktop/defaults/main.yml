@@ -1,0 +1,8 @@
+---
+sources_dir: "{{ ansible_env.HOME }}/sources"
+
+# Install variables
+# These variables define which include_tasks will run for the workstation role.
+install_alacritty: true
+install_flameshot: true
+install_regolith: true

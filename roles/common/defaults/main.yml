@@ -1,2 +1,5 @@
 ---
+nodejs_version: 20.17.0
+nvm_version: v0.40.1
+ohmyzsh_theme: robbyrussell
 openssh_keypair_type: ed25519

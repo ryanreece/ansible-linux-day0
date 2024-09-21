@@ -4,8 +4,6 @@
   vars:
     ansible_user: sysadmin
     ohmyzsh_theme: jispwoso
-    nvm_version: v0.40.1
-    nodejs_version: 20.17.0
 
   roles:
     - common

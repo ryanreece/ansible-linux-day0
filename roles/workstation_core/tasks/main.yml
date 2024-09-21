@@ -34,18 +34,6 @@
   when: install_dotfiles | default(true)
   tags: dotfiles
 
-- name: Install Alacritty
-  ansible.builtin.include_tasks:
-    file: install_alacritty.yml
-  when: install_alacritty | default(true)
-  tags: alacritty
-
-- name: Install flameshot
-  ansible.builtin.include_tasks:
-    file: install_flameshot.yml
-  when: install_flameshot | default(true)
-  tags: flameshot
-
 - name: Install fastfetch
   ansible.builtin.include_tasks:
     file: install_fastfetch.yml
@@ -69,9 +57,3 @@
     file: install_lazygit.yml
   when: install_lazygit | default(true)
   tags: lazygit
-
-- name: Install Regolith
-  ansible.builtin.include_tasks:
-    file: install_regolith.yml
-  when: install_regolith | default(true)
-  tags: regolith
