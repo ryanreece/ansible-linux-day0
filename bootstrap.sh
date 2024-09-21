@@ -30,4 +30,4 @@ esac
 
 echo -e "\n${GREEN}ansible-linux-day0 bootstrap complete!"
 echo -e "\n${NC}Use the following command to run on workstations:"
-echo -e "${BLUE} ansible-playbook -i localhost, day0-workstation.yml --connection=local -K\n"
+echo -e "${BLUE} ./install-workstation.sh"

@@ -30,6 +30,7 @@
       - wget
       - whois
       - zip
+      - zoxide
     state: present
     update_cache: true
   tags: packages
