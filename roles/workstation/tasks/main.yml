@@ -16,6 +16,12 @@
   when: install_python | default(true)
   tags: python
 
+- name: Install TypeScript
+  ansible.builtin.include_tasks:
+    file: install_typescript.yml
+  when: install_typescript | default(true)
+  tags: typescript
+
 - name: Install Neovim
   ansible.builtin.include_tasks:
     file: install_neovim.yml
@@ -46,6 +52,12 @@
   when: install_fastfetch | default(true)
   tags: fastfetch
 
+- name: Install docker
+  ansible.builtin.include_tasks:
+    file: install_docker.yml
+  when: install_docker | default(true)
+  tags: docker
+
 - name: Install lazydocker
   ansible.builtin.include_tasks:
     file: install_lazydocker.yml
@@ -63,9 +75,3 @@
     file: install_regolith.yml
   when: install_regolith | default(true)
   tags: regolith
-
-- name: Install TypeScript
-  ansible.builtin.include_tasks:
-    file: install_typescript.yml
-  when: install_typescript | default(true)
-  tags: typescript

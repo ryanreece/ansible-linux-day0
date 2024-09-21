@@ -107,6 +107,7 @@
     XDG_CONFIG_HOME: "{{ ansible_env.HOME }}/.config"
   register: packer_sync_result
   ignore_errors: true
+  changed_when: false
   tags: neovim
 
 - name: Display PackerSync output

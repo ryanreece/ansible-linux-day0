@@ -9,7 +9,7 @@
 
 - name: Set the installed lazygit version
   ansible.builtin.set_fact:
-    installed_lazygit_version: "{{ lazygit_installed.stdout_lines[0] | regex_search('Version: ([0-9.]+)', '\\1') | first }}"
+    installed_lazygit_version: "{{ lazygit_installed.stdout_lines[0] | regex_search('version=([0-9.]+)', '\\1') | first }}"
   when: lazygit_installed.rc == 0
   tags: lazygit
 

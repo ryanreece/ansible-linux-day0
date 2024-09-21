@@ -24,6 +24,7 @@
     cmd: "{{ ansible_env.HOME }}/repos/dotfiles/install_dotfiles.sh"
   args:
     chdir: "{{ ansible_env.HOME }}/repos/dotfiles"
+  changed_when: false
   tags: dotfiles
 
 - name: Collect facts and source dotfiles

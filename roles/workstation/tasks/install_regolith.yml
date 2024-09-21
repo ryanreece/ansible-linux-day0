@@ -6,6 +6,8 @@
     gpg --dearmor | sudo tee /usr/share/keyrings/regolith-archive-keyring.gpg > /dev/null
   args:
     executable: /bin/bash
+  changed_when: false
+  when: ansible_facts['os_family'] == 'Debian'
   tags: regolith
 
 - name: Add Regolith repository to sources list
@@ -13,6 +15,7 @@
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/regolith-archive-keyring.gpg] https://regolith-desktop.org/release-3_2-ubuntu-noble-amd64 noble main"
     filename: regolith
+  when: ansible_facts['os_family'] == 'Debian'
   tags: regolith
 
 - name: Install Regolith desktop and related packages
@@ -24,4 +27,5 @@
       - regolith-look-lascaille
       - i3xrocks-battery
     state: present
+  when: ansible_facts['os_family'] == 'Debian'
   tags: regolith
