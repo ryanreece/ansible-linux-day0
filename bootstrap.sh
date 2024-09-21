@@ -26,8 +26,13 @@ case $ID in
     rocky)
         sudo dnf install ansible
         ;;
+    *)
+        echo -e "${RED}Error: ${ID} not supported..."
+        exit 1
 esac
+
+ansible-galaxy install -r roles/requirements.yml
 
 echo -e "\n${GREEN}ansible-linux-day0 bootstrap complete!"
 echo -e "\n${NC}Use the following command to run on workstations:"
-echo -e "${BLUE} ./install-workstation.sh"
+echo -e "${BLUE} ./install-workstation.sh\n\n"
