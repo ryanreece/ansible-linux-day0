@@ -6,3 +6,5 @@ sources_dir: "{{ ansible_env.HOME }}/sources"
 install_alacritty: true
 install_flameshot: true
 install_regolith: true
+install_chrome: true
+install_ulauncher: true

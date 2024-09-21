@@ -4,11 +4,12 @@ neovim_repo: "https://github.com/neovim/neovim"
 
 # Install variables
 # These variables define which include_tasks will run for the workstation role.
-install_alacritty: true
 install_dotfiles: true
-install_flameshot: true
 install_libraries: true
 install_neovim: true
 install_python: true
-install_regolith: true
 install_typescript: true
+install_fastfetch: true
+install_docker: true
+install_lazydocker: true
+install_lazygit: true

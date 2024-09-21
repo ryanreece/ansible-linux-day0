@@ -1,0 +1,29 @@
+---
+- name: Check if Chrome is installed
+  ansible.builtin.command:
+    cmd: google-chrome --version
+  register: chrome_installed
+  ignore_errors: true
+  changed_when: false
+  tags: chrome
+
+- name: Download Chrome deb package
+  ansible.builtin.get_url:
+    url: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    dest: /tmp/google-chrome-stable_current_amd64.deb
+  when: ansible_facts['os_family'] == 'Debian' and chrome_installed.rc != 0
+  tags: chrome
+
+- name: Install Chrome
+  become: true
+  ansible.builtin.apt:
+    deb: /tmp/google-chrome-stable_current_amd64.deb
+  when: ansible_facts['os_family'] == 'Debian' and chrome_installed.rc != 0
+  tags: chrome
+
+- name: Remove Chrome deb package
+  ansible.builtin.file:
+    path: /tmp/google-chrome-stable_current_amd64.deb
+    state: absent
+  when: ansible_facts['os_family'] == 'Debian' and chrome_installed.rc != 0
+  tags: chrome

@@ -80,10 +80,12 @@
   become: true
   ansible.builtin.package:
     name:
-      - ripgrep
-      - gpg
       - gnupg
+      - gpg
       - gpg-agent
+      - ripgrep
+      - xclip
+      - xsel
   tags: neovim
 
 - name: Install Neovim packer
