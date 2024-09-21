@@ -1,0 +1,47 @@
+---
+- name: Check if lazygit is installed
+  ansible.builtin.command:
+    cmd: lazygit --version
+  register: lazygit_installed
+  ignore_errors: true
+  changed_when: false
+  tags: lazygit
+
+- name: Set the installed lazygit version
+  ansible.builtin.set_fact:
+    installed_lazygit_version: "{{ lazygit_installed.stdout_lines[0] | regex_search('Version: ([0-9.]+)', '\\1') | first }}"
+  when: lazygit_installed.rc == 0
+  tags: lazygit
+
+- name: Get the latest lazygit release
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/jesseduffield/lazygit/releases/latest
+    return_content: true
+  register: lazygit_release
+  tags: lazygit
+
+- name: Set the latest lazygit release tag
+  ansible.builtin.set_fact:
+    lazygit_tag: "{{ lazygit_release.json.tag_name | regex_replace('^v', '') }}"
+  tags: lazygit
+
+- name: Download the latest lazygit binary
+  ansible.builtin.get_url:
+    url: "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_{{ lazygit_tag }}_{{ system_arch }}.tar.gz"
+    dest: /tmp/lazygit.tar.gz
+  when: installed_lazygit_version is not defined or installed_lazygit_version != lazygit_tag
+  tags: lazygit
+
+- name: Unarchive and install the lazygit binary
+  ansible.builtin.unarchive:
+    src: /tmp/lazygit.tar.gz
+    dest: "{{ ansible_env.HOME }}/.local/bin"
+  when: installed_lazygit_version is not defined or installed_lazygit_version != lazygit_tag
+  tags: lazygit
+
+- name: Remove /tmp/lazygit.tar.gz
+  ansible.builtin.file:
+    path: /tmp/lazygit.tar.gz
+    state: absent
+  when: installed_lazygit_version is not defined or installed_lazygit_version != lazygit_tag
+  tags: lazygit

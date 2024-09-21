@@ -52,6 +52,12 @@
   when: install_lazydocker | default(true)
   tags: lazydocker
 
+- name: Install lazygit
+  ansible.builtin.include_tasks:
+    file: install_lazygit.yml
+  when: install_lazygit | default(true)
+  tags: lazygit
+
 - name: Install Regolith
   ansible.builtin.include_tasks:
     file: install_regolith.yml

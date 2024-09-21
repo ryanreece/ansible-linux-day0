@@ -50,3 +50,10 @@
       - postgresql-client-common
     state: present
   tags: libraries
+
+- name: Ensure ~/.local/bin folder exists
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.local/bin"
+    state: directory
+    mode: '0755'
+  tags: libraries

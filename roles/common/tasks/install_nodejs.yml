@@ -1,25 +1,25 @@
 ---
-- name: Download NVM to "$HOME/.nvm-install.sh"
+- name: Download NVM to "{{ ansible_env.HOME }}/.nvm-install.sh"
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh
-    dest: "$HOME/.nvm-install.sh"
+    dest: "{{ ansible_env.HOME }}/.nvm-install.sh"
     mode: a+x
   tags: nodejs
 
 - name: Install NVM {{ nvm_version }}
-  ansible.builtin.shell: "$HOME/.nvm-install.sh"
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.nvm-install.sh"
   args:
     executable: /bin/bash
-    chdir: "$HOME"
-    creates: "$HOME/.nvm/nvm.sh"
+    chdir: "{{ ansible_env.HOME }}"
+    creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
   tags: nodejs
 
 - name: Install NodeJS v{{ nodejs_version }}
   ansible.builtin.shell: >
-    . $HOME/.nvm/nvm.sh && nvm install {{ nodejs_version }}
+    . {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm install {{ nodejs_version }}
   args:
     executable: /bin/bash
-    chdir: "$HOME"
-    creates: "$HOME/.nvm/versions/node/v{{ nodejs_version }}"
+    chdir: "{{ ansible_env.HOME }}"
+    creates: "{{ ansible_env.HOME }}/.nvm/versions/node/v{{ nodejs_version }}"
   tags: nodejs
 
