@@ -2,16 +2,17 @@
     <h1>Ansible Linux Day 0</h1>
 </div>
 
-**ansible-linux-day0** is a server and workstation configuration repo designed to
-automatically install useful tools and applications. This is an _opinionated_ 
-set of choices based on my personal experience managing Unix-based systems. 
+**ansible-linux-day0** is a server and workstation configuration repo designed 
+to automatically install useful tools and applications. This is an
+_opinionated_ set of choices based on my personal experience managing Linux 
+systems.
 
 ## Getting Started
 
 The playbook is designed to work on a baseline Ubuntu system. To get started, 
 clone the repo to your system and run the `./bootstrap.sh` file. This script 
-will install the core requirement of the latest version of ansible as well as 
-install the necessary ansible roles in `roles/requirements.yml`.
+will install the latest version of ansible and the necessary ansible roles
+defined in `roles/requirements.yml`.
 
 1. Run `bootstrap.sh`:
 
@@ -40,7 +41,7 @@ ansible-playbook -i inventory/server.yml day0-server.yml -K
 
 ### Common
 
-1. Packages
+1. [Packages](#packages)
 2. Tmux
 3. Zsh
 4. SSH Key
@@ -56,7 +57,7 @@ ansible-playbook -i inventory/server.yml day0-server.yml -K
 ### Workstation Core
 
 1. Dotfiles
-2. Libraries
+2. [Libraries](#libraries)
 3. Luarocks
 4. Neovim
 5. Python
@@ -73,3 +74,22 @@ ansible-playbook -i inventory/server.yml day0-server.yml -K
 3. Regolith
 4. Chrome
 5. Ulauncher
+
+---
+
+### Packages
+
+1. btop
+2. curl
+3. fzf
+4. git
+5. net-tools
+6. ripgrep
+7. unzip
+8. vim
+9. wget
+10. whois
+11. zip
+12. zoxide
+
+### Libraries
