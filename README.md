@@ -1,9 +1,8 @@
 <div align="center">
-    <h1>ansible-linux-day0</h1>
+    <h1>Ansible Linux Day 0</h1>
 </div>
-<hr>
 
-ansible-linux-day0 is a server and workstation configuration repo designed to
+**ansible-linux-day0** is a server and workstation configuration repo designed to
 automatically install useful tools and applications. This is an _opinionated_ 
 set of choices based on my personal experience managing Unix-based systems. 
 
