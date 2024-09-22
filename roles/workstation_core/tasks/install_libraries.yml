@@ -51,9 +51,16 @@
     state: present
   tags: libraries
 
-- name: Ensure ~/.local/bin folder exists
+- name: Ensure ~/.local/bin exists
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/.local/bin"
+    state: directory
+    mode: '0755'
+  tags: libraries
+
+- name: Ensure {{ sources_dir }} exists
+  ansible.builtin.file:
+    path: "{{ sources_dir }}"
     state: directory
     mode: '0755'
   tags: libraries

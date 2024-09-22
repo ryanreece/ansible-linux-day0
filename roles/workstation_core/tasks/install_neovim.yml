@@ -1,11 +1,4 @@
 ---
-- name: Create the sources directory if it doesn't exist
-  ansible.builtin.file:
-    path: "{{ sources_dir }}"
-    state: directory
-    mode: '0755'
-  tags: neovim
-
 - name: Install Neovim dependencies 
   become: true
   ansible.builtin.package:

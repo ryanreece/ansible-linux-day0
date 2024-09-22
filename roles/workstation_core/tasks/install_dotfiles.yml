@@ -1,5 +1,5 @@
 ---
-- name: Create the repos directory if it doesn't exist
+- name: Ensure {{ ansible_env.HOME }}/repos exists
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/repos"
     state: directory
@@ -13,13 +13,13 @@
     update: true
   tags: dotfiles
 
-- name: Make the install_dotfiles.sh script executable
+- name: Make install_dotfiles.sh executable
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/repos/dotfiles/install_dotfiles.sh"
     mode: '0755'
   tags: dotfiles
 
-- name: Run the install_dotfiles.sh script
+- name: Run install_dotfiles.sh
   ansible.builtin.command:
     cmd: "{{ ansible_env.HOME }}/repos/dotfiles/install_dotfiles.sh"
   args:

@@ -28,11 +28,6 @@
   changed_when: false
   tags: alacritty
 
-- name: Debug the Alacritty path
-  ansible.builtin.debug:
-    msg: "Alacritty path is: {{ alacritty_path.stdout }}"
-  tags: alacritty
-
 - name: Add Alacritty to update-alternatives
   become: true
   ansible.builtin.command:
