@@ -4,7 +4,6 @@
   ansible.builtin.apt_repository:
     repo: "deb http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }} universe"
     state: present
-  when: ansible_facts['os_family'] == 'Debian'
   tags: ulauncher
 
 - name: Add ulauncher repository
@@ -12,7 +11,6 @@
   ansible.builtin.apt_repository:
     repo: "ppa:agornostal/ulauncher"
     state: present
-  when: ansible_facts['os_family'] == 'Debian'
   tags: ulauncher
 
 - name: Install ulauncher
@@ -20,5 +18,4 @@
   ansible.builtin.apt:
     name: ulauncher
     state: present
-  when: ansible_facts['os_family'] == 'Debian'
   tags: ulauncher

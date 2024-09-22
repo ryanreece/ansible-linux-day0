@@ -14,17 +14,23 @@
 - name: Install Regolith
   ansible.builtin.include_tasks:
     file: install_regolith.yml
-  when: install_regolith | default(true)
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - install_regolith | default(true)
   tags: regolith
 
 - name: Install Chrome
   ansible.builtin.include_tasks:
     file: install_chrome.yml
-  when: install_chrome | default(true)
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - install_chrome | default(true)
   tags: chrome
 
 - name: Install ulauncher
   ansible.builtin.include_tasks:
     file: install_ulauncher.yml
-  when: install_ulauncher | default(true)
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - install_ulauncher | default(true)
   tags: ulauncher
