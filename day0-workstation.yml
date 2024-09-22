@@ -3,7 +3,6 @@
   hosts: all
   vars:
     ohmyzsh_theme: robbyrussell
-    install_typescript: false
 
   roles:
     - common

@@ -3,16 +3,19 @@
   community.general.npm:
     name: yarn
     global: true
+  ignore_errors: true
   tags: typescript
 
 - name: Install typescript
   community.general.yarn:
     name: typescript
     global: true
+  ignore_errors: true
   tags: typescript
 
 - name: Install typescript language server
   community.general.yarn:
     name: typescript-language-server
     global: true
+  ignore_errors: true
   tags: typescript
