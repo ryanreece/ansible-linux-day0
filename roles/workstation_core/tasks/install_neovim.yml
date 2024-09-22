@@ -6,6 +6,18 @@
     mode: '0755'
   tags: neovim
 
+- name: Install Neovim dependencies 
+  become: true
+  ansible.builtin.package:
+    name:
+      - gnupg
+      - gpg
+      - gpg-agent
+      - ripgrep
+      - xclip
+      - xsel
+  tags: neovim
+
 - name: Check if Neovim is installed
   ansible.builtin.command:
     cmd: nvim --version
@@ -32,7 +44,7 @@
 
 - name: Clone the Neovim repository
   ansible.builtin.git:
-    repo: "{{ neovim_repo }}"
+    repo: https://github.com/neovim/neovim
     dest: "{{ sources_dir }}/neovim"
     version: stable
     update: true
@@ -74,18 +86,6 @@
     chdir: "{{ sources_dir }}/neovim"
     target: install
   when: installed_neovim_version is not defined or installed_neovim_version != latest_neovim_version_clean
-  tags: neovim
-
-- name: Install more Neovim dependencies 
-  become: true
-  ansible.builtin.package:
-    name:
-      - gnupg
-      - gpg
-      - gpg-agent
-      - ripgrep
-      - xclip
-      - xsel
   tags: neovim
 
 - name: Install Neovim packer

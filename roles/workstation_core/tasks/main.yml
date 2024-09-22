@@ -22,6 +22,12 @@
   when: install_typescript | default(true)
   tags: typescript
 
+- name: Install luarocks 
+  ansible.builtin.include_tasks:
+    file: install_luarocks.yml
+  when: install_luarocks | default(true)
+  tags: luarocks
+
 - name: Install Neovim
   ansible.builtin.include_tasks:
     file: install_neovim.yml

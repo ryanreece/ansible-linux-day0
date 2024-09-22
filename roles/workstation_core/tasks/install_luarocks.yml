@@ -1,0 +1,54 @@
+---
+- name: Install lua libraries
+  ansible.builtin.package:
+    name:
+      - liblua5.4-0
+      - liblua5.4-dev
+      - lua5.4
+    state: present
+  tags: luarocks
+
+- name: Check if luarocks is installed
+  ansible.builtin.command:
+    cmd: luarocks --version
+  register: luarocks_installed
+  ignore_errors: true
+  changed_when: false
+  tags: luarocks
+
+- name: Download and extract luarocks tarball
+  ansible.builtin.unarchive:
+    src: https://luarocks.org/releases/luarocks-3.11.1.tar.gz
+    dest: "{{ sources_dir }}"
+    remote_src: true
+  when: luarocks_installed.rc != 0
+  tags: luarocks
+
+- name: Configure luarocks
+  ansible.builtin.command:
+    cmd: ./configure
+  args:
+    chdir: "{{ sources_dir }}/luarocks-3.11.1"
+  when: luarocks_installed.rc != 0
+  tags: luarocks
+
+- name: Build luarocks
+  community.general.make:
+    chdir: "{{ sources_dir }}/luarocks-3.11.1"
+  when: luarocks_installed.rc != 0
+  tags: luarocks
+
+- name: Install luarocks
+  become: true
+  community.general.make:
+    chdir: "{{ sources_dir }}/luarocks-3.11.1"
+    target: install
+  when: luarocks_installed.rc != 0
+  tags: luarocks 
+
+- name: Install luarocks socket
+  become: true
+  ansible.builtin.command:
+    cmd: luarocks install luasocket
+  when: luarocks_installed.rc != 0
+  tags: luarocks
