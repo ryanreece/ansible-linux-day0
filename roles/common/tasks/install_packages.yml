@@ -5,6 +5,13 @@
     update_cache: true
   tags: packages
 
+- name: Upgrade apt packages
+  become: true
+  ansible.builtin.apt:
+    upgrade: dist
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: packages
+
 - name: Install apt-transport-https & gnupg2
   become: true
   ansible.builtin.apt:
