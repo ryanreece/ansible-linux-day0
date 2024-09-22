@@ -64,14 +64,6 @@
     latest_neovim_version_clean: "{{ latest_neovim_version.stdout | regex_replace('^v', '') }}"
   tags: neovim
 
-- name: Debug Neovim version comparrison
-  ansible.builtin.debug:
-    msg:
-      - "{{ installed_neovim_version }}"
-      - "{{ latest_neovim_version_clean }}"
-  when: installed_neovim_version is defined and latest_neovim_version_clean is defined
-  tags: neovim
-
 - name: Build Neovim if not installed or version mismatch
   community.general.make:
     chdir: "{{ sources_dir }}/neovim"
@@ -88,31 +80,9 @@
   when: installed_neovim_version is not defined or installed_neovim_version != latest_neovim_version_clean
   tags: neovim
 
-- name: Install Neovim packer
-  ansible.builtin.git:
-    repo: "https://github.com/wbthomason/packer.nvim"
-    dest: "{{ ansible_env.HOME }}/.local/share/nvim/site/pack/packer/start/packer.nvim"
-    depth: 1
-    update: true
-  tags: neovim
-
 - name: Install Neovim config
   ansible.builtin.git:
     repo: https://github.com/ryanreece/neovim-config.git
     dest: "{{ ansible_env.HOME }}/.config/nvim"
     update: true
-  tags: neovim
-  
-- name: Run :PackerSync in Neovim
-  ansible.builtin.command: nvim --headless -c "luafile ~/.config/nvim/lua/reece/packer.lua" -c "so" -c "PackerSync" -c "qa"
-  environment:
-    XDG_CONFIG_HOME: "{{ ansible_env.HOME }}/.config"
-  register: packer_sync_result
-  ignore_errors: true
-  changed_when: false
-  tags: neovim
-
-- name: Display PackerSync output
-  ansible.builtin.debug:
-    msg: "{{ packer_sync_result.stdout }}"
   tags: neovim
