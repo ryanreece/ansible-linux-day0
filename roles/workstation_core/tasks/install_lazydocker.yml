@@ -29,6 +29,7 @@
   ansible.builtin.get_url:
     url: "https://github.com/jesseduffield/lazydocker/releases/latest/download/lazydocker_{{ lazydocker_tag }}_{{ system_arch }}.tar.gz"
     dest: /tmp/lazydocker.tar.gz
+    mode: '0644'
   when: installed_lazydocker_version is not defined or installed_lazydocker_version != lazydocker_tag
   tags: lazydocker
 

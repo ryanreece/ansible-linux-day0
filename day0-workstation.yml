@@ -1,5 +1,5 @@
 ---
-- name: Day 0 Config for Workstations 
+- name: Day 0 Config for Workstations
   hosts: all
   vars:
     ohmyzsh_theme: robbyrussell

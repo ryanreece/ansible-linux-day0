@@ -11,4 +11,3 @@
     path: ~/.ssh/id_{{ openssh_keypair_type }}
     type: "{{ openssh_keypair_type }}"
   tags: ssh
-

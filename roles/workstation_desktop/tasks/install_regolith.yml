@@ -33,7 +33,7 @@
   register: regolith_exists
   tags: regolith
 
-- name: Check if user ({{ ansible_user_id }}) session is already regolith-x11
+- name: Check if user session is already regolith-x11
   become: true
   ansible.builtin.command:
     cmd: "grep '^Session=regolith-x11' /var/lib/AccountsService/users/{{ ansible_user_id }}"
@@ -54,7 +54,7 @@
     - regolith_exists.stat.exists
   tags: regolith
 
-- name: Set user ({{ ansible_user_id }}) session to regolith-x11
+- name: Set user session to regolith-x11
   become: true
   ansible.builtin.lineinfile:
     path: "/var/lib/AccountsService/users/{{ ansible_user_id }}"

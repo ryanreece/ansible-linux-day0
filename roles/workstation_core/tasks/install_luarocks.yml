@@ -45,7 +45,7 @@
     chdir: "{{ sources_dir }}/luarocks-3.11.1"
     target: install
   when: luarocks_installed.rc != 0
-  tags: luarocks 
+  tags: luarocks
 
 - name: Install luarocks socket
   become: true

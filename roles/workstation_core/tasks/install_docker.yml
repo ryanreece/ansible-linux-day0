@@ -40,7 +40,7 @@
   when: ansible_facts['os_family'] == 'Debian'
   tags: docker
 
-- name: Add {{ ansible_user_id }} to the docker group
+- name: Add the following user to the docker group {{ ansible_user_id }}
   become: true
   ansible.builtin.user:
     name: "{{ ansible_user_id }}"

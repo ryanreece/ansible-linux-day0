@@ -1,5 +1,5 @@
 ---
-- name: Ensure {{ ansible_env.HOME }}/repos exists
+- name: Ensure ~/repos exists
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/repos"
     state: directory

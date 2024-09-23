@@ -1,5 +1,5 @@
 ---
-- name: Download NVM to "{{ ansible_env.HOME }}/.nvm-install.sh"
+- name: Download NVM to ~/.nvm-install.sh
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh
     dest: "{{ ansible_env.HOME }}/.nvm-install.sh"
@@ -22,4 +22,3 @@
     chdir: "{{ ansible_env.HOME }}"
     creates: "{{ ansible_env.HOME }}/.nvm/versions/node/v{{ nodejs_version }}"
   tags: nodejs
-

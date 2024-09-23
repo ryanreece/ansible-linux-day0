@@ -8,5 +8,5 @@
       - python3-pylsp
       - python3-venv
       - python-is-python3
-    state: present 
+    state: present
   tags: python

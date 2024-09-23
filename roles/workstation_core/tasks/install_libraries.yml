@@ -58,7 +58,7 @@
     mode: '0755'
   tags: libraries
 
-- name: Ensure {{ sources_dir }} exists
+- name: Ensure directory exists {{ sources_dir }}
   ansible.builtin.file:
     path: "{{ sources_dir }}"
     state: directory
