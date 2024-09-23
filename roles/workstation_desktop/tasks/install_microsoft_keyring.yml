@@ -1,0 +1,10 @@
+---
+- name: Install gpg key for Microsoft
+  become: true
+  ansible.builtin.apt_key:
+    url: https://packages.microsoft.com/keys/microsoft.asc
+    keyring: /etc/apt/trusted.gpg.d/microsoft.gpg
+    state: present
+  tags:
+    - vscode
+    - microsoft_edge

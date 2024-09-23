@@ -1,0 +1,15 @@
+---
+- name: Install Microsoft Edge repository
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main"
+    state: present
+  tags: microsoft_edge
+
+- name: Install Microsoft Edge
+  become: true
+  ansible.builtin.package:
+    name: microsoft-edge-stable
+    state: present
+    update_cache: true
+  tags: microsoft_edge

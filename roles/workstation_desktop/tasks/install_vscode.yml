@@ -1,0 +1,15 @@
+---
+- name: Install VSCode repository
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
+    state: present
+  tags: vscode
+
+- name: Install VSCode
+  become: true
+  ansible.builtin.package:
+    name: code
+    state: present
+    update_cache: true
+  tags: vscode

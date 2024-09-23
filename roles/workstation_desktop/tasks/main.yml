@@ -27,6 +27,33 @@
     - install_chrome | default(true)
   tags: chrome
 
+- name: Install Microsoft keyring
+  ansible.builtin.include_tasks:
+    file: install_microsoft_keyring.yml
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - install_microsoft_edge | default(true) or
+      install_vscode | default(true)
+  tags:
+    - microsoft_edge
+    - vscode
+
+- name: Install Microsoft Edge
+  ansible.builtin.include_tasks:
+    file: install_microsoft_edge.yml
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - install_microsoft_edge | default(true)
+  tags: microsoft_edge
+
+- name: Install VSCode
+  ansible.builtin.include_tasks:
+    file: install_vscode.yml
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - install_vscode | default(true)
+  tags: vscode
+
 - name: Install ulauncher
   ansible.builtin.include_tasks:
     file: install_ulauncher.yml

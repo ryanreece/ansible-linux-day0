@@ -120,5 +120,7 @@ and is installed via the `./aws/install` command.
 2. [Flameshot](#flameshot)
 3. [Regolith](#regolith)
 4. [Chrome](#chrome)
-5. [Ulauncher](#ulauncher)
+5. [Microsoft Edge](#microsoft-edge)
+6. [VSCode](#vscode)
+7. [Ulauncher](#ulauncher)
 
