@@ -51,43 +51,7 @@ for the tasks you want to exclude to `false`.
 
 ### Common (`roles/common`)
 
-1. [Packages](#packages)
-2. [Tmux](#tmux)
-3. [Zsh](#zsh)
-4. [SSH Key](#ssh-key)
-5. [NodeJS](#nodejs)
-6. [AWS CLI](#aws-cli)
-
-### Server Core (`roles/server_core`)
-
-1. Unattended upgrades
-2. Tmux `.tmux.conf`
-3. Zsh `.zshrc`
-
-### Workstation Core (`roles/workstation_core`)
-
-1. [Dotfiles](#dotfiles)
-2. [Libraries](#libraries)
-3. [Luarocks](#luarocks)
-4. [Neovim](#neovim)
-5. [Python](#python)
-6. [TypeScript](#typescript)
-7. [FastFetch](#fastfetch)
-8. [Docker](#docker)
-9. [LazyDocker](#lazydocker)
-10. [LazyGit](#lazygit)
-
-### Workstation Desktop (`roles/workstation_desktop`)
-
-1. [Alacritty](#alacritty)
-2. [Flameshot](#flameshot)
-3. [Regolith](#regolith)
-4. [Chrome](#chrome)
-5. [Ulauncher](#ulauncher)
-
----
-
-### Packages (`install_packages.yml`)
+#### Packages (`install_packages.yml`)
 
 1. [btop](#btop)
 2. [curl](#curl)
@@ -102,25 +66,59 @@ for the tasks you want to exclude to `false`.
 11. [zip](#zip)
 12. [zoxide](#zoxide)
 
-### Tmux (`install_tmux.yml`)
+#### Tmux (`install_tmux.yml`)
 
 tmux is a terminal multiplexer that allows users to manage multiple terminal sessions within a single window or session. With tmux, you can split a terminal into multiple panes, switch between them, and keep processes running in the background even if you disconnect from the session. It's especially useful for remote work, as you can disconnect from a session and reconnect later without losing any of the running processes.
 
-### Zsh (`install_zsh.yml`)
+#### Zsh (`install_zsh.yml`)
 
 Zsh (Z shell) is an extended version of the Unix shell, with many improvements over the traditional Bash shell. It is widely used for interactive shell sessions due to its advanced features, ease of customization, and powerful scripting capabilities.
 
-### SSH Key (`install_ssh_key.yml`)
+#### SSH Key (`install_ssh_key.yml`)
 
 An ssh key is generated for the `ansible_user_id` with the type defined in the
 `openssh_keypair_type` variable. The default type is set to **ed25519**.
 
-### NodeJS (`install_nodejs.yml`)
+#### NodeJS (`install_nodejs.yml`)
 
 NodeJS is installed via the Node Version Manager (nvm). The NodeJS version to 
 install is defined in the `nodejs_version` variable.
 
-### AWS CLI (`install_aws_cli.yml`)
+#### AWS CLI (`install_aws_cli.yml`)
 
 The latest version of the AWS CLI v2 is downloaded from `awscli.amazonaws.com`
 and is installed via the `./aws/install` command.
+
+---
+
+### Server Core (`roles/server_core`)
+
+1. Unattended upgrades
+2. Tmux `.tmux.conf`
+3. Zsh `.zshrc`
+
+---
+
+### Workstation Core (`roles/workstation_core`)
+
+1. [Dotfiles](#dotfiles)
+2. [Libraries](#libraries)
+3. [Luarocks](#luarocks)
+4. [Neovim](#neovim)
+5. [Python](#python)
+6. [TypeScript](#typescript)
+7. [FastFetch](#fastfetch)
+8. [Docker](#docker)
+9. [LazyDocker](#lazydocker)
+10. [LazyGit](#lazygit)
+
+---
+
+### Workstation Desktop (`roles/workstation_desktop`)
+
+1. [Alacritty](#alacritty)
+2. [Flameshot](#flameshot)
+3. [Regolith](#regolith)
+4. [Chrome](#chrome)
+5. [Ulauncher](#ulauncher)
+
