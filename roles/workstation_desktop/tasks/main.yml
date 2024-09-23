@@ -61,3 +61,11 @@
     - ansible_facts['os_family'] == 'Debian'
     - install_ulauncher | default(true)
   tags: ulauncher
+
+- name: Install Remmina
+  ansible.builtin.include_tasks:
+    file: install_remmina.yml
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - install_remmina | default(true)
+  tags: remmina

@@ -123,4 +123,4 @@ and is installed via the `./aws/install` command.
 5. [Microsoft Edge](#microsoft-edge)
 6. [VSCode](#vscode)
 7. [Ulauncher](#ulauncher)
-
+8. [Remmina](#remmina)

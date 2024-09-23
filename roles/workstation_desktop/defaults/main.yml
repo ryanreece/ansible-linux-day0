@@ -4,9 +4,10 @@ sources_dir: "{{ ansible_env.HOME }}/sources"
 # Install variables
 # These variables define which include_tasks will run for the workstation role.
 install_alacritty: true
-install_flameshot: true
-install_regolith: true
 install_chrome: true
+install_flameshot: true
 install_microsoft_edge: true
-install_vscode: true
+install_regolith: true
+install_remmina: true
 install_ulauncher: true
+install_vscode: true

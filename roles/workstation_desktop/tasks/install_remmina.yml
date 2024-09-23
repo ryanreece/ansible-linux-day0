@@ -1,0 +1,23 @@
+---
+- name: Install Remmina/FreeRDP gpg key
+  become: true
+  ansible.builtin.apt_key:
+    url: https://pub.freerdp.com/repositories/ADD6BF6D97CE5D8D.asc
+    keyring: /etc/apt/trusted.gpg.d/freerdp.gpg
+    state: present
+  tags: remmina
+
+- name: Install Remmina/FreeRDP repo
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed_by=/etc/apt/trusted.gpg.d/freerdp.gpg] http://pub.freerdp.com/repositories/deb/{{ ansible_distribution_release }} freerdp-nightly main"
+    state: present
+  tags: remmina
+
+- name: Install Remmina
+  become: true
+  ansible.builtin.package:
+    name: remmina
+    state: present
+    update_cache: true
+  tags: remmina
