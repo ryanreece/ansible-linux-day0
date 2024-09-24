@@ -69,3 +69,11 @@
     - ansible_facts['os_family'] == 'Debian'
     - install_remmina | default(true)
   tags: remmina
+
+- name: Install KeePassXC
+  ansible.builtin.include_tasks:
+    file: install_keepassxc.yml
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - install_remmina | default(true)
+  tags: keepassxc

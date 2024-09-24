@@ -1,0 +1,15 @@
+---
+- name: Install KeePassXC repo
+  become: true
+  ansible.builtin.apt_repository:
+    repo: ppa:phoerious/keepassxc
+    state: present
+  tags: keepassxc
+
+- name: Install KeePassXC
+  become: true
+  ansible.builtin.package:
+    name: keepassxc
+    state: present
+    update_cache: true
+  tags: keepassxc
