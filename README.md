@@ -49,9 +49,25 @@ Each role has a `defaults/main.yml` file which contains the `install_*`
 variables. To skip run an included task, simply set the `install_*` variable
 for the tasks you want to exclude to `false`.
 
-### Common (`roles/common`)
+Example:
 
-#### Packages (`install_packages.yml`)
+```yaml
+# vars.yml
+# Don't install Regolith/i3
+install_regolith: false
+```
+
+### Common
+
+* Role file: `roles/common/main.yml`
+
+The common role is used to install packages and configuration on both 
+workstations and servers. 
+
+#### Packages
+
+* Task file: `install_packages.yml`
+* Install var: `install_packages: true`
 
 1. [btop](#btop)
 2. [curl](#curl)
@@ -66,32 +82,49 @@ for the tasks you want to exclude to `false`.
 11. [zip](#zip)
 12. [zoxide](#zoxide)
 
-#### Tmux (`install_tmux.yml`)
+#### Tmux
+
+* Task file: `install_tmux.yml`
+* Install var: `install_tmux: true`
 
 tmux is a terminal multiplexer that allows users to manage multiple terminal sessions within a single window or session. With tmux, you can split a terminal into multiple panes, switch between them, and keep processes running in the background even if you disconnect from the session. It's especially useful for remote work, as you can disconnect from a session and reconnect later without losing any of the running processes.
 
-#### Zsh (`install_zsh.yml`)
+#### Zsh
+
+* Task file: `install_zsh.yml`
+* Install var: `install_zsh: true`
 
 Zsh (Z shell) is an extended version of the Unix shell, with many improvements over the traditional Bash shell. It is widely used for interactive shell sessions due to its advanced features, ease of customization, and powerful scripting capabilities.
 
-#### SSH Key (`install_ssh_key.yml`)
+#### SSH Key
+
+* Task file: `install_ssh_key.yml`
+* Install var: `install_ssh_key: true`
 
 An ssh key is generated for the `ansible_user_id` with the type defined in the
 `openssh_keypair_type` variable. The default type is set to **ed25519**.
 
-#### NodeJS (`install_nodejs.yml`)
+#### NodeJS
+
+* Task file: `install_nodejs.yml`
+* Install var: `install_nodejs: true`
 
 NodeJS is installed via the Node Version Manager (nvm). The NodeJS version to 
 install is defined in the `nodejs_version` variable.
 
-#### AWS CLI (`install_aws_cli.yml`)
+#### AWS CLI
+
+* Task file: `install_aws_cli.yml`
+* Install var: `install_aws_cli: true`
 
 The latest version of the AWS CLI v2 is downloaded from `awscli.amazonaws.com`
 and is installed via the `./aws/install` command.
 
 ---
 
-### Server Core (`roles/server_core`)
+### Server Core
+
+* Role file: `roles/server_core/main.yml`
 
 1. Unattended upgrades
 2. Tmux `.tmux.conf`
@@ -99,28 +132,107 @@ and is installed via the `./aws/install` command.
 
 ---
 
-### Workstation Core (`roles/workstation_core`)
+### Workstation Core
 
-1. [Dotfiles](#dotfiles)
-2. [Libraries](#libraries)
-3. [Luarocks](#luarocks)
-4. [Neovim](#neovim)
-5. [Python](#python)
-6. [TypeScript](#typescript)
-7. [FastFetch](#fastfetch)
-8. [Docker](#docker)
-9. [LazyDocker](#lazydocker)
-10. [LazyGit](#lazygit)
+* Role file: `roles/workstation_core/main.yml`
+
+#### Dotfiles
+
+* Task file: `install_dotfiles.yml`
+* Install var: `install_dotfiles: true`
+
+#### Libraries
+
+* Task file: `install_libraries.yml`
+* Install var: `install_libraries: true`
+
+#### Luarocks
+
+* Task file: `install_luarocks.yml`
+* Install var: `install_luarocks: true`
+
+#### Neovim
+
+* Task file: `install_neovim.yml`
+* Install var: `install_neovim: true`
+
+#### Python
+
+* Task file: `install_python.yml`
+* Install var: `install_python: true`
+
+#### TypeScript
+
+* Task file: `install_typescript.yml`
+* Install var: `install_typescript: true`
+
+#### FastFetch
+
+* Task file: `install_fastfetch.yml`
+* Install var: `install_fastfetch: true`
+
+#### Docker
+
+* Task file: `install_docker.yml`
+* Install var: `install_docker: true`
+
+#### LazyDocker
+
+* Task file: `install_lazydocker.yml`
+* Install var: `install_lazydocker: true`
+
+#### LazyGit
+
+* Task file: `install_lazygit.yml`
+* Install var: `install_lazygit: true`
 
 ---
 
-### Workstation Desktop (`roles/workstation_desktop`)
+### Workstation Desktop
 
-1. [Alacritty](#alacritty)
-2. [Flameshot](#flameshot)
-3. [Regolith](#regolith)
-4. [Chrome](#chrome)
-5. [Microsoft Edge](#microsoft-edge)
-6. [VSCode](#vscode)
-7. [Ulauncher](#ulauncher)
-8. [Remmina](#remmina)
+* Role file: `roles/workstation_desktop/main.yml`
+
+#### Alacritty
+
+* Task file: `install_alacritty.yml`
+* Install var: `install_alacritty: true`
+
+#### Flameshot
+
+* Task file: `install_flameshot.yml`
+* Install var: `install_flameshot: true`
+
+#### Regolith
+
+* Task file: `install_regolith.yml`
+* Install var: `install_regolith: true`
+
+#### Chrome
+
+* Task file: `install_chrome.yml`
+* Install var: `install_chrome: true`
+
+#### Microsoft Edge 
+
+* Task file: `install_microsoft_edge.yml`
+* Install var: `install_microsoft_edge: true`
+
+#### VSCode
+
+* Task file: `install_vscode.yml`
+* Install var: `install_vscode: true`
+
+#### Ulauncher
+
+* Task file: `install_ulauncher.yml`
+* Install var: `install_ulauncher: true`
+
+#### Remmina
+
+* Task file: `install_remmina.yml`
+* Install var: `install_remmina: true`
+
+#### KeePassXC
+
+* Task file: `install_keepassxc.yml`
+* Install var: `install_keepassxc: true`
