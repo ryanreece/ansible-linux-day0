@@ -138,7 +138,7 @@ and is installed via the `./aws/install` command.
 
 #### Dotfiles
 
-* Task file: `install_dotfiles.yml`
+* Task file: [`install_dotfiles.yml`](roles/workstation_core/tasks/install_dotfiles.yml)
 * Install var: `install_dotfiles: true`
 
 #### Libraries
