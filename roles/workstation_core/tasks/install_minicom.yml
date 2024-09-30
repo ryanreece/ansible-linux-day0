@@ -1,0 +1,16 @@
+---
+- name: Install minicom
+  become: true
+  ansible.builtin.package:
+    name:
+      - minicom
+    state: present
+  tags: minicom
+
+- name: Add the following user to the dialout group {{ ansible_user_id }}
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    groups: dialout
+    append: true
+  tags: minicom

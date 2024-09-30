@@ -188,6 +188,11 @@ and is installed via the `./aws/install` command.
 * Task file: [`install_lazygit.yml`](roles/workstation_core/tasks/install_lazygit.yml)
 * Install var: `install_lazygit: true`
 
+#### Minicom
+
+* Task file: [`install_minicom.yml`](roles/workstation_core/tasks/install_minicom.yml)
+* Install var: `install_minicom: true`
+
 ---
 
 ### Workstation Desktop

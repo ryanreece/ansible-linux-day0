@@ -63,3 +63,9 @@
     file: install_lazygit.yml
   when: install_lazygit | default(true)
   tags: lazygit
+
+- name: Install minicom
+  ansible.builtin.include_tasks:
+    file: install_minicom.yml
+  when: install_minicom | default(true)
+  tags: minicom
