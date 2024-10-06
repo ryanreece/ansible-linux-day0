@@ -14,3 +14,4 @@ install_docker: true
 install_lazydocker: true
 install_lazygit: true
 install_minicom: true
+install_terraform: true

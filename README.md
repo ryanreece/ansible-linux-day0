@@ -193,6 +193,11 @@ and is installed via the `./aws/install` command.
 * Task file: [`install_minicom.yml`](roles/workstation_core/tasks/install_minicom.yml)
 * Install var: `install_minicom: true`
 
+#### Terraform
+
+* Task file: [`install_terraform.yml`](roles/workstation_core/tasks/install_terraform.yml)
+* Install var: `install_terraform: true`
+
 ---
 
 ### Workstation Desktop

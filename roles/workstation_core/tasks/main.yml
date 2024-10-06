@@ -69,3 +69,9 @@
     file: install_minicom.yml
   when: install_minicom | default(true)
   tags: minicom
+
+- name: Install terraform
+  ansible.builtin.include_tasks:
+    file: install_terraform.yml
+  when: install_terraform | default(true)
+  tags: terraform
