@@ -178,6 +178,11 @@ and is installed via the `./aws/install` command.
 * Task file: [`install_docker.yml`](roles/workstation_core/tasks/install_docker.yml)
 * Install var: `install_docker: true`
 
+#### ProxyChains-NG
+
+* Task file: [`install_proxychains_ng.yml`](roles/workstation_core/tasks/install_proxychains_ng.yml)
+* Install var: `install_proxychains_ng: true`
+
 #### LazyDocker
 
 * Task file: [`install_lazydocker.yml`](roles/workstation_core/tasks/install_lazydocker.yml)
