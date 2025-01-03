@@ -21,7 +21,7 @@
 - name: Install 'Development Tools' dnf group for RedHat os families
   become: true
   ansible.builtin.dnf:
-    name: "Development Tools"
+    name: '@Development Tools'
     state: present
   tags: libraries
 
