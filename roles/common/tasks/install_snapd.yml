@@ -22,3 +22,10 @@
     name: snapd.socket
     state: started
     enabled: true
+
+- name: Create class snap symlink
+  become: true
+  ansible.builtin.file:
+    src: /var/lib/snapd/snap
+    dest: /snap
+    state: link
