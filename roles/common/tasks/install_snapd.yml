@@ -11,6 +11,7 @@
     update_cache: true
 
 - name: Enable RHSM optional and extras repositories
+  become: true
   community.general.rhsm_repository:
     name:
       - rhel-9-optional-rpms
@@ -18,11 +19,13 @@
     state: enabled
 
 - name: Install snapd
+  become: true
   ansible.builtin.dnf:
     name: snapd
     state: present
 
 - name: Enable snapd socket
+  become: true
   ansible.builtin.systemd_service:
     name: snapd.socket
     state: started
