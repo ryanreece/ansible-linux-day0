@@ -1,0 +1,29 @@
+---
+- name: Install the EPEL repository
+  become: true
+  ansible.builtin.dnf:
+    name: 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm'
+    state: present
+
+- name: Update the package cache
+  become: true
+  ansible.builtin.package:
+    update_cache: true
+
+- name: Enable RHSM optional and extras repositories
+  community.general.rhsm_repository:
+    name:
+      - rhel-9-optional-rpms
+      - rhel-9-extras-rpms
+    state: enabled
+
+- name: Install snapd
+  ansible.builtin.dnf:
+    name: snapd
+    state: present
+
+- name: Enable snapd socket
+  ansible.builtin.systemd_service:
+    name: snapd.socket
+    state: started
+    enabled: true
