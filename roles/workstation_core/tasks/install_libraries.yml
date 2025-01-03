@@ -18,14 +18,7 @@
   when: ansible_facts['os_family'] == 'Debian'
   tags: libraries
 
-- name: Install 'Development Tools' dnf group for RedHat os families
-  become: true
-  ansible.builtin.dnf:
-    name: '@Development Tools'
-    state: present
-  tags: libraries
-
-- name: Install essential libraries
+- name: Install essential libraries for Debian os families
   become: true
   ansible.builtin.package:
     name:
@@ -47,6 +40,14 @@
       - mupdf-tools
       - uuid-dev
       - zlib1g-dev
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: libraries
+
+- name: Install 'Development Tools' dnf group for RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: '@Development Tools'
     state: present
   tags: libraries
 
