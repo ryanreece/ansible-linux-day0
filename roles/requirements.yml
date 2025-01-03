@@ -5,3 +5,4 @@ collections:
 
 roles:
   - name: hifis.unattended_upgrades
+  - name: geerlingguy.repo-epel
