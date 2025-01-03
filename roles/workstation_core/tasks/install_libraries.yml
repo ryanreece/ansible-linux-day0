@@ -44,14 +44,7 @@
   when: ansible_facts['os_family'] == 'Debian'
   tags: libraries
 
-- name: Install 'Development Tools' dnf group for RedHat os families
-  become: true
-  ansible.builtin.dnf:
-    name: '@Development Tools'
-    state: present
-  tags: libraries
-
-- name: Install development tools
+- name: Install development tools for Debian os families
   become: true
   ansible.builtin.package:
     name:
@@ -62,6 +55,14 @@
       - libpq-dev
       - postgresql-client
       - postgresql-client-common
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: libraries
+
+- name: Install 'Development Tools' dnf group for RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: '@Development Tools'
     state: present
   tags: libraries
 
