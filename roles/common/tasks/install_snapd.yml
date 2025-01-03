@@ -1,8 +1,9 @@
 ---
 - name: Install the EPEL repository
-  become: true
   ansible.builtin.include_role:
     name: geerlingguy.repo-epel
+  vars:
+    ansible_become: true
 
 - name: Update the package cache
   become: true
