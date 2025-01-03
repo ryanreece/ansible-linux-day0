@@ -14,8 +14,8 @@
   become: true
   community.general.rhsm_repository:
     name:
-      - rhel-9-optional-rpms
-      - rhel-9-extras-rpms
+      - rhel-*-optional-rpms
+      - rhel-*-extras-rpms
     state: enabled
 
 - name: Install snapd
