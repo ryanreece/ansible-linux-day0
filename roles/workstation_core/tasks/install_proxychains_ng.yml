@@ -1,4 +1,9 @@
 ---
+- name: Initialize proxychains_installed fact to false
+  ansible.builtin.set_fact:
+    proxychains_installed: false
+  tags: proxychains_ng
+
 - name: Check if ProxyChains is installed
   ansible.builtin.command:
     cmd: proxychains4 --help
