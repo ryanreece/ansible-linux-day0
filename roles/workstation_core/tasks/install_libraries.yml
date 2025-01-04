@@ -48,13 +48,14 @@
   become: true
   ansible.builtin.package:
     name:
-      - redis-tools
-      - sqlite3
-      - libsqlite3-0
+      - gpg-agent
       - libmysqlclient-dev
       - libpq-dev
+      - libsqlite3-0
       - postgresql-client
       - postgresql-client-common
+      - redis-tools
+      - sqlite3
     state: present
   when: ansible_facts['os_family'] == 'Debian'
   tags: libraries

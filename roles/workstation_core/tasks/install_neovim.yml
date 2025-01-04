@@ -5,7 +5,6 @@
     name:
       - gnupg
       - gpg
-      - gpg-agent
       - ripgrep
       - xclip
       - xsel
