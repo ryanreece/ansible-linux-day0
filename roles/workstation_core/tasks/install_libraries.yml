@@ -68,11 +68,15 @@
   when: ansible_facts['os_family'] == 'RedHat'
   tags: libraries
 
-- name: Install cmake for RedHat os families
+- name: Install compliation tools and devel libs for RedHat os families
   become: true
   ansible.builtin.dnf:
     name:
       - cmake
+      - fontconfig-devel
+      - freetype-devel
+      - libxcb-devel
+      - libxkbcommon-devel
     state: present
   when: ansible_facts['os_family'] == 'RedHat'
   tags: libraries
