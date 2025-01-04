@@ -72,11 +72,13 @@
   become: true
   ansible.builtin.dnf:
     name:
+      - cargo
       - cmake
       - fontconfig-devel
       - freetype-devel
       - libxcb-devel
       - libxkbcommon-devel
+      - rust
     state: present
   when: ansible_facts['os_family'] == 'RedHat'
   tags: libraries

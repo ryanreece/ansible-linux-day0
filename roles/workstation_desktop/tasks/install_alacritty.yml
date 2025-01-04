@@ -7,15 +7,16 @@
   when: ansible_facts['os_family'] == 'Debian'
   tags: alacritty
 
-- name: Install Alacritty for RedHat os families
-  become: true
-  community.general.snap:
-    name:
-      - alacritty
-    classic: true
-    state: present
-  when: ansible_facts['os_family'] == 'RedHat'
-  tags: alacritty
+  # TODO: Install on RHEL via cargo build process and cloning git repo
+  #- name: Install Alacritty for RedHat os families
+  #  become: true
+  #  community.general.snap:
+  #    name:
+  #      - alacritty
+  #    classic: true
+  #    state: present
+  #  when: ansible_facts['os_family'] == 'RedHat'
+  #  tags: alacritty
 
 - name: Create the Alacritty themes directory
   ansible.builtin.file:
