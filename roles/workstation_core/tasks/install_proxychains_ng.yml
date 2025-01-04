@@ -1,7 +1,9 @@
 ---
-- name: Initialize proxychains_installed fact to false
+- name: Initialize proxychains playbook facts
   ansible.builtin.set_fact:
     proxychains_installed: false
+    installed_proxychains_version: false
+    installed_proxychains_version_contents: false
   tags: proxychains_ng
 
 - name: Check if ProxyChains is installed
