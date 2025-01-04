@@ -1,9 +1,19 @@
 ---
-- name: Install Alacritty
+- name: Install Alacritty for Debian os families
   become: true
   ansible.builtin.package:
     name:
       - alacritty
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: alacritty
+
+- name: Install Alacritty for RedHat os families
+  become: true
+  community.general.snap:
+    name:
+      - alacritty
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
   tags: alacritty
 
 - name: Create the Alacritty themes directory
