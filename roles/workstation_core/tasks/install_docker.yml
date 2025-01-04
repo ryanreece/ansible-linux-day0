@@ -37,9 +37,8 @@
     
 - name: Add docker repository for RedHat os families
   become: true
-  community.general.dnf_config_manager:
-    name: https://download.docker.com/linux/rhel/docker-ce.repo
-    state: enabled
+  ansible.builin.command:
+    cmd: dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
   when: ansible_facts['os_family'] == 'RedHat'
   tags: docker
 
