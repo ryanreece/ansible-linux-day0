@@ -23,7 +23,6 @@
   ansible.builtin.include_tasks:
     file: install_chrome.yml
   when:
-    - ansible_facts['os_family'] == 'Debian'
     - install_chrome | default(true)
   tags: chrome
 
