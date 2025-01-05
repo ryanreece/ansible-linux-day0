@@ -1,10 +1,23 @@
 ---
-- name: Install gpg key for Microsoft
+- name: Install Microsoft GPG key for Debian os families
   become: true
   ansible.builtin.apt_key:
     url: https://packages.microsoft.com/keys/microsoft.asc
     keyring: /etc/apt/trusted.gpg.d/microsoft.gpg
     state: present
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+  tags:
+    - vscode
+    - microsoft_edge
+
+- name: Install Microsoft GPG key for RedHat os families
+  become: true
+  ansible.builtin.rpm_key:
+    state: present
+    key: https://packages.microsoft.com/keys/microsoft.asc
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
   tags:
     - vscode
     - microsoft_edge

@@ -4,6 +4,8 @@
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
     state: present
+  when:
+    - ansible_facts['os_family'] == 'Debian'
   tags: vscode
 
 - name: Install VSCode
@@ -12,4 +14,23 @@
     name: code
     state: present
     update_cache: true
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+  tags: vscode
+
+- name: Download VSCode rpm package
+  ansible.builtin.get_url:
+    url: https://code.visualstudio.com/sha/download?build=stable&os=linux-rpm-x64
+    dest: /tmp/vscode_current_x86_64.rpm
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+  tags: vscode
+
+- name: Install VSCode on RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: /tmp/vscode_current_x86_64.rpm
+    state: present
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
   tags: vscode
