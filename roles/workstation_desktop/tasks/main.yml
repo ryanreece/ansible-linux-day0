@@ -19,6 +19,14 @@
     - install_regolith | default(true)
   tags: regolith
 
+- name: Install KDE
+  ansible.builtin.include_tasks:
+    file: install_kde.yml
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - install_kde | default(true)
+  tags: kde
+
 - name: Install Chrome
   ansible.builtin.include_tasks:
     file: install_chrome.yml
