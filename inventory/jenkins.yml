@@ -1,0 +1,4 @@
+linux:
+  hosts:
+    JenkinsTest:
+    JenkinsTestLin1:
