@@ -2,7 +2,7 @@
 - name: Day 0 Config for Servers
   hosts: linux
   vars:
-    ansible_user: sysadmin
+    ansible_user: popnimda
     ohmyzsh_theme: jispwoso
 
   roles:
