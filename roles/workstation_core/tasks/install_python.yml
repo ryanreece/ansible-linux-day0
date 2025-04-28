@@ -8,6 +8,13 @@
     state: present
   tags: python
 
+- name: Install Python UV using the official install script
+  ansible.builtin.shell: |
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+  args:
+    executable: /bin/bash
+  tags: python
+
 - name: Install python3 packages for Debian os families
   become: true
   ansible.builtin.package:
