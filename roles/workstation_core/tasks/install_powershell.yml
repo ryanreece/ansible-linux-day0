@@ -1,0 +1,66 @@
+---
+- name: Check if PowerShell is installed
+  ansible.builtin.command:
+    cmd: pwsh --version
+  register: pwsh_installed
+  ignore_errors: true
+  changed_when: false
+  tags: pwsh
+  
+- name: Set the installed pwsh version
+  ansible.builtin.set_fact:
+    installed_pwsh_version: "{{ pwsh_installed.stdout_lines[0] | regex_search('([0-9.]+)', '\\1') | first }}"
+  when: pwsh_installed.rc == 0
+  tags: pwsh
+
+- name: Get the latest pwsh release
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/PowerShell/PowerShell/releases/latest
+    return_content: true
+  register: pwsh_release
+  tags: pwsh
+
+- name: Set the latest pwsh release tag
+  ansible.builtin.set_fact:
+    pwsh_tag: "{{ pwsh_release.json.tag_name | regex_replace('^v', '') }}"
+  tags: pwsh
+
+- name: Extract PowerShell .deb package download URL from release assets
+  ansible.builtin.set_fact:
+    pwsh_deb_url: "{{ pwsh_release.json.assets
+                      | selectattr('content_type', 'equalto', 'application/x-debian-package')
+                      | map(attribute='browser_download_url')
+                      | list
+                      | first }}"
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - installed_pwsh_version is not defined or installed_pwsh_version != pwsh_tag
+  tags: pwsh
+
+- name: Download PowerShell deb package
+  ansible.builtin.get_url:
+    url: "{{ pwsh_deb_url }}"
+    dest: "/tmp/{{ pwsh_deb_url | basename }}"
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - installed_pwsh_version is not defined or installed_pwsh_version != pwsh_tag
+  tags: pwsh
+
+- name: Install PowerShell on Debian os families
+  become: true
+  ansible.builtin.apt:
+    deb: "/tmp/{{ pwsh_deb_url | basename }}"
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - installed_pwsh_version is not defined or installed_pwsh_version != pwsh_tag
+  tags: pwsh
+
+- name: Remove PowerShell deb package
+  ansible.builtin.file:
+    path: "/tmp/{{ pwsh_deb_url | basename }}"
+    state: absent
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - installed_pwsh_version is not defined or installed_pwsh_version != pwsh_tag
+  tags: pwsh
+
