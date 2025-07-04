@@ -3,10 +3,28 @@
   become: true
   ansible.builtin.package:
     name:
-      - liblua5.1-0
-      - liblua5.1-dev
       - lua5.1
     state: present
+  tags: luarocks
+
+- name: Install lua libraries for Debian os families
+  become: true
+  ansible.builtin.package:
+    name:
+      - liblua5.1-0
+      - liblua5.1-dev
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: luarocks
+  
+- name: Install lua libraries for RedHat os families
+  become: true
+  ansible.builtin.package:
+    name:
+      - compat-lua-devel
+      - compat-lua-libs
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
   tags: luarocks
 
 - name: Check if luarocks is installed

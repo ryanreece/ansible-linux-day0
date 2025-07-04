@@ -1,8 +1,19 @@
 ---
-- name: Install flameshot
+- name: Install flameshot for Debian os families
   become: true
   ansible.builtin.package:
     name:
       - flameshot
     state: present
+  when: ansible_facts['os_family'] == 'Debian'
   tags: flameshot
+
+  # TODO: Get flameshot installing on rhel...
+  #- name: Install flameshot for RedHat os families
+  #  become: true
+  #  community.general.snap:
+  #    name:
+  #      - flameshot
+  #    state: present
+  #  when: ansible_facts['os_family'] == 'RedHat'
+  #  tags: flameshot

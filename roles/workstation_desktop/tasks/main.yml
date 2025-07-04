@@ -19,11 +19,18 @@
     - install_regolith | default(true)
   tags: regolith
 
+- name: Install KDE
+  ansible.builtin.include_tasks:
+    file: install_kde.yml
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - install_kde | default(true)
+  tags: kde
+
 - name: Install Chrome
   ansible.builtin.include_tasks:
     file: install_chrome.yml
   when:
-    - ansible_facts['os_family'] == 'Debian'
     - install_chrome | default(true)
   tags: chrome
 
@@ -31,7 +38,6 @@
   ansible.builtin.include_tasks:
     file: install_microsoft_keyring.yml
   when:
-    - ansible_facts['os_family'] == 'Debian'
     - install_microsoft_edge | default(true) or
       install_vscode | default(true)
   tags:
@@ -50,7 +56,6 @@
   ansible.builtin.include_tasks:
     file: install_vscode.yml
   when:
-    - ansible_facts['os_family'] == 'Debian'
     - install_vscode | default(true)
   tags: vscode
 

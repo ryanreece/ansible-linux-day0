@@ -9,9 +9,12 @@ install_luarocks: true
 install_neovim: true
 install_python: true
 install_typescript: true
+install_ruby: true
 install_fastfetch: true
 install_docker: true
+install_proxychains_ng: true
 install_lazydocker: true
 install_lazygit: true
 install_minicom: true
 install_terraform: true
+install_powershell: true

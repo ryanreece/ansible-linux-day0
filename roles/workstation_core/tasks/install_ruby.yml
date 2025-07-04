@@ -1,0 +1,19 @@
+---
+- name: Install rbenv
+  ansible.builtin.git:
+    repo: https://github.com/rbenv/rbenv.git
+    dest: ~/.rbenv
+    depth: 1
+  tags: ruby
+
+- name: Install ruby-build
+  ansible.builtin.git:
+    repo: https://github.com/rbenv/ruby-build.git
+    dest: ~/.rbenv/plugins/ruby-build
+    depth: 1
+  tags: ruby
+
+- name: Initalize rbenv
+  ansible.builtin.command:
+    cmd: zsh -lc "~/.rbenv/bin/rbenv install -l"
+  tags: ruby

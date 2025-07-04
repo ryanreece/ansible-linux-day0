@@ -22,6 +22,12 @@
   when: install_typescript | default(true)
   tags: typescript
 
+- name: Install Ruby
+  ansible.builtin.include_tasks:
+    file: install_ruby.yml
+  when: install_ruby | default(true)
+  tags: ruby
+
 - name: Install luarocks
   ansible.builtin.include_tasks:
     file: install_luarocks.yml
@@ -52,6 +58,14 @@
   when: install_docker | default(true)
   tags: docker
 
+- name: Install ProxyChains-NG
+  ansible.builtin.include_tasks:
+    file: install_proxychains_ng.yml
+  when: 
+    - install_proxychains_ng | default(true)
+    - ansible_facts['os_family'] == 'Debian'
+  tags: proxychains_ng
+
 - name: Install lazydocker
   ansible.builtin.include_tasks:
     file: install_lazydocker.yml
@@ -75,3 +89,11 @@
     file: install_terraform.yml
   when: install_terraform | default(true)
   tags: terraform
+
+- name: Install PowerShell
+  ansible.builtin.include_tasks:
+    file: install_powershell.yml
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - install_powershell | default(true)
+  tags: pwsh

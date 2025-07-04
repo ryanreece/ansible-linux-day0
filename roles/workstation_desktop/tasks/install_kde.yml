@@ -1,0 +1,37 @@
+---
+- name: Install 'kde-desktop-environment' dnf group for RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: '@kde-desktop-environment'
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags: kde
+
+- name: Check if user session is already kde plasma
+  become: true
+  ansible.builtin.command:
+    cmd: "grep '^Session=plasma' /var/lib/AccountsService/users/{{ ansible_user_id }}"
+  register: kde_session_set
+  ignore_errors: true
+  changed_when: false
+  tags: kde
+
+- name: Backup the AccountService user file
+  become: true
+  ansible.builtin.copy:
+    src: "/var/lib/AccountsService/users/{{ ansible_user_id }}"
+    dest: "/var/lib/AccountsService/users/{{ ansible_user_id }}.bak"
+    remote_src: true
+  when:
+    - kde_session_set.rc != 0
+  tags: kde
+
+- name: Set user session to kde plasma
+  become: true
+  ansible.builtin.lineinfile:
+    path: "/var/lib/AccountsService/users/{{ ansible_user_id }}"
+    regexp: '^Session='
+    line: 'Session=plasma'
+  when:
+    - kde_session_set.rc != 0
+  tags: kde
