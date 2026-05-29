@@ -1,0 +1,39 @@
+---
+- name: Check if Cisco Secure Client VPN UI exists
+  ansible.builtin.stat:
+    path: /opt/cisco/anyconnect/bin/vpnui
+  register: cisco_secure_client_vpnui
+  tags:
+    - cisco_secure_client
+    - vpn
+
+- name: Download Cisco Secure Client installer
+  ansible.builtin.get_url:
+    url: https://assets.reece.ai/bin/anyconnect-linux64-4.10.06079-core-vpn-webdeploy-k9.sh
+    dest: /tmp/anyconnect-linux64-4.10.06079-core-vpn-webdeploy-k9.sh
+    mode: '0755'
+  when: not cisco_secure_client_vpnui.stat.exists
+  tags:
+    - cisco_secure_client
+    - vpn
+
+- name: Install Cisco Secure Client
+  become: true
+  ansible.builtin.command:
+    argv:
+      - /tmp/anyconnect-linux64-4.10.06079-core-vpn-webdeploy-k9.sh
+  args:
+    creates: /opt/cisco/anyconnect/bin/vpnui
+  when: not cisco_secure_client_vpnui.stat.exists
+  tags:
+    - cisco_secure_client
+    - vpn
+
+- name: Remove Cisco Secure Client installer
+  ansible.builtin.file:
+    path: /tmp/anyconnect-linux64-4.10.06079-core-vpn-webdeploy-k9.sh
+    state: absent
+  when: not cisco_secure_client_vpnui.stat.exists
+  tags:
+    - cisco_secure_client
+    - vpn

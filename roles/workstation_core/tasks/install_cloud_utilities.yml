@@ -1,0 +1,108 @@
+---
+- name: Install rclone
+  become: true
+  ansible.builtin.package:
+    name: rclone
+    state: present
+  tags: cloud_utilities
+
+- name: Check if cloudflared is installed
+  ansible.builtin.command:
+    cmd: cloudflared --version
+  register: cloudflared_installed
+  ignore_errors: true
+  changed_when: false
+  tags: cloud_utilities
+
+- name: Set cloudflared package architecture
+  ansible.builtin.set_fact:
+    cloudflared_deb_arch: >-
+      {{
+        'amd64' if ansible_architecture == 'x86_64'
+        else 'arm64' if ansible_architecture == 'aarch64'
+        else ''
+      }}
+    cloudflared_rpm_arch: >-
+      {{
+        'x86_64' if ansible_architecture == 'x86_64'
+        else 'aarch64' if ansible_architecture == 'aarch64'
+        else ''
+      }}
+  when: cloudflared_installed.rc != 0
+  tags: cloud_utilities
+
+- name: Stop if cloudflared architecture is unsupported
+  ansible.builtin.fail:
+    msg: "Unsupported cloudflared architecture: {{ ansible_architecture }}"
+  when:
+    - cloudflared_installed.rc != 0
+    - ansible_facts['os_family'] in ['Debian', 'RedHat']
+    - cloudflared_deb_arch == '' or cloudflared_rpm_arch == ''
+  tags: cloud_utilities
+
+- name: Download cloudflared deb package
+  ansible.builtin.get_url:
+    url: "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-{{ cloudflared_deb_arch }}.deb"
+    dest: "/tmp/cloudflared-linux-{{ cloudflared_deb_arch }}.deb"
+    mode: '0644'
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - cloudflared_installed.rc != 0
+  tags: cloud_utilities
+
+- name: Install cloudflared on Debian os families
+  become: true
+  ansible.builtin.apt:
+    deb: "/tmp/cloudflared-linux-{{ cloudflared_deb_arch }}.deb"
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - cloudflared_installed.rc != 0
+  tags: cloud_utilities
+
+- name: Download cloudflared rpm package
+  ansible.builtin.get_url:
+    url: "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-{{ cloudflared_rpm_arch }}.rpm"
+    dest: "/tmp/cloudflared-linux-{{ cloudflared_rpm_arch }}.rpm"
+    mode: '0644'
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - cloudflared_installed.rc != 0
+  tags: cloud_utilities
+
+- name: Install cloudflared on RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: "/tmp/cloudflared-linux-{{ cloudflared_rpm_arch }}.rpm"
+    state: present
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - cloudflared_installed.rc != 0
+  tags: cloud_utilities
+
+- name: Install cloudflared on Archlinux os families
+  become: true
+  ansible.builtin.package:
+    name: cloudflared
+    state: present
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+    - cloudflared_installed.rc != 0
+  tags: cloud_utilities
+
+- name: Remove cloudflared deb package
+  ansible.builtin.file:
+    path: "/tmp/cloudflared-linux-{{ cloudflared_deb_arch }}.deb"
+    state: absent
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - cloudflared_installed.rc != 0
+  tags: cloud_utilities
+
+- name: Remove cloudflared rpm package
+  ansible.builtin.file:
+    path: "/tmp/cloudflared-linux-{{ cloudflared_rpm_arch }}.rpm"
+    state: absent
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - cloudflared_installed.rc != 0
+  tags: cloud_utilities
