@@ -1,7 +1,16 @@
 ---
 - name: Set Hyprland look and feel config path
   ansible.builtin.set_fact:
+    hyprland_bindings_config: "{{ ansible_env.HOME }}/.config/hypr/bindings.conf"
     hyprland_looknfeel_config: "{{ ansible_env.HOME }}/.config/hypr/looknfeel.conf"
+  tags: hyprland
+
+- name: Check if Hyprland is installed
+  ansible.builtin.command:
+    cmd: which Hyprland
+  register: hyprland_installed
+  ignore_errors: true
+  changed_when: false
   tags: hyprland
 
 - name: Check if Hyprland look and feel config exists
@@ -16,7 +25,7 @@
       {{
         hyprland_looknfeel_config_stat.stat.exists
         and (
-          ansible_facts['os_family'] == 'Archlinux'
+          hyprland_installed.rc == 0
           or 'hyprland' in (ansible_env.XDG_CURRENT_DESKTOP | default('') | lower)
           or 'hyprland' in (ansible_env.XDG_SESSION_DESKTOP | default('') | lower)
           or ansible_env.HYPRLAND_INSTANCE_SIGNATURE is defined
@@ -116,4 +125,20 @@
     - hyprland_settings_should_apply | bool
     - hyprland_looknfeel_content is defined
     - hyprland_looknfeel_content is not search('(?ms)^\s*general\s*\{(?:(?!^\s*\}).)*^\s*gaps_in\s*=')
+  tags: hyprland
+
+- name: Check if Hyprland bindings config exists
+  ansible.builtin.stat:
+    path: "{{ hyprland_bindings_config }}"
+  register: hyprland_bindings_config_stat
+  tags: hyprland
+
+- name: Uncomment Omarchy screenshot binding
+  ansible.builtin.replace:
+    path: "{{ hyprland_bindings_config }}"
+    regexp: '^\s*#\s*bind\s*=\s*SUPER SHIFT,\s*S,\s*exec,\s*omarchy-capture-screenshot\s+#\s*Print Screen Button\s*$'
+    replace: "bind = SUPER SHIFT, S, exec, omarchy-capture-screenshot      # Print Screen Button"
+  when:
+    - hyprland_installed.rc == 0
+    - hyprland_bindings_config_stat.stat.exists
   tags: hyprland
