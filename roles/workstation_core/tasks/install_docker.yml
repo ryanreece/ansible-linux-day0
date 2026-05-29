@@ -34,12 +34,23 @@
     state: present
   when: ansible_facts['os_family'] == 'RedHat'
   tags: docker
-    
+
 - name: Add docker repository for RedHat os families
   become: true
   ansible.builtin.command:
     cmd: dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
   when: ansible_facts['os_family'] == 'RedHat'
+  tags: docker
+
+- name: Install docker packages for Archlinux os families
+  become: true
+  ansible.builtin.package:
+    pkg:
+      - docker
+      - docker-buildx
+      - docker-compose
+    state: present
+  when: ansible_facts['os_family'] == 'Archlinux'
   tags: docker
 
 - name: Install docker packages
@@ -53,6 +64,7 @@
       - docker-compose-plugin
       - docker-ce-rootless-extras
     state: present
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
   tags: docker
 
 - name: Add the following user to the docker group {{ ansible_user_id }}

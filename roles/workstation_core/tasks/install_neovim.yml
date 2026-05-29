@@ -1,5 +1,5 @@
 ---
-- name: Install Neovim dependencies
+- name: Install Neovim dependencies for Debian and RedHat os families
   become: true
   ansible.builtin.package:
     name:
@@ -8,6 +8,19 @@
       - ripgrep
       - xclip
       - xsel
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+  tags: neovim
+
+- name: Install Neovim dependencies for Archlinux os families
+  become: true
+  ansible.builtin.package:
+    name:
+      - gnupg
+      - ripgrep
+      - xclip
+      - xsel
+    state: present
+  when: ansible_facts['os_family'] == 'Archlinux'
   tags: neovim
 
 - name: Check if Neovim is installed

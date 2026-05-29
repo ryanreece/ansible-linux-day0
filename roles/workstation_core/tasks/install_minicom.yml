@@ -13,4 +13,14 @@
     name: "{{ ansible_user_id }}"
     groups: dialout
     append: true
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+  tags: minicom
+
+- name: Add the following user to the uucp group {{ ansible_user_id }}
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    groups: uucp
+    append: true
+  when: ansible_facts['os_family'] == 'Archlinux'
   tags: minicom

@@ -23,7 +23,7 @@
   ansible.builtin.include_tasks:
     file: install_kde.yml
   when:
-    - ansible_facts['os_family'] == 'RedHat'
+    - ansible_facts['os_family'] in ['RedHat', 'Archlinux']
     - install_kde | default(true)
   tags: kde
 
@@ -71,7 +71,7 @@
   ansible.builtin.include_tasks:
     file: install_remmina.yml
   when:
-    - ansible_facts['os_family'] == 'Debian'
+    - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
     - install_remmina | default(true)
   tags: remmina
 
@@ -79,6 +79,6 @@
   ansible.builtin.include_tasks:
     file: install_keepassxc.yml
   when:
-    - ansible_facts['os_family'] == 'Debian'
-    - install_remmina | default(true)
+    - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
+    - install_keepassxc | default(true)
   tags: keepassxc
