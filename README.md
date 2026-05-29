@@ -22,6 +22,7 @@ or inventory.
 ## Contents
 
 - [Supported Platforms](#supported-platforms)
+- [Omarchy Notes](#omarchy-notes)
 - [Quick Start](#quick-start)
 - [Playbooks](#playbooks)
 - [Feature Toggles](#feature-toggles)
@@ -42,19 +43,54 @@ cross-distro workstation bootstrap.
 | RHEL | Supported | Partial | Partial | Uses RPM/DNF paths where available. |
 | Rocky / AlmaLinux | Partial | Partial | Partial | Expected to follow RedHat-family paths; test per feature. |
 | Fedora | Not in bootstrap yet | Partial | Not verified | Many RedHat-family package tasks should work, but bootstrap coverage is not complete. |
-| Arch Linux | Supported | Active support | Not verified | Pacman package paths are being added for workstation use. |
-| Omarchy / Hyprland on Arch | N/A | Partial | N/A | Hyprland settings are only applied when the config exists and the host is Arch or running Hyprland. |
+| Arch Linux | Supported | Partial | Not verified | The tested Arch target is Omarchy, not a generic hand-rolled Arch install. |
+| [Omarchy](https://omarchy.org/) / Hyprland on Arch | N/A | Active support | N/A | Tested against the Omarchy spin by DHH. Install Omarchy first, then run this playbook to tune it. |
 
 Desktop-environment assumptions are intentionally conservative:
 
 - KDE Plasma is opt-in only with `install_kde: true`.
 - Regolith is only attempted on Ubuntu.
-- AUR-only applications are not installed by default through this repo.
+- AUR-only applications are limited to explicit app tasks such as Chrome and
+  Microsoft Edge on Arch.
+
+## Omarchy Notes
+
+[Omarchy](https://omarchy.org/) describes itself as "Beautiful, Modern &
+Opinionated Linux by DHH" and links its manual, ISO, and GitHub project from
+the main site. The Arch workflow in this repository assumes that Omarchy has
+already been installed on the machine.
+
+Recommended flow:
+
+1. Follow the Omarchy website and manual to install Omarchy onto a fresh
+   computer.
+2. Boot into the completed Omarchy system.
+3. Clone this repository.
+4. Run `./bootstrap.sh`.
+5. Run the workstation playbook.
+
+This playbook is intended to layer personal day-zero workstation preferences on
+top of Omarchy. It deliberately supersedes some Omarchy opinions, including
+installing this repo's Neovim configuration and tmux bindings. Tasks that
+replace preexisting user configuration should preserve the original directory or
+file with a backup before installing the playbook-managed version.
+
+Current Omarchy/Hyprland-specific behavior includes:
+
+- Tuning `~/.config/hypr/looknfeel.conf` when Hyprland is installed and the
+  file exists.
+- Enabling the Omarchy screenshot binding in
+  `~/.config/hypr/bindings.conf` when the commented binding exists.
+- Backing up unmanaged `~/.config/nvim` before installing the playbook-managed
+  Neovim config.
 
 ## Quick Start
 
-Clone the repository on the target host, install Ansible and role
-dependencies, then run the workstation playbook locally.
+Clone the repository on the target host, install Ansible and role dependencies,
+then run the workstation playbook locally.
+
+For Omarchy systems, install Omarchy first from the official Omarchy project,
+then run this repo on top of that completed install.
 
 ```bash
 ./bootstrap.sh
@@ -262,7 +298,9 @@ Important platform notes:
 - Ubuntu-only PPAs or repositories must be guarded with
   `ansible_distribution == 'Ubuntu'`.
 - RedHat-family work should use DNF/RPM paths where needed.
-- Arch work should prefer official pacman packages. AUR support is not assumed.
+- Arch work should be tested against Omarchy unless a task explicitly targets
+  generic Arch. Prefer official pacman packages where possible.
+- AUR support is limited to specific application tasks that need it.
 - Desktop environment installs should be opt-in unless they are lightweight app
   installs.
 
