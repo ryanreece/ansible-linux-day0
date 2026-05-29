@@ -1,15 +1,71 @@
 ---
+- name: Check if Microsoft Edge is installed
+  ansible.builtin.command:
+    cmd: microsoft-edge-stable --version
+  register: microsoft_edge_installed
+  ignore_errors: true
+  changed_when: false
+  tags: microsoft_edge
+
 - name: Install Microsoft Edge repository
   become: true
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/microsoft.gpg] https://packages.microsoft.com/repos/edge stable main"
     state: present
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - microsoft_edge_installed.rc != 0
   tags: microsoft_edge
 
-- name: Install Microsoft Edge
+- name: Install Microsoft Edge on Debian os families
   become: true
   ansible.builtin.package:
     name: microsoft-edge-stable
     state: present
     update_cache: true
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - microsoft_edge_installed.rc != 0
+  tags: microsoft_edge
+
+- name: Install AUR build dependencies for Microsoft Edge on Archlinux os families
+  become: true
+  ansible.builtin.package:
+    name:
+      - base-devel
+      - git
+    state: present
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+    - microsoft_edge_installed.rc != 0
+  tags: microsoft_edge
+
+- name: Ensure AUR source directory exists for Microsoft Edge
+  ansible.builtin.file:
+    path: "{{ sources_dir }}/aur"
+    state: directory
+    mode: '0755'
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+    - microsoft_edge_installed.rc != 0
+  tags: microsoft_edge
+
+- name: Clone Microsoft Edge AUR package on Archlinux os families
+  ansible.builtin.git:
+    repo: https://aur.archlinux.org/microsoft-edge-stable-bin.git
+    dest: "{{ sources_dir }}/aur/microsoft-edge-stable-bin"
+    update: true
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+    - microsoft_edge_installed.rc != 0
+  tags: microsoft_edge
+
+- name: Build and install Microsoft Edge from AUR on Archlinux os families
+  ansible.builtin.command:
+    cmd: makepkg -si --noconfirm --needed
+  args:
+    chdir: "{{ sources_dir }}/aur/microsoft-edge-stable-bin"
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+    - microsoft_edge_installed.rc != 0
   tags: microsoft_edge

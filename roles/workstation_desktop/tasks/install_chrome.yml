@@ -54,6 +54,48 @@
     - chrome_installed.rc != 0
   tags: chrome
 
+- name: Install AUR build dependencies for Chrome on Archlinux os families
+  become: true
+  ansible.builtin.package:
+    name:
+      - base-devel
+      - git
+    state: present
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+    - chrome_installed.rc != 0
+  tags: chrome
+
+- name: Ensure AUR source directory exists for Chrome
+  ansible.builtin.file:
+    path: "{{ sources_dir }}/aur"
+    state: directory
+    mode: '0755'
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+    - chrome_installed.rc != 0
+  tags: chrome
+
+- name: Clone Chrome AUR package on Archlinux os families
+  ansible.builtin.git:
+    repo: https://aur.archlinux.org/google-chrome.git
+    dest: "{{ sources_dir }}/aur/google-chrome"
+    update: true
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+    - chrome_installed.rc != 0
+  tags: chrome
+
+- name: Build and install Chrome from AUR on Archlinux os families
+  ansible.builtin.command:
+    cmd: makepkg -si --noconfirm --needed
+  args:
+    chdir: "{{ sources_dir }}/aur/google-chrome"
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+    - chrome_installed.rc != 0
+  tags: chrome
+
 - name: Remove Chrome deb package
   ansible.builtin.file:
     path: /tmp/google-chrome-stable_current_amd64.deb
