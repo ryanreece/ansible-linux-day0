@@ -102,7 +102,6 @@
   become: true
   ansible.builtin.package:
     name:
-      - clutter
       - gdbm
       - gmp
       - gobject-introspection

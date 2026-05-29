@@ -1,4 +1,14 @@
 ---
+- name: Set NVM directory
+  ansible.builtin.set_fact:
+    nvm_dir: >-
+      {{
+        ansible_env.HOME ~ '/.config/nvm'
+        if ansible_facts['os_family'] == 'Archlinux'
+        else ansible_env.HOME ~ '/.nvm'
+      }}
+  tags: nodejs
+
 - name: Download NVM to ~/.nvm-install.sh
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/nvm-sh/nvm/{{ nvm_version }}/install.sh
@@ -11,14 +21,18 @@
   args:
     executable: /bin/bash
     chdir: "{{ ansible_env.HOME }}"
-    creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+    creates: "{{ nvm_dir }}/nvm.sh"
+  environment:
+    NVM_DIR: "{{ nvm_dir }}"
   tags: nodejs
 
 - name: Install NodeJS v{{ nodejs_version }}
   ansible.builtin.shell: >
-    . {{ ansible_env.HOME }}/.nvm/nvm.sh && nvm install {{ nodejs_version }}
+    . {{ nvm_dir }}/nvm.sh && nvm install {{ nodejs_version }}
   args:
     executable: /bin/bash
     chdir: "{{ ansible_env.HOME }}"
-    creates: "{{ ansible_env.HOME }}/.nvm/versions/node/v{{ nodejs_version }}"
+    creates: "{{ nvm_dir }}/versions/node/v{{ nodejs_version }}"
+  environment:
+    NVM_DIR: "{{ nvm_dir }}"
   tags: nodejs
