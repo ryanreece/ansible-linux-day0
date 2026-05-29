@@ -1,0 +1,119 @@
+---
+- name: Set Hyprland look and feel config path
+  ansible.builtin.set_fact:
+    hyprland_looknfeel_config: "{{ ansible_env.HOME }}/.config/hypr/looknfeel.conf"
+  tags: hyprland
+
+- name: Check if Hyprland look and feel config exists
+  ansible.builtin.stat:
+    path: "{{ hyprland_looknfeel_config }}"
+  register: hyprland_looknfeel_config_stat
+  tags: hyprland
+
+- name: Set Hyprland detection fact
+  ansible.builtin.set_fact:
+    hyprland_settings_should_apply: >-
+      {{
+        hyprland_looknfeel_config_stat.stat.exists
+        and (
+          ansible_facts['os_family'] == 'Archlinux'
+          or 'hyprland' in (ansible_env.XDG_CURRENT_DESKTOP | default('') | lower)
+          or 'hyprland' in (ansible_env.XDG_SESSION_DESKTOP | default('') | lower)
+          or ansible_env.HYPRLAND_INSTANCE_SIGNATURE is defined
+        )
+      }}
+  tags: hyprland
+
+- name: Read Hyprland look and feel config
+  ansible.builtin.slurp:
+    src: "{{ hyprland_looknfeel_config }}"
+  register: hyprland_looknfeel_config_contents
+  when: hyprland_settings_should_apply | bool
+  tags: hyprland
+
+- name: Set Hyprland look and feel content fact
+  ansible.builtin.set_fact:
+    hyprland_looknfeel_content: "{{ hyprland_looknfeel_config_contents.content | b64decode }}"
+  when: hyprland_looknfeel_config_contents.content is defined
+  tags: hyprland
+
+- name: Stop if Hyprland general block is missing
+  ansible.builtin.fail:
+    msg: "Cannot update {{ hyprland_looknfeel_config }} because it does not contain a general block."
+  when:
+    - hyprland_settings_should_apply | bool
+    - hyprland_looknfeel_content is defined
+    - hyprland_looknfeel_content is not search('(?m)^\s*general\s*\{\s*$')
+  tags: hyprland
+
+- name: Set Hyprland general gaps_in
+  ansible.builtin.replace:
+    path: "{{ hyprland_looknfeel_config }}"
+    after: '^\s*general\s*\{\s*$'
+    before: '^\s*\}\s*$'
+    regexp: '^(\s*gaps_in\s*=).*$'
+    replace: '\1 0'
+  when:
+    - hyprland_settings_should_apply | bool
+    - hyprland_looknfeel_content is search('(?ms)^\s*general\s*\{(?:(?!^\s*\}).)*^\s*gaps_in\s*=')
+  tags: hyprland
+
+- name: Set Hyprland general gaps_out
+  ansible.builtin.replace:
+    path: "{{ hyprland_looknfeel_config }}"
+    after: '^\s*general\s*\{\s*$'
+    before: '^\s*\}\s*$'
+    regexp: '^(\s*gaps_out\s*=).*$'
+    replace: '\1 0'
+  when:
+    - hyprland_settings_should_apply | bool
+    - hyprland_looknfeel_content is search('(?ms)^\s*general\s*\{(?:(?!^\s*\}).)*^\s*gaps_out\s*=')
+  tags: hyprland
+
+- name: Set Hyprland general border_size
+  ansible.builtin.replace:
+    path: "{{ hyprland_looknfeel_config }}"
+    after: '^\s*general\s*\{\s*$'
+    before: '^\s*\}\s*$'
+    regexp: '^(\s*border_size\s*=).*$'
+    replace: '\1 1'
+  when:
+    - hyprland_settings_should_apply | bool
+    - hyprland_looknfeel_content is search('(?ms)^\s*general\s*\{(?:(?!^\s*\}).)*^\s*border_size\s*=')
+  tags: hyprland
+
+- name: Insert Hyprland general border_size
+  ansible.builtin.lineinfile:
+    path: "{{ hyprland_looknfeel_config }}"
+    insertafter: '^\s*general\s*\{\s*$'
+    line: "    border_size = 1"
+    state: present
+  when:
+    - hyprland_settings_should_apply | bool
+    - hyprland_looknfeel_content is defined
+    - hyprland_looknfeel_content is not search('(?ms)^\s*general\s*\{(?:(?!^\s*\}).)*^\s*border_size\s*=')
+  tags: hyprland
+
+- name: Insert Hyprland general gaps_out
+  ansible.builtin.lineinfile:
+    path: "{{ hyprland_looknfeel_config }}"
+    insertafter: '^\s*general\s*\{\s*$'
+    line: "    gaps_out = 0"
+    state: present
+  when:
+    - hyprland_settings_should_apply | bool
+    - hyprland_looknfeel_content is defined
+    - hyprland_looknfeel_content is not search('(?ms)^\s*general\s*\{(?:(?!^\s*\}).)*^\s*gaps_out\s*=')
+  tags: hyprland
+
+- name: Insert Hyprland general gaps_in
+  ansible.builtin.lineinfile:
+    path: "{{ hyprland_looknfeel_config }}"
+    insertafter: '^\s*general\s*\{\s*$'
+    line: "    gaps_in = 0"
+    state: present
+  when:
+    - hyprland_settings_should_apply | bool
+    - hyprland_looknfeel_content is defined
+    - hyprland_looknfeel_content is not search('(?ms)^\s*general\s*\{(?:(?!^\s*\}).)*^\s*gaps_in\s*=')
+  tags: hyprland

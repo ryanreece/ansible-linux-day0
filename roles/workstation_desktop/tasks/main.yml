@@ -11,6 +11,12 @@
   when: install_flameshot | default(true)
   tags: flameshot
 
+- name: Configure Hyprland settings
+  ansible.builtin.include_tasks:
+    file: install_hyprland_settings.yml
+  when: install_hyprland_settings | default(true)
+  tags: hyprland
+
 - name: Install Regolith
   ansible.builtin.include_tasks:
     file: install_regolith.yml

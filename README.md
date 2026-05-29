@@ -229,6 +229,11 @@ and is installed via the `./aws/install` command.
 * Task file: [`install_flameshot.yml`](roles/workstation_desktop/tasks/install_flameshot.yml)
 * Install var: `install_flameshot: true`
 
+#### Hyprland Settings
+
+* Task file: [`install_hyprland_settings.yml`](roles/workstation_desktop/tasks/install_hyprland_settings.yml)
+* Install var: `install_hyprland_settings: true`
+
 #### Regolith
 
 * Task file: [`install_regolith.yml`](roles/workstation_desktop/tasks/install_regolith.yml)
