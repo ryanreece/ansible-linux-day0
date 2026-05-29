@@ -70,6 +70,14 @@
   when: install_cloud_utilities | default(true)
   tags: cloud_utilities
 
+- name: Install Cisco Secure Client
+  ansible.builtin.include_tasks:
+    file: install_cisco_secure_client.yml
+  when: install_cisco_secure_client | default(true)
+  tags:
+    - cisco_secure_client
+    - vpn
+
 - name: Install ProxyChains-NG
   ansible.builtin.include_tasks:
     file: install_proxychains_ng.yml

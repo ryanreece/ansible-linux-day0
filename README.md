@@ -212,6 +212,7 @@ Developer tooling and CLI applications.
 | Fastfetch | [`install_fastfetch.yml`](roles/workstation_core/tasks/install_fastfetch.yml) | `install_fastfetch` |
 | Docker | [`install_docker.yml`](roles/workstation_core/tasks/install_docker.yml) | `install_docker` |
 | Cloud utilities | [`install_cloud_utilities.yml`](roles/workstation_core/tasks/install_cloud_utilities.yml) | `install_cloud_utilities` |
+| Cisco Secure Client | [`install_cisco_secure_client.yml`](roles/workstation_core/tasks/install_cisco_secure_client.yml) | `install_cisco_secure_client` |
 | ProxyChains-NG | [`install_proxychains_ng.yml`](roles/workstation_core/tasks/install_proxychains_ng.yml) | `install_proxychains_ng` |
 | LazyDocker | [`install_lazydocker.yml`](roles/workstation_core/tasks/install_lazydocker.yml) | `install_lazydocker` |
 | LazyGit | [`install_lazygit.yml`](roles/workstation_core/tasks/install_lazygit.yml) | `install_lazygit` |

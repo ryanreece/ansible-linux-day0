@@ -14,6 +14,7 @@ install_ruby: true
 install_fastfetch: true
 install_docker: true
 install_cloud_utilities: true
+install_cisco_secure_client: true
 install_proxychains_ng: true
 install_lazydocker: true
 install_lazygit: true
