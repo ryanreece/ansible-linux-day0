@@ -16,6 +16,12 @@
   when: install_python | default(true)
   tags: python
 
+- name: Install Go
+  ansible.builtin.include_tasks:
+    file: install_go.yml
+  when: install_go | default(true)
+  tags: go
+
 - name: Install TypeScript
   ansible.builtin.include_tasks:
     file: install_typescript.yml

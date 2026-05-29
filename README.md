@@ -163,6 +163,11 @@ and is installed via the `./aws/install` command.
 * Task file: [`install_python.yml`](roles/workstation_core/tasks/install_python.yml)
 * Install var: `install_python: true`
 
+#### Go
+
+* Task file: [`install_go.yml`](roles/workstation_core/tasks/install_go.yml)
+* Install var: `install_go: true`
+
 #### TypeScript
 
 * Task file: [`install_typescript.yml`](roles/workstation_core/tasks/install_typescript.yml)

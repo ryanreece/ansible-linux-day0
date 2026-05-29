@@ -8,6 +8,7 @@ install_libraries: true
 install_luarocks: true
 install_neovim: true
 install_python: true
+install_go: true
 install_typescript: true
 install_ruby: true
 install_fastfetch: true

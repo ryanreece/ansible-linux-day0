@@ -4,4 +4,3 @@
 
 - [ ] kind
 - [ ] kubectl
-- [ ] go
