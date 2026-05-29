@@ -64,6 +64,12 @@
   when: install_docker | default(true)
   tags: docker
 
+- name: Install cloud utilities
+  ansible.builtin.include_tasks:
+    file: install_cloud_utilities.yml
+  when: install_cloud_utilities | default(true)
+  tags: cloud_utilities
+
 - name: Install ProxyChains-NG
   ansible.builtin.include_tasks:
     file: install_proxychains_ng.yml
