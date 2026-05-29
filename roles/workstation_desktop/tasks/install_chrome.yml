@@ -86,14 +86,39 @@
     - chrome_installed.rc != 0
   tags: chrome
 
-- name: Build and install Chrome from AUR on Archlinux os families
+- name: Build Chrome AUR package on Archlinux os families
   ansible.builtin.command:
-    cmd: makepkg -si --noconfirm --needed
+    cmd: makepkg -f --noconfirm
   args:
     chdir: "{{ sources_dir }}/aur/google-chrome"
   when:
     - ansible_facts['os_family'] == 'Archlinux'
     - chrome_installed.rc != 0
+  tags: chrome
+
+- name: Find built Chrome AUR package on Archlinux os families
+  ansible.builtin.find:
+    paths: "{{ sources_dir }}/aur/google-chrome"
+    patterns: "google-chrome-*.pkg.tar.*"
+    file_type: file
+  register: chrome_aur_packages
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+    - chrome_installed.rc != 0
+  tags: chrome
+
+- name: Install built Chrome AUR package on Archlinux os families
+  become: true
+  ansible.builtin.command:
+    argv:
+      - pacman
+      - -U
+      - --noconfirm
+      - "{{ chrome_aur_packages.files | sort(attribute='mtime') | map(attribute='path') | list | last }}"
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+    - chrome_installed.rc != 0
+    - chrome_aur_packages.files | length > 0
   tags: chrome
 
 - name: Remove Chrome deb package
