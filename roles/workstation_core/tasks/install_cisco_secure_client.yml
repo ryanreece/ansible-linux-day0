@@ -21,7 +21,7 @@
   ansible.builtin.get_url:
     url: "https://assets.reece.ai/bin/{{ cisco_secure_client_deb }}"
     dest: "/tmp/{{ cisco_secure_client_deb }}"
-    mode: '0644'
+    mode: "0644"
   when:
     - ansible_facts['os_family'] == 'Debian'
     - not cisco_secure_client_vpnui.stat.exists
@@ -56,7 +56,7 @@
   ansible.builtin.get_url:
     url: "https://assets.reece.ai/bin/{{ cisco_secure_client_rpm }}"
     dest: "/tmp/{{ cisco_secure_client_rpm }}"
-    mode: '0644'
+    mode: "0644"
   when:
     - ansible_facts['os_family'] == 'Archlinux'
     - not cisco_secure_client_vpnui.stat.exists
@@ -71,9 +71,10 @@
       - rpm
       - -Uvh
       - --nodeps
+      - --nosignature
       - "/tmp/{{ cisco_secure_client_rpm }}"
   args:
-    creates: /opt/cisco/anyconnect/bin/vpnui
+    creates: /opt/cisco/secureclient/bin/vpnui
   when:
     - ansible_facts['os_family'] == 'Archlinux'
     - not cisco_secure_client_vpnui.stat.exists
