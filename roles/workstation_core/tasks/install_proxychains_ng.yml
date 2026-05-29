@@ -40,9 +40,10 @@
 - name: Decode the file contents to a fact
   ansible.builtin.set_fact:
     installed_proxychains_version: "{{ installed_proxychains_version_contents.content | b64decode | trim }}"
-  when: 
-    - installed_proxychains_version_contents
-    - proxychains_installed
+  when:
+    - ansible_facts['os_family'] != 'Archlinux'
+    - proxychains_installed | bool
+    - installed_proxychains_version_contents.content is defined
   tags: proxychains_ng
 
 - name: Fetch tags and force update if ProxyChains directory exists
@@ -52,8 +53,8 @@
     chdir: "{{ sources_dir }}/proxychains-ng"
   when:
     - ansible_facts['os_family'] != 'Archlinux'
-    - proxychains_installed
-    - installed_proxychains_version
+    - proxychains_installed | bool
+    - installed_proxychains_version | bool
   ignore_errors: true
   changed_when: false
   tags: proxychains_ng
