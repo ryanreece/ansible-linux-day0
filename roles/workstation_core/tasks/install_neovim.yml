@@ -1,5 +1,5 @@
 ---
-- name: Install Neovim dependencies
+- name: Install Neovim dependencies for Debian and RedHat os families
   become: true
   ansible.builtin.package:
     name:
@@ -8,6 +8,19 @@
       - ripgrep
       - xclip
       - xsel
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+  tags: neovim
+
+- name: Install Neovim dependencies for Archlinux os families
+  become: true
+  ansible.builtin.package:
+    name:
+      - gnupg
+      - ripgrep
+      - xclip
+      - xsel
+    state: present
+  when: ansible_facts['os_family'] == 'Archlinux'
   tags: neovim
 
 - name: Check if Neovim is installed
@@ -72,9 +85,91 @@
   when: installed_neovim_version is not defined or installed_neovim_version != latest_neovim_version_clean
   tags: neovim
 
+- name: Set Neovim config paths
+  ansible.builtin.set_fact:
+    neovim_config_repo: https://github.com/ryanreece/neovim-config.git
+    neovim_config_dir: "{{ ansible_env.HOME }}/.config/nvim"
+    neovim_config_backup_dir: "{{ ansible_env.HOME }}/.config/nvim.pre-ansible"
+  tags: neovim
+
+- name: Check if Neovim config directory exists
+  ansible.builtin.stat:
+    path: "{{ neovim_config_dir }}"
+  register: neovim_config_dir_stat
+  tags: neovim
+
+- name: Check if Neovim config directory is a git checkout
+  ansible.builtin.stat:
+    path: "{{ neovim_config_dir }}/.git"
+  register: neovim_config_git_stat
+  when: neovim_config_dir_stat.stat.exists
+  tags: neovim
+
+- name: Check Neovim config git origin
+  ansible.builtin.command:
+    cmd: git config --get remote.origin.url
+  args:
+    chdir: "{{ neovim_config_dir }}"
+  register: neovim_config_origin
+  ignore_errors: true
+  changed_when: false
+  when:
+    - neovim_config_dir_stat.stat.exists
+    - neovim_config_git_stat.stat.exists
+  tags: neovim
+
+- name: Set Neovim config managed state
+  ansible.builtin.set_fact:
+    neovim_config_managed: >-
+      {{
+        neovim_config_dir_stat.stat.exists
+        and (neovim_config_git_stat.stat.exists | default(false))
+        and (neovim_config_origin.rc | default(1)) == 0
+        and (neovim_config_origin.stdout | default('')) in [
+          neovim_config_repo,
+          'git@github.com:ryanreece/neovim-config.git'
+        ]
+      }}
+  tags: neovim
+
+- name: Check if Neovim config backup directory exists
+  ansible.builtin.stat:
+    path: "{{ neovim_config_backup_dir }}"
+  register: neovim_config_backup_stat
+  when:
+    - neovim_config_dir_stat.stat.exists
+    - not neovim_config_managed | bool
+  tags: neovim
+
+- name: Stop if unmanaged Neovim config and backup both exist
+  ansible.builtin.fail:
+    msg: >-
+      Refusing to overwrite {{ neovim_config_backup_dir }} while backing up
+      unmanaged Neovim config at {{ neovim_config_dir }}. Move one of these
+      directories and rerun the playbook.
+  when:
+    - neovim_config_dir_stat.stat.exists
+    - not neovim_config_managed | bool
+    - neovim_config_backup_stat.stat.exists
+  tags: neovim
+
+- name: Back up unmanaged Neovim config directory
+  ansible.builtin.command:
+    argv:
+      - mv
+      - "{{ neovim_config_dir }}"
+      - "{{ neovim_config_backup_dir }}"
+  args:
+    creates: "{{ neovim_config_backup_dir }}"
+    removes: "{{ neovim_config_dir }}"
+  when:
+    - neovim_config_dir_stat.stat.exists
+    - not neovim_config_managed | bool
+  tags: neovim
+
 - name: Install Neovim config
   ansible.builtin.git:
-    repo: https://github.com/ryanreece/neovim-config.git
-    dest: "{{ ansible_env.HOME }}/.config/nvim"
+    repo: "{{ neovim_config_repo }}"
+    dest: "{{ neovim_config_dir }}"
     update: true
   tags: neovim

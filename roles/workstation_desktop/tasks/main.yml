@@ -11,11 +11,17 @@
   when: install_flameshot | default(true)
   tags: flameshot
 
+- name: Configure Hyprland settings
+  ansible.builtin.include_tasks:
+    file: install_hyprland_settings.yml
+  when: install_hyprland_settings | default(true)
+  tags: hyprland
+
 - name: Install Regolith
   ansible.builtin.include_tasks:
     file: install_regolith.yml
   when:
-    - ansible_facts['os_family'] == 'Debian'
+    - ansible_distribution == 'Ubuntu'
     - install_regolith | default(true)
   tags: regolith
 
@@ -23,8 +29,8 @@
   ansible.builtin.include_tasks:
     file: install_kde.yml
   when:
-    - ansible_facts['os_family'] == 'RedHat'
-    - install_kde | default(true)
+    - ansible_facts['os_family'] in ['RedHat', 'Archlinux']
+    - install_kde | default(false)
   tags: kde
 
 - name: Install Chrome
@@ -71,7 +77,7 @@
   ansible.builtin.include_tasks:
     file: install_remmina.yml
   when:
-    - ansible_facts['os_family'] == 'Debian'
+    - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
     - install_remmina | default(true)
   tags: remmina
 
@@ -79,6 +85,6 @@
   ansible.builtin.include_tasks:
     file: install_keepassxc.yml
   when:
-    - ansible_facts['os_family'] == 'Debian'
-    - install_remmina | default(true)
+    - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
+    - install_keepassxc | default(true)
   tags: keepassxc

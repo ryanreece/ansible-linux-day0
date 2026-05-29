@@ -1,12 +1,13 @@
 ---
 - name: Download Regolith GPG key and add to keyring
   become: true
-  shell: |
+  ansible.builtin.shell: |
     wget -qO - https://regolith-desktop.org/regolith.key | \
     gpg --dearmor | sudo tee /usr/share/keyrings/regolith-archive-keyring.gpg > /dev/null
   args:
     executable: /bin/bash
   changed_when: false
+  when: ansible_distribution == 'Ubuntu'
   tags: regolith
 
 - name: Add Regolith repository to sources list
@@ -14,6 +15,7 @@
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/regolith-archive-keyring.gpg] https://regolith-desktop.org/release-3_2-ubuntu-noble-amd64 noble main"
     filename: regolith
+  when: ansible_distribution == 'Ubuntu'
   tags: regolith
 
 - name: Install Regolith desktop and related packages
@@ -25,12 +27,14 @@
       - regolith-look-lascaille
       - i3xrocks-battery
     state: present
+  when: ansible_distribution == 'Ubuntu'
   tags: regolith
 
 - name: Validate the regolith-x11.desktop session exists
   ansible.builtin.stat:
     path: "/usr/share/xsessions/regolith-x11.desktop"
   register: regolith_exists
+  when: ansible_distribution == 'Ubuntu'
   tags: regolith
 
 - name: Check if user session is already regolith-x11
@@ -40,7 +44,9 @@
   register: regolith_session_set
   ignore_errors: true
   changed_when: false
-  when: regolith_exists.stat.exists
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - regolith_exists.stat.exists | default(false)
   tags: regolith
 
 - name: Backup the AccountService user file
@@ -50,8 +56,9 @@
     dest: "/var/lib/AccountsService/users/{{ ansible_user_id }}.bak"
     remote_src: true
   when:
-    - regolith_session_set.rc != 0
-    - regolith_exists.stat.exists
+    - ansible_distribution == 'Ubuntu'
+    - regolith_session_set.rc | default(1) != 0
+    - regolith_exists.stat.exists | default(false)
   tags: regolith
 
 - name: Set user session to regolith-x11
@@ -61,6 +68,7 @@
     regexp: '^Session='
     line: 'Session=regolith-x11'
   when:
-    - regolith_session_set.rc != 0
-    - regolith_exists.stat.exists
+    - ansible_distribution == 'Ubuntu'
+    - regolith_session_set.rc | default(1) != 0
+    - regolith_exists.stat.exists | default(false)
   tags: regolith

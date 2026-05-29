@@ -1,0 +1,24 @@
+---
+- name: Install Go for Debian os families
+  become: true
+  ansible.builtin.package:
+    name: golang-go
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: go
+
+- name: Install Go for RedHat os families
+  become: true
+  ansible.builtin.package:
+    name: golang
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags: go
+
+- name: Install Go for Archlinux os families
+  become: true
+  ansible.builtin.package:
+    name: go
+    state: present
+  when: ansible_facts['os_family'] == 'Archlinux'
+  tags: go

@@ -16,6 +16,12 @@
   when: install_python | default(true)
   tags: python
 
+- name: Install Go
+  ansible.builtin.include_tasks:
+    file: install_go.yml
+  when: install_go | default(true)
+  tags: go
+
 - name: Install TypeScript
   ansible.builtin.include_tasks:
     file: install_typescript.yml
@@ -63,7 +69,7 @@
     file: install_proxychains_ng.yml
   when: 
     - install_proxychains_ng | default(true)
-    - ansible_facts['os_family'] == 'Debian'
+    - ansible_facts['os_family'] in ['Debian', 'Archlinux']
   tags: proxychains_ng
 
 - name: Install lazydocker

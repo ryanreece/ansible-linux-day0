@@ -34,3 +34,12 @@
   when:
     - ansible_facts['os_family'] == 'RedHat'
   tags: vscode
+
+- name: Install Code - OSS on Archlinux os families
+  become: true
+  ansible.builtin.package:
+    name: code
+    state: present
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+  tags: vscode

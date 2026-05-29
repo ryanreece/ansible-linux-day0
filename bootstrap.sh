@@ -29,6 +29,10 @@ case $ID in
     rhel)
         sudo dnf install ansible-core
         ;;
+    arch)
+        sudo pacman -Syu
+        sudo pacman -Sy ansible
+        ;;
     *)
         echo -e "${RED}Error: ${ID} not supported..."
         exit 1

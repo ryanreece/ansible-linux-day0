@@ -7,6 +7,23 @@
   when: ansible_facts['os_family'] == 'RedHat'
   tags: kde
 
+- name: Install KDE Plasma for Archlinux os families
+  become: true
+  ansible.builtin.package:
+    name:
+      - plasma-meta
+      - sddm
+    state: present
+  when: ansible_facts['os_family'] == 'Archlinux'
+  tags: kde
+
+- name: Check if AccountService user file exists
+  become: true
+  ansible.builtin.stat:
+    path: "/var/lib/AccountsService/users/{{ ansible_user_id }}"
+  register: accountservice_user_file
+  tags: kde
+
 - name: Check if user session is already kde plasma
   become: true
   ansible.builtin.command:
@@ -14,6 +31,7 @@
   register: kde_session_set
   ignore_errors: true
   changed_when: false
+  when: accountservice_user_file.stat.exists
   tags: kde
 
 - name: Backup the AccountService user file
@@ -23,6 +41,8 @@
     dest: "/var/lib/AccountsService/users/{{ ansible_user_id }}.bak"
     remote_src: true
   when:
+    - accountservice_user_file.stat.exists
+    - kde_session_set is defined
     - kde_session_set.rc != 0
   tags: kde
 
@@ -33,5 +53,7 @@
     regexp: '^Session='
     line: 'Session=plasma'
   when:
+    - accountservice_user_file.stat.exists
+    - kde_session_set is defined
     - kde_session_set.rc != 0
   tags: kde

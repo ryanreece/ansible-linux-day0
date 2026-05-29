@@ -6,7 +6,8 @@ sources_dir: "{{ ansible_env.HOME }}/sources"
 install_alacritty: true
 install_chrome: true
 install_flameshot: true
-install_kde: true
+install_hyprland_settings: true
+install_kde: false
 install_keepassxc: true
 install_microsoft_edge: true
 install_regolith: true

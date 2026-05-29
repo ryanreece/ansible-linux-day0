@@ -1,10 +1,11 @@
 ---
-- name: Install lua libraries
+- name: Install lua libraries for Debian os families
   become: true
   ansible.builtin.package:
     name:
       - lua5.1
     state: present
+  when: ansible_facts['os_family'] == 'Debian'
   tags: luarocks
 
 - name: Install lua libraries for Debian os families
@@ -25,6 +26,17 @@
       - compat-lua-libs
     state: present
   when: ansible_facts['os_family'] == 'RedHat'
+  tags: luarocks
+
+- name: Install lua and luarocks for Archlinux os families
+  become: true
+  ansible.builtin.package:
+    name:
+      - lua51
+      - lua51-socket
+      - luarocks
+    state: present
+  when: ansible_facts['os_family'] == 'Archlinux'
   tags: luarocks
 
 - name: Check if luarocks is installed

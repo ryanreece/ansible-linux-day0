@@ -6,6 +6,14 @@
     installed_proxychains_version_contents: false
   tags: proxychains_ng
 
+- name: Install ProxyChains-NG for Archlinux os families
+  become: true
+  ansible.builtin.package:
+    name: proxychains-ng
+    state: present
+  when: ansible_facts['os_family'] == 'Archlinux'
+  tags: proxychains_ng
+
 - name: Check if ProxyChains is installed
   ansible.builtin.command:
     cmd: proxychains4 --help
@@ -24,15 +32,18 @@
   ansible.builtin.slurp:
     src: "{{ sources_dir }}/proxychains-ng/VERSION"
   register: installed_proxychains_version_contents
-  when: proxychains_installed
+  when:
+    - ansible_facts['os_family'] != 'Archlinux'
+    - proxychains_installed
   tags: proxychains_ng
 
 - name: Decode the file contents to a fact
   ansible.builtin.set_fact:
     installed_proxychains_version: "{{ installed_proxychains_version_contents.content | b64decode | trim }}"
-  when: 
-    - installed_proxychains_version_contents
-    - proxychains_installed
+  when:
+    - ansible_facts['os_family'] != 'Archlinux'
+    - proxychains_installed | bool
+    - installed_proxychains_version_contents.content is defined
   tags: proxychains_ng
 
 - name: Fetch tags and force update if ProxyChains directory exists
@@ -41,8 +52,9 @@
   args:
     chdir: "{{ sources_dir }}/proxychains-ng"
   when:
-    - proxychains_installed
-    - installed_proxychains_version
+    - ansible_facts['os_family'] != 'Archlinux'
+    - proxychains_installed | bool
+    - installed_proxychains_version | bool
   ignore_errors: true
   changed_when: false
   tags: proxychains_ng
@@ -53,6 +65,7 @@
     dest: "{{ sources_dir }}/proxychains-ng"
     version: master
     update: true
+  when: ansible_facts['os_family'] != 'Archlinux'
   tags: proxychains_ng
 
 - name: Get the latest stable version tag from the ProxyChains repo
@@ -62,17 +75,21 @@
     chdir: "{{ sources_dir }}/proxychains-ng"
   register: latest_proxychains_version
   changed_when: false
+  when: ansible_facts['os_family'] != 'Archlinux'
   tags: proxychains_ng
 
 - name: Remove the leading 'v' from the latest_proxychains_version
   ansible.builtin.set_fact:
     latest_proxychains_version_clean: "{{ latest_proxychains_version.stdout | regex_replace('^v', '') }}"
+  when: ansible_facts['os_family'] != 'Archlinux'
   tags: proxychains_ng
 
 - name: Build ProxyChains if not installed or version mismatch
   community.general.make:
     chdir: "{{ sources_dir }}/proxychains-ng"
-  when: installed_proxychains_version is not defined or installed_proxychains_version != latest_proxychains_version_clean
+  when:
+    - ansible_facts['os_family'] != 'Archlinux'
+    - installed_proxychains_version is not defined or installed_proxychains_version != latest_proxychains_version_clean
   tags: proxychains_ng
 
 - name: Install ProxyChains
@@ -80,7 +97,9 @@
   community.general.make:
     chdir: "{{ sources_dir }}/proxychains-ng"
     target: install
-  when: installed_proxychains_version is not defined or installed_proxychains_version != latest_proxychains_version_clean
+  when:
+    - ansible_facts['os_family'] != 'Archlinux'
+    - installed_proxychains_version is not defined or installed_proxychains_version != latest_proxychains_version_clean
   tags: proxychains_ng
 
 - name: Install ProxyChains config
