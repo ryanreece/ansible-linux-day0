@@ -1,0 +1,31 @@
+---
+- name: Upgrade packages on Debian os families
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+  when: ansible_facts['os_family'] == 'Debian'
+  notify:
+    - Reboot system
+  tags: packages
+
+- name: Upgrade packages on RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    update_cache: true
+  when: ansible_facts['os_family'] == 'RedHat'
+  notify:
+    - Reboot system
+  tags: packages
+
+- name: Upgrade packages on Archlinux os families
+  become: true
+  community.general.pacman:
+    update_cache: true
+    upgrade: true
+  when: ansible_facts['os_family'] == 'Archlinux'
+  notify:
+    - Reboot system
+  tags: packages

@@ -186,12 +186,19 @@ Role entry point: [`roles/server_core/tasks/main.yml`](roles/server_core/tasks/m
 
 Server-only configuration.
 
-| Feature | Notes |
-| --- | --- |
-| Hostname | Sets hostname from inventory name. |
-| Package upgrades | Debian-family upgrade task. |
-| Unattended upgrades | Configured through the role dependency in `meta/main.yml`. |
-| tmux/zsh config | Deploys role templates for server sessions. |
+| Feature | Task file | Toggle | Notes |
+| --- | --- | --- | --- |
+| Hostname | [`set_hostname.yml`](roles/server_core/tasks/set_hostname.yml) | `install_server_hostname` | Sets hostname from inventory name. |
+| Package upgrades | [`upgrade_packages.yml`](roles/server_core/tasks/upgrade_packages.yml) | `install_server_package_upgrades` | Uses `apt`, `dnf`, or `pacman` based on OS family. |
+| Unattended updates | [`configure_unattended_updates.yml`](roles/server_core/tasks/configure_unattended_updates.yml) | `install_server_unattended_updates` | Uses Ubuntu unattended-upgrades, RedHat-family `dnf-automatic`, and Arch package cache maintenance. |
+| tmux config | [`deploy_tmux_config.yml`](roles/server_core/tasks/deploy_tmux_config.yml) | `install_server_tmux_config` | Deploys the server tmux template. |
+| zsh config | [`deploy_zsh_config.yml`](roles/server_core/tasks/deploy_zsh_config.yml) | `install_server_zsh_config` | Deploys the server zsh template. |
+
+Server package upgrades notify the `server_core` reboot handler when package
+changes are applied. Arch support intentionally avoids unattended full system
+upgrades by default; it enables `paccache.timer` for package cache maintenance
+instead. Run Arch package upgrades through the explicit package upgrade task or
+an operator-managed maintenance window.
 
 ### Workstation Core
 
@@ -300,6 +307,9 @@ Important platform notes:
 - Ubuntu-only PPAs or repositories must be guarded with
   `ansible_distribution == 'Ubuntu'`.
 - RedHat-family work should use DNF/RPM paths where needed.
+- Server unattended updates are distro-specific: Ubuntu uses
+  `hifis.unattended_upgrades`, RedHat-family hosts use `dnf-automatic`, and
+  Arch only enables package cache maintenance by default.
 - Arch work should be tested against Omarchy unless a task explicitly targets
   generic Arch. Prefer official pacman packages where possible.
 - AUR support is limited to specific application tasks that need it.

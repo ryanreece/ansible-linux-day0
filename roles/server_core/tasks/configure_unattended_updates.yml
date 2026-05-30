@@ -1,0 +1,68 @@
+---
+- name: Configure unattended upgrades on Ubuntu
+  ansible.builtin.include_role:
+    name: hifis.unattended_upgrades
+    apply:
+      become: true
+  vars:
+    unattended_origins_patterns:
+      - 'origin=Ubuntu,archive=${distro_codename}-security'
+      - 'o=Ubuntu,a=${distro_codename}-updates'
+  when: ansible_distribution == 'Ubuntu'
+  tags: unattended_updates
+
+- name: Install dnf-automatic on RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: dnf-automatic
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags: unattended_updates
+
+- name: Configure dnf-automatic upgrade type on RedHat os families
+  become: true
+  community.general.ini_file:
+    path: /etc/dnf/automatic.conf
+    section: commands
+    option: upgrade_type
+    value: "{{ server_dnf_automatic_upgrade_type }}"
+    mode: '0644'
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags: unattended_updates
+
+- name: Enable automatic update application on RedHat os families
+  become: true
+  community.general.ini_file:
+    path: /etc/dnf/automatic.conf
+    section: commands
+    option: apply_updates
+    value: "yes"
+    mode: '0644'
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags: unattended_updates
+
+- name: Enable dnf-automatic timer on RedHat os families
+  become: true
+  ansible.builtin.systemd_service:
+    name: dnf-automatic.timer
+    state: started
+    enabled: true
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags: unattended_updates
+
+- name: Install pacman cache maintenance tools on Archlinux os families
+  become: true
+  community.general.pacman:
+    name: pacman-contrib
+    state: present
+  when: ansible_facts['os_family'] == 'Archlinux'
+  tags: unattended_updates
+
+- name: Enable pacman package cache cleanup timer on Archlinux os families
+  become: true
+  ansible.builtin.systemd_service:
+    name: paccache.timer
+    state: started
+    enabled: true
+  when: ansible_facts['os_family'] == 'Archlinux'
+  tags: unattended_updates
