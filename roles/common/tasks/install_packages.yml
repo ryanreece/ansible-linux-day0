@@ -55,6 +55,7 @@
     name:
       - curl
       - git
+      - git-lfs
       - net-tools
       - unzip
       - vim
