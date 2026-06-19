@@ -1,0 +1,28 @@
+---
+- name: Set Zabbix repo distribution name on RedHat os families
+  ansible.builtin.set_fact:
+    zabbix_repo_dist: "{{ zabbix_redhat_dist_map[ansible_distribution] | default(ansible_distribution | lower) }}"
+  tags: zabbix_agent
+
+- name: Import Zabbix GPG key on RedHat os families
+  become: true
+  ansible.builtin.rpm_key:
+    key: "https://repo.zabbix.com/RPM-GPG-KEY-ZABBIX-B5333005"
+    state: present
+  tags: zabbix_agent
+
+- name: Install Zabbix repository on RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: "https://repo.zabbix.com/zabbix/{{ zabbix_agent_version }}/release/{{ zabbix_repo_dist }}/{{ ansible_distribution_major_version }}/noarch/zabbix-release-latest.el{{ ansible_distribution_major_version }}.noarch.rpm"
+    state: present
+    disable_gpg_check: false
+  tags: zabbix_agent
+
+- name: Install Zabbix Agent 2 on RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: zabbix-agent2
+    state: present
+    update_cache: true
+  tags: zabbix_agent

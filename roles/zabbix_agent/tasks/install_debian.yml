@@ -1,0 +1,27 @@
+---
+- name: Download Zabbix release package on Debian os families
+  ansible.builtin.get_url:
+    url: "https://repo.zabbix.com/zabbix/{{ zabbix_agent_version }}/release/{{ ansible_distribution | lower }}/pool/main/z/zabbix-release/zabbix-release_latest+{{ ansible_distribution | lower }}{{ ansible_distribution_version }}_all.deb"
+    dest: /tmp/zabbix-release.deb
+    mode: '0644'
+  tags: zabbix_agent
+
+- name: Install Zabbix repository on Debian os families
+  become: true
+  ansible.builtin.apt:
+    deb: /tmp/zabbix-release.deb
+  tags: zabbix_agent
+
+- name: Remove Zabbix release package file
+  ansible.builtin.file:
+    path: /tmp/zabbix-release.deb
+    state: absent
+  tags: zabbix_agent
+
+- name: Install Zabbix Agent 2 on Debian os families
+  become: true
+  ansible.builtin.apt:
+    name: zabbix-agent2
+    state: present
+    update_cache: true
+  tags: zabbix_agent

@@ -1,0 +1,178 @@
+---
+- name: Obtain Zabbix API auth token via user.login
+  ansible.builtin.uri:
+    url: "{{ zabbix_api_url }}"
+    method: POST
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: user.login
+      params:
+        username: "{{ zabbix_api_user }}"
+        password: "{{ zabbix_api_password }}"
+      id: 1
+    return_content: true
+    status_code: 200
+  register: zabbix_login
+  delegate_to: localhost
+  when: zabbix_api_token | length == 0
+  tags: zabbix_register
+
+- name: Set effective Zabbix auth token
+  ansible.builtin.set_fact:
+    zabbix_effective_token: "{{ zabbix_api_token if zabbix_api_token | length > 0 else zabbix_login.json.result }}"
+  tags: zabbix_register
+
+- name: Get configured Zabbix host groups
+  ansible.builtin.uri:
+    url: "{{ zabbix_api_url }}"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ zabbix_effective_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: hostgroup.get
+      params:
+        output:
+          - groupid
+          - name
+        filter:
+          name: "{{ zabbix_host_groups | map(attribute='name') | list }}"
+      id: 2
+    return_content: true
+    status_code: 200
+  register: zabbix_group_info
+  delegate_to: localhost
+  tags: zabbix_register
+
+- name: Create missing host groups in Zabbix
+  ansible.builtin.uri:
+    url: "{{ zabbix_api_url }}"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ zabbix_effective_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: hostgroup.create
+      params:
+        name: "{{ item }}"
+      id: 3
+    return_content: true
+    status_code: 200
+  loop: "{{ zabbix_host_groups | map(attribute='name') | list | difference(zabbix_group_info.json.result | map(attribute='name') | list) }}"
+  delegate_to: localhost
+  tags: zabbix_register
+
+- name: Refresh Zabbix host group IDs
+  ansible.builtin.uri:
+    url: "{{ zabbix_api_url }}"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ zabbix_effective_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: hostgroup.get
+      params:
+        output:
+          - groupid
+          - name
+        filter:
+          name: "{{ zabbix_host_groups | map(attribute='name') | list }}"
+      id: 4
+    return_content: true
+    status_code: 200
+  register: zabbix_group_info
+  delegate_to: localhost
+  tags: zabbix_register
+
+- name: Get Zabbix template IDs
+  ansible.builtin.uri:
+    url: "{{ zabbix_api_url }}"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ zabbix_effective_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: template.get
+      params:
+        output:
+          - templateid
+          - name
+        filter:
+          name: "{{ zabbix_templates | map(attribute='name') | list }}"
+      id: 5
+    return_content: true
+    status_code: 200
+  register: zabbix_template_info
+  delegate_to: localhost
+  tags: zabbix_register
+
+- name: Build Zabbix API groups list
+  ansible.builtin.set_fact:
+    zabbix_api_groups: "{{ zabbix_api_groups | default([]) + [{'groupid': item.groupid}] }}"
+  loop: "{{ zabbix_group_info.json.result }}"
+  tags: zabbix_register
+
+- name: Build Zabbix API templates list
+  ansible.builtin.set_fact:
+    zabbix_api_templates: "{{ zabbix_api_templates | default([]) + [{'templateid': item.templateid}] }}"
+  loop: "{{ zabbix_template_info.json.result }}"
+  tags: zabbix_register
+
+- name: Check if host already exists in Zabbix
+  ansible.builtin.uri:
+    url: "{{ zabbix_api_url }}"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ zabbix_effective_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: host.get
+      params:
+        output:
+          - hostid
+          - host
+        filter:
+          host:
+            - "{{ zabbix_agent_hostname }}"
+      id: 6
+    return_content: true
+    status_code: 200
+  register: zabbix_host_check
+  delegate_to: localhost
+  tags: zabbix_register
+
+- name: Create host in Zabbix
+  ansible.builtin.uri:
+    url: "{{ zabbix_api_url }}"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ zabbix_effective_token }}"
+    body_format: json
+    body:
+      jsonrpc: "2.0"
+      method: host.create
+      params:
+        host: "{{ zabbix_agent_hostname }}"
+        name: "{{ zabbix_agent_hostname }}"
+        interfaces:
+          - type: 1
+            main: 1
+            useip: 1
+            ip: "{{ ansible_default_ipv4.address }}"
+            dns: ""
+            port: "10050"
+        groups: "{{ zabbix_api_groups }}"
+        templates: "{{ zabbix_api_templates }}"
+      id: 7
+    return_content: true
+    status_code: 200
+  register: zabbix_host_create
+  when: zabbix_host_check.json.result | length == 0
+  delegate_to: localhost
+  tags: zabbix_register

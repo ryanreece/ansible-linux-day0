@@ -7,3 +7,4 @@
   roles:
     - common
     - server_core
+    - zabbix_agent
