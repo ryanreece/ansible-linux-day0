@@ -1,0 +1,24 @@
+---
+nas_smb_workgroup: "WORKGROUP"
+nas_smb_server_string: "vmhost03 NAS"
+
+nas_shares:
+  - name: data
+    path: /tank/data
+    comment: "NAS Data"
+    zfs_dataset: tank/data
+    owner: nobody
+    group: nobody
+    mode: "0775"
+    samba:
+      enabled: true
+      browseable: true
+      read_only: false
+      guest_ok: true
+      create_mask: "0664"
+      directory_mask: "0775"
+    nfs:
+      enabled: true
+      clients:
+        - host: "10.0.5.0/24"
+          options: "rw,sync,no_subtree_check,root_squash"

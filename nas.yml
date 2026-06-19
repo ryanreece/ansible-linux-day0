@@ -1,0 +1,7 @@
+---
+- name: NAS Configuration
+  hosts: all
+
+  roles:
+    - role: nas
+      when: nas_shares is defined and nas_shares | length > 0

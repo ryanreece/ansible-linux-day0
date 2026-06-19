@@ -1,0 +1,26 @@
+---
+# Global Samba settings
+nas_smb_workgroup: "WORKGROUP"
+nas_smb_server_string: "{{ ansible_hostname }} NAS"
+nas_smb_min_protocol: "SMB2"
+
+# Share definitions — configure per-host in host_vars/<host>/nas.yml
+# Each share entry supports:
+#   name:         share name (alphanumeric, used as [section] in smb.conf)
+#   path:         absolute filesystem path
+#   comment:      human-readable description
+#   zfs_dataset:  optional — ZFS dataset name; if set, acltype/xattr are configured
+#   owner/group:  directory ownership (default: nobody)
+#   mode:         directory mode (default: 0775)
+#   samba:
+#     enabled:        expose via SMB (default: false)
+#     browseable:     visible in network browse (default: true)
+#     read_only:      read-only share (default: false)
+#     guest_ok:       allow unauthenticated access (default: true)
+#     valid_users:    space-separated list to restrict access (optional)
+#     create_mask:    new file permissions (default: 0664)
+#     directory_mask: new directory permissions (default: 0775)
+#   nfs:
+#     enabled:   expose via NFS (default: false)
+#     clients:   list of { host, options } entries for /etc/exports
+nas_shares: []

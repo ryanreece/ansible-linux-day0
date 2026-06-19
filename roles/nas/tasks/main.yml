@@ -1,0 +1,27 @@
+---
+- name: Configure ZFS dataset properties for sharing
+  ansible.builtin.include_tasks:
+    file: configure_zfs_properties.yml
+  tags: nas_zfs
+
+- name: Configure share directories
+  ansible.builtin.include_tasks:
+    file: configure_share_dirs.yml
+  tags: nas_dirs
+
+- name: Configure Samba
+  ansible.builtin.include_tasks:
+    file: install_samba.yml
+  when: nas_shares | selectattr('samba.enabled', 'defined') | selectattr('samba.enabled') | list | length > 0
+  tags: nas_smb
+
+- name: Configure NFS
+  ansible.builtin.include_tasks:
+    file: install_nfs.yml
+  when: nas_shares | selectattr('nfs.enabled', 'defined') | selectattr('nfs.enabled') | list | length > 0
+  tags: nas_nfs
+
+- name: Configure firewall
+  ansible.builtin.include_tasks:
+    file: configure_firewall.yml
+  tags: nas_firewall

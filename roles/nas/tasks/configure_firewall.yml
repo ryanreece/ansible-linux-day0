@@ -1,0 +1,40 @@
+---
+- name: Enable Samba in firewalld
+  become: true
+  ansible.posix.firewalld:
+    service: samba
+    permanent: true
+    state: enabled
+    immediate: true
+  when: nas_shares | selectattr('samba.enabled', 'defined') | selectattr('samba.enabled') | list | length > 0
+  tags: nas_firewall
+
+- name: Enable NFS in firewalld
+  become: true
+  ansible.posix.firewalld:
+    service: nfs
+    permanent: true
+    state: enabled
+    immediate: true
+  when: nas_shares | selectattr('nfs.enabled', 'defined') | selectattr('nfs.enabled') | list | length > 0
+  tags: nas_firewall
+
+- name: Enable rpcbind in firewalld
+  become: true
+  ansible.posix.firewalld:
+    service: rpc-bind
+    permanent: true
+    state: enabled
+    immediate: true
+  when: nas_shares | selectattr('nfs.enabled', 'defined') | selectattr('nfs.enabled') | list | length > 0
+  tags: nas_firewall
+
+- name: Enable mountd in firewalld
+  become: true
+  ansible.posix.firewalld:
+    service: mountd
+    permanent: true
+    state: enabled
+    immediate: true
+  when: nas_shares | selectattr('nfs.enabled', 'defined') | selectattr('nfs.enabled') | list | length > 0
+  tags: nas_firewall

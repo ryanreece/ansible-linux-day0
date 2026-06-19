@@ -1,0 +1,11 @@
+---
+- name: Set ZFS ACL and xattr properties on share datasets
+  become: true
+  community.general.zfs:
+    name: "{{ item.zfs_dataset }}"
+    state: present
+    extra_zfs_properties:
+      acltype: posixacl
+      xattr: sa
+  loop: "{{ nas_shares | selectattr('zfs_dataset', 'defined') | list }}"
+  tags: nas_zfs

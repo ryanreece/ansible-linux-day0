@@ -1,0 +1,8 @@
+# NFS exports - managed by Ansible, do not edit manually
+{% for share in nas_shares %}
+{% if share.nfs.enabled | default(false) %}
+{% for client in share.nfs.clients | default([]) %}
+{{ share.path }}	{{ client.host }}({{ client.options | default('rw,sync,no_subtree_check,root_squash') }})
+{% endfor %}
+{% endif %}
+{% endfor %}

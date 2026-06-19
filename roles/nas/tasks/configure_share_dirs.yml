@@ -1,0 +1,11 @@
+---
+- name: Ensure share directories exist with correct ownership
+  become: true
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner | default('nobody') }}"
+    group: "{{ item.group | default('nobody') }}"
+    mode: "{{ item.mode | default('0775') }}"
+  loop: "{{ nas_shares }}"
+  tags: nas_dirs
