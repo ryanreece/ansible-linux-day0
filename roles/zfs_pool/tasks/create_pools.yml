@@ -1,0 +1,61 @@
+---
+- name: "Check if ZFS pool {{ pool.name }} exists"
+  become: true
+  ansible.builtin.command:
+    cmd: "zpool list -H -o name {{ pool.name }}"
+  register: zpool_check
+  failed_when: false
+  changed_when: false
+  tags: zfs_pools
+
+- name: "Wipe existing partition tables from devices for pool {{ pool.name }}"
+  become: true
+  ansible.builtin.command:
+    cmd: "wipefs -a {{ item }}"
+  loop: "{{ pool.devices }}"
+  when:
+    - zpool_check.rc != 0
+    - pool.wipe_devices | default(false)
+  changed_when: true
+  tags: zfs_pools
+
+- name: "Build zpool create command for {{ pool.name }}"
+  ansible.builtin.set_fact:
+    zpool_create_cmd: >-
+      zpool create
+      {% for key, val in (pool.pool_options | default({})).items() %}-o {{ key }}={{ val }} {% endfor %}
+      {% for key, val in (pool.filesystem_options | default({})).items() %}-O {{ key }}={{ val }} {% endfor %}
+      {{ pool.name }}
+      {% if pool.vdev_type is defined %}{{ pool.vdev_type }} {% endif %}
+      {{ pool.devices | join(' ') }}
+  when: zpool_check.rc != 0
+  tags: zfs_pools
+
+- name: "Create ZFS pool {{ pool.name }}"
+  become: true
+  ansible.builtin.command:
+    cmd: "{{ zpool_create_cmd }}"
+  when: zpool_check.rc != 0
+  changed_when: true
+  tags: zfs_pools
+
+- name: "Persist {{ pool.name }} to ZFS import cache"
+  become: true
+  ansible.builtin.command:
+    cmd: "zpool set cachefile=/etc/zfs/zpool.cache {{ pool.name }}"
+  when: zpool_check.rc != 0
+  changed_when: true
+  tags: zfs_pools
+
+- name: "Show ZFS pool status for {{ pool.name }}"
+  become: true
+  ansible.builtin.command:
+    cmd: "zpool status {{ pool.name }}"
+  register: zpool_status
+  changed_when: false
+  tags: zfs_pools
+
+- name: "Display ZFS pool status for {{ pool.name }}"
+  ansible.builtin.debug:
+    msg: "{{ zpool_status.stdout_lines }}"
+  tags: zfs_pools

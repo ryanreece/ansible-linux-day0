@@ -1,0 +1,33 @@
+---
+- name: Install ZFS on RedHat os families
+  ansible.builtin.include_tasks:
+    file: install_zfs_redhat.yml
+  when:
+    - install_zfs | default(true)
+    - ansible_facts['os_family'] == 'RedHat'
+  tags: zfs_install
+
+- name: Install ZFS on Debian os families
+  ansible.builtin.include_tasks:
+    file: install_zfs_debian.yml
+  when:
+    - install_zfs | default(true)
+    - ansible_facts['os_family'] == 'Debian'
+  tags: zfs_install
+
+- name: Create ZFS pools
+  ansible.builtin.include_tasks:
+    file: create_pools.yml
+  loop: "{{ zfs_pools | default([]) }}"
+  loop_control:
+    loop_var: pool
+  tags: zfs_pools
+
+- name: Manage ZFS datasets
+  ansible.builtin.include_tasks:
+    file: manage_datasets.yml
+  loop: "{{ zfs_pools | default([]) }}"
+  loop_control:
+    loop_var: pool
+  when: pool.datasets is defined and pool.datasets | length > 0
+  tags: zfs_datasets

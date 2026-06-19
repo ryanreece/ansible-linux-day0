@@ -1,3 +1,4 @@
 linux:
   hosts:
     vmhost03.network.reece.ai:
+      ansible_host: 10.0.5.74

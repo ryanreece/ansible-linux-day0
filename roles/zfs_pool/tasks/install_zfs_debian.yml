@@ -1,0 +1,36 @@
+---
+- name: Install ZFS prerequisites on Debian os families
+  become: true
+  ansible.builtin.apt:
+    name:
+      - dpkg-dev
+      - linux-headers-generic
+    state: present
+    update_cache: true
+  tags: zfs_install
+
+- name: Install ZFS package on Debian os families
+  become: true
+  ansible.builtin.apt:
+    name: zfsutils-linux
+    state: present
+  tags: zfs_install
+
+- name: Load ZFS kernel module on Debian os families
+  become: true
+  community.general.modprobe:
+    name: zfs
+    state: present
+  tags: zfs_install
+
+- name: Enable ZFS services on Debian os families
+  become: true
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - zfs-import-cache
+    - zfs-mount
+    - zfs-zed
+  tags: zfs_install

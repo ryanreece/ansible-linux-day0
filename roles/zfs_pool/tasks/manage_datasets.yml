@@ -1,0 +1,11 @@
+---
+- name: "Create ZFS datasets for pool {{ pool.name }}"
+  become: true
+  community.general.zfs:
+    name: "{{ pool.name }}/{{ dataset.name }}"
+    state: present
+    extra_zfs_properties: "{{ dataset.properties | default({}) }}"
+  loop: "{{ pool.datasets }}"
+  loop_control:
+    loop_var: dataset
+  tags: zfs_datasets

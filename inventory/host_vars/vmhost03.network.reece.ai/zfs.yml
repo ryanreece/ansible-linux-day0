@@ -1,0 +1,19 @@
+---
+zfs_pools:
+  - name: tank
+    vdev_type: mirror
+    devices:
+      - /dev/sda
+      - /dev/sdb
+      - /dev/sdc
+    wipe_devices: true
+    pool_options:
+      ashift: 12          # 4KB sector alignment (WD Red 4TB are 512e/4Kn drives)
+    filesystem_options:
+      compression: lz4    # transparent compression, minimal CPU overhead
+      atime: "off"        # no access-time updates on reads (NAS workloads)
+    datasets:
+      - name: data
+        properties:
+          compression: lz4
+          atime: "off"

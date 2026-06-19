@@ -1,0 +1,15 @@
+---
+install_zfs: true
+
+# zfs_pools is defined per-host in host_vars; see inventory/host_vars/<host>/zfs.yml
+# Each pool entry supports:
+#   name:               pool name (e.g. "tank")
+#   vdev_type:          zfs vdev type: mirror, raidz, raidz2, raidz3 (omit for single-disk)
+#   devices:            list of block device paths
+#   wipe_devices:       wipe existing partition tables before pool creation (default: false)
+#   pool_options:       map of zpool create -o options (e.g. ashift: 12)
+#   filesystem_options: map of zpool create -O options applied to the root dataset
+#   datasets:           list of child datasets to create under the pool
+#     - name:           dataset name relative to pool (e.g. "data")
+#       properties:     map of ZFS properties to set on the dataset
+zfs_pools: []

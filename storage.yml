@@ -1,0 +1,7 @@
+---
+- name: Storage Configuration
+  hosts: all
+
+  roles:
+    - role: zfs_pool
+      when: zfs_pools is defined and zfs_pools | length > 0
