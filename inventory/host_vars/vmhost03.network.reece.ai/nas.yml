@@ -1,5 +1,5 @@
 ---
-nas_smb_workgroup: "WORKGROUP"
+nas_smb_workgroup: "REECE_AI"
 nas_smb_server_string: "vmhost03 NAS"
 
 nas_shares:

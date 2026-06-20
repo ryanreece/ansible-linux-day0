@@ -1,6 +1,6 @@
 ---
 # Global Samba settings
-nas_smb_workgroup: "WORKGROUP"
+nas_smb_workgroup: "REECE_AI"
 nas_smb_server_string: "{{ ansible_hostname }} NAS"
 nas_smb_min_protocol: "SMB2"
 
