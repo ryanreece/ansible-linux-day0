@@ -25,5 +25,6 @@ nas_smb_min_protocol: "SMB2"
 #     clients:   list of { host, options } entries for /etc/exports
 nas_shares: []
 
-# Linux groups to ensure exist on the NAS host before shares are configured
+# Linux groups to ensure exist on the NAS host before shares are configured.
+# Each entry: { name: <group>, members: [<user>, ...] }  (members is optional)
 nas_linux_groups: []

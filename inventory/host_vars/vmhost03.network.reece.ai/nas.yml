@@ -3,23 +3,100 @@ nas_smb_workgroup: "REECE_AI"
 nas_smb_server_string: "vmhost03 NAS"
 
 nas_linux_groups:
-  - nas-users
+  - name: nas-family
+    members:
+      - reece
+  - name: nas-reece-ai
+    members:
+      - reece
+  - name: nas-work
+    members:
+      - reece
+  - name: nas-misc
+    members:
+      - reece
 
 nas_shares:
-  - name: data
-    path: /tank/data
-    comment: "NAS Data"
-    zfs_dataset: tank/data
+  - name: family
+    path: /tank/family
+    comment: "Family"
+    zfs_dataset: tank/family
     owner: root
-    group: nas-users
+    group: nas-family
     mode: "2775"
     samba:
       enabled: true
       browseable: true
       read_only: false
       guest_ok: false
-      valid_users: "@nas-users"
-      force_group: "nas-users"
+      valid_users: "@nas-family"
+      force_group: "nas-family"
+      create_mask: "0664"
+      directory_mask: "0775"
+    nfs:
+      enabled: true
+      clients:
+        - host: "10.0.0.0/8"
+          options: "rw,sync,no_subtree_check,root_squash"
+
+  - name: reece_ai
+    path: /tank/reece_ai
+    comment: "Reece AI"
+    zfs_dataset: tank/reece_ai
+    owner: root
+    group: nas-reece-ai
+    mode: "2775"
+    samba:
+      enabled: true
+      browseable: true
+      read_only: false
+      guest_ok: false
+      valid_users: "@nas-reece-ai"
+      force_group: "nas-reece-ai"
+      create_mask: "0664"
+      directory_mask: "0775"
+    nfs:
+      enabled: true
+      clients:
+        - host: "10.0.0.0/8"
+          options: "rw,sync,no_subtree_check,root_squash"
+
+  - name: work
+    path: /tank/work
+    comment: "Work"
+    zfs_dataset: tank/work
+    owner: root
+    group: nas-work
+    mode: "2775"
+    samba:
+      enabled: true
+      browseable: true
+      read_only: false
+      guest_ok: false
+      valid_users: "@nas-work"
+      force_group: "nas-work"
+      create_mask: "0664"
+      directory_mask: "0775"
+    nfs:
+      enabled: true
+      clients:
+        - host: "10.0.0.0/8"
+          options: "rw,sync,no_subtree_check,root_squash"
+
+  - name: misc
+    path: /tank/misc
+    comment: "Misc"
+    zfs_dataset: tank/misc
+    owner: root
+    group: nas-misc
+    mode: "2775"
+    samba:
+      enabled: true
+      browseable: true
+      read_only: false
+      guest_ok: false
+      valid_users: "@nas-misc"
+      force_group: "nas-misc"
       create_mask: "0664"
       directory_mask: "0775"
     nfs:

@@ -13,7 +13,19 @@ zfs_pools:
       compression: lz4    # transparent compression, minimal CPU overhead
       atime: "off"        # no access-time updates on reads (NAS workloads)
     datasets:
-      - name: data
+      - name: family
+        properties:
+          compression: lz4
+          atime: "off"
+      - name: reece_ai
+        properties:
+          compression: lz4
+          atime: "off"
+      - name: work
+        properties:
+          compression: lz4
+          atime: "off"
+      - name: misc
         properties:
           compression: lz4
           atime: "off"

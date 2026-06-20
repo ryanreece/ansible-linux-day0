@@ -2,7 +2,18 @@
 - name: Ensure NAS Linux groups exist
   become: true
   ansible.builtin.group:
-    name: "{{ item }}"
+    name: "{{ item.name }}"
     state: present
   loop: "{{ nas_linux_groups }}"
+  tags: nas_groups
+
+- name: Ensure NAS group members are assigned
+  become: true
+  ansible.builtin.user:
+    name: "{{ item.1 }}"
+    groups: "{{ item.0.name }}"
+    append: true
+  loop: "{{ nas_linux_groups | subelements('members', skip_missing=True) }}"
+  loop_control:
+    label: "{{ item.1 }} → {{ item.0.name }}"
   tags: nas_groups
