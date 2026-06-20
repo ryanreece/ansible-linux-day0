@@ -1,4 +1,10 @@
 ---
+- name: Ensure NAS Linux groups exist
+  ansible.builtin.include_tasks:
+    file: configure_linux_groups.yml
+  when: nas_linux_groups | length > 0
+  tags: nas_groups
+
 - name: Configure ZFS dataset properties for sharing
   ansible.builtin.include_tasks:
     file: configure_zfs_properties.yml

@@ -1,0 +1,8 @@
+---
+- name: Ensure NAS Linux groups exist
+  become: true
+  ansible.builtin.group:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ nas_linux_groups }}"
+  tags: nas_groups

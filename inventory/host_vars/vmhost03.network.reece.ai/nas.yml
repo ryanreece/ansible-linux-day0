@@ -2,19 +2,24 @@
 nas_smb_workgroup: "REECE_AI"
 nas_smb_server_string: "vmhost03 NAS"
 
+nas_linux_groups:
+  - nas-users
+
 nas_shares:
   - name: data
     path: /tank/data
     comment: "NAS Data"
     zfs_dataset: tank/data
-    owner: nobody
-    group: nobody
-    mode: "0775"
+    owner: root
+    group: nas-users
+    mode: "2775"
     samba:
       enabled: true
       browseable: true
       read_only: false
-      guest_ok: true
+      guest_ok: false
+      valid_users: "@nas-users"
+      force_group: "nas-users"
       create_mask: "0664"
       directory_mask: "0775"
     nfs:

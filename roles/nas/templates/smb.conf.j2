@@ -25,6 +25,9 @@
 {% if share.samba.valid_users is defined and share.samba.valid_users %}
     valid users = {{ share.samba.valid_users }}
 {% endif %}
+{% if share.samba.force_group is defined and share.samba.force_group %}
+    force group = {{ share.samba.force_group }}
+{% endif %}
 
 {% endif %}
 {% endfor %}
