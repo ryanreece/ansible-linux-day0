@@ -1,0 +1,5 @@
+linux:
+  hosts:
+    moonbox.trust.reece.ai:
+      ansible_host: 10.0.10.21
+      ansible_connection: local

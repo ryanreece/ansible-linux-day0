@@ -1,0 +1,26 @@
+---
+- name: Deploy sunrpc modprobe config
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/sunrpc.conf
+    content: |
+      options sunrpc tcp_slot_table_entries=128
+      options sunrpc tcp_max_slot_table_entries=128
+    owner: root
+    group: root
+    mode: '0644'
+  tags: nfs_client_sunrpc
+
+- name: Read current tcp_slot_table_entries
+  become: true
+  ansible.builtin.slurp:
+    src: /sys/module/sunrpc/parameters/tcp_slot_table_entries
+  register: _sunrpc_slot_current
+  tags: nfs_client_sunrpc
+
+- name: Set tcp_slot_table_entries live
+  become: true
+  ansible.builtin.shell:
+    cmd: echo 128 > /sys/module/sunrpc/parameters/tcp_slot_table_entries
+  when: (_sunrpc_slot_current.content | b64decode | trim) != '128'
+  tags: nfs_client_sunrpc

@@ -1,0 +1,7 @@
+---
+- name: NFS Client Configuration
+  hosts: all
+
+  roles:
+    - role: nfs_client
+      when: nfs_client_mounts is defined and nfs_client_mounts | length > 0

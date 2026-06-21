@@ -1,0 +1,16 @@
+---
+- name: Install NFS client packages
+  ansible.builtin.include_tasks:
+    file: install_packages.yml
+  tags: nfs_client_packages
+
+- name: Tune sunrpc slot table
+  ansible.builtin.include_tasks:
+    file: tune_sunrpc.yml
+  tags: nfs_client_sunrpc
+
+- name: Configure NFS mounts
+  ansible.builtin.include_tasks:
+    file: configure_mounts.yml
+  when: nfs_client_mounts | length > 0
+  tags: nfs_client_mounts
