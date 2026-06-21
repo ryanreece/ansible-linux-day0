@@ -40,6 +40,59 @@
   notify: Restart nfs-server
   tags: nas_nfs
 
+- name: Disable RDMA in nfs.conf (no RDMA hardware on vmhost03)
+  become: true
+  community.general.ini_file:
+    path: /etc/nfs.conf
+    section: nfsd
+    option: rdma
+    value: "n"
+    mode: '0644'
+  notify: Restart nfs-server
+  tags: nas_nfs
+
+- name: Remove rdma-port from nfs.conf
+  become: true
+  community.general.ini_file:
+    path: /etc/nfs.conf
+    section: nfsd
+    option: rdma-port
+    state: absent
+  notify: Restart nfs-server
+  tags: nas_nfs
+
+- name: Ensure /var/lib/nfs is owned by root with correct permissions
+  become: true
+  ansible.builtin.file:
+    path: /var/lib/nfs
+    owner: root
+    group: root
+    mode: '0755'
+  tags: nas_nfs
+
+- name: Ensure NFS lock files have correct permissions
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    mode: '0644'
+    state: touch
+    modification_time: preserve
+    access_time: preserve
+  loop:
+    - /var/lib/nfs/.etab.lock
+    - /var/lib/nfs/export-lock
+  tags: nas_nfs
+
+- name: Restore SELinux context on /var/lib/nfs
+  become: true
+  ansible.builtin.command:
+    cmd: restorecon -Rv /var/lib/nfs/
+  register: _restorecon_result
+  changed_when: _restorecon_result.stdout | length > 0
+  tags: nas_nfs
+
 - name: Deploy sunrpc modprobe config for NFS slot table tuning
   become: true
   ansible.builtin.copy:
