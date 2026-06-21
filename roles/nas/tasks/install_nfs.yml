@@ -29,6 +29,43 @@
   notify: Reload exports
   tags: nas_nfs
 
+- name: Set NFS server thread count
+  become: true
+  community.general.ini_file:
+    path: /etc/nfs.conf
+    section: nfsd
+    option: threads
+    value: "{{ nas_nfs_threads }}"
+    mode: '0644'
+  notify: Restart nfs-server
+  tags: nas_nfs
+
+- name: Deploy sunrpc modprobe config for NFS slot table tuning
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/modprobe.d/sunrpc.conf
+    content: |
+      options sunrpc tcp_slot_table_entries=128
+      options sunrpc tcp_max_slot_table_entries=128
+    owner: root
+    group: root
+    mode: '0644'
+  tags: nas_nfs
+
+- name: Read current tcp_slot_table_entries
+  become: true
+  ansible.builtin.slurp:
+    src: /sys/module/sunrpc/parameters/tcp_slot_table_entries
+  register: _sunrpc_slot_current
+  tags: nas_nfs
+
+- name: Set tcp_slot_table_entries live
+  become: true
+  ansible.builtin.shell:
+    cmd: echo 128 > /sys/module/sunrpc/parameters/tcp_slot_table_entries
+  when: (_sunrpc_slot_current.content | b64decode | trim) != '128'
+  tags: nas_nfs
+
 - name: Enable and start NFS server services
   become: true
   ansible.builtin.systemd_service:

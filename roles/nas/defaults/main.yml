@@ -28,3 +28,6 @@ nas_shares: []
 # Linux groups to ensure exist on the NAS host before shares are configured.
 # Each entry: { name: <group>, members: [<user>, ...] }  (members is optional)
 nas_linux_groups: []
+
+# NFS server thread count — recommended 2× CPU cores (vmhost03 has 8 logical cores → 16)
+nas_nfs_threads: 16

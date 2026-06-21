@@ -1,4 +1,10 @@
 ---
+- name: Configure ZFS ARC tuning
+  ansible.builtin.include_tasks:
+    file: configure_arc.yml
+  when: zfs_arc_max_bytes | int > 0
+  tags: zfs_arc
+
 - name: Install ZFS on RedHat os families
   ansible.builtin.include_tasks:
     file: install_zfs_redhat.yml

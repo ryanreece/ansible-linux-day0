@@ -1,6 +1,9 @@
 ---
 install_zfs: true
 
+# ZFS ARC max in bytes — 48 GiB (80% of 60 GiB RAM on vmhost03); set 0 to use OS default
+zfs_arc_max_bytes: 51539607552
+
 # zfs_pools is defined per-host in host_vars; see inventory/host_vars/<host>/zfs.yml
 # Each pool entry supports:
 #   name:               pool name (e.g. "tank")
