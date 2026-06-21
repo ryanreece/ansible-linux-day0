@@ -7,6 +7,8 @@ zfs_pools:
       - /dev/sdb
       - /dev/sdc
     wipe_devices: true
+    log_devices:
+      - /dev/rl/zfs_slog   # 16G LV on md127 (NVMe RAID-1: nvme0n1p3 + nvme1n1p3)
     pool_options:
       ashift: 12          # 4KB sector alignment (WD Red 4TB are 512e/4Kn drives)
     filesystem_options:
