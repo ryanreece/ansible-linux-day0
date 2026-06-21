@@ -47,6 +47,14 @@
   changed_when: true
   tags: zfs_pools
 
+- name: "Ensure filesystem properties on pool root {{ pool.name }}"
+  become: true
+  community.general.zfs:
+    name: "{{ pool.name }}"
+    state: present
+    extra_zfs_properties: "{{ pool.filesystem_options | default({}) }}"
+  tags: zfs_pools
+
 - name: "Show ZFS pool status for {{ pool.name }}"
   become: true
   ansible.builtin.command:

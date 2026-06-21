@@ -12,20 +12,30 @@ zfs_pools:
     filesystem_options:
       compression: lz4    # transparent compression, minimal CPU overhead
       atime: "off"        # no access-time updates on reads (NAS workloads)
+      xattr: sa           # store XATTRs in dnode (inline, avoids extra I/O)
+      dnodesize: auto     # allow ZFS to grow dnode up to 16 KiB as needed for xattr=sa
     datasets:
       - name: family
         properties:
           compression: lz4
           atime: "off"
+          xattr: sa
+          dnodesize: auto
       - name: reece_ai
         properties:
           compression: lz4
           atime: "off"
+          xattr: sa
+          dnodesize: auto
       - name: work
         properties:
           compression: lz4
           atime: "off"
+          xattr: sa
+          dnodesize: auto
       - name: misc
         properties:
           compression: lz4
           atime: "off"
+          xattr: sa
+          dnodesize: auto
