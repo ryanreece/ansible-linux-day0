@@ -1,0 +1,26 @@
+---
+# Canonical NAS group definitions — consistent GIDs across all hosts.
+# GIDs start at 3000 to avoid conflicts with system groups (< 1000),
+# user UIDs/GIDs (1000), and distro-specific service accounts (1001–1999;
+# e.g. vmware=1001 on moonbox).
+nas_common_groups:
+  - name: nas-users
+    gid: 3000
+    members:
+      - reece
+  - name: nas-family
+    gid: 3001
+    members:
+      - reece
+  - name: nas-reece-ai
+    gid: 3002
+    members:
+      - reece
+  - name: nas-work
+    gid: 3003
+    members:
+      - reece
+  - name: nas-misc
+    gid: 3004
+    members:
+      - reece

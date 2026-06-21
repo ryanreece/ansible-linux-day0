@@ -1,0 +1,37 @@
+---
+- name: Provision common NAS groups
+  hosts: all
+
+  roles:
+    - role: linux_groups
+      vars:
+        linux_groups: "{{ nas_common_groups }}"
+
+# vmhost03 had nas-* groups created without explicit GIDs (landed at 1001–1005).
+# This play remaps filesystem ownership on /tank to match the new GIDs (3000–3004)
+# after the group module calls groupmod to update them. Idempotent: find returns
+# nothing on a second run once all files carry the new GIDs.
+- name: Fix ZFS filesystem GID ownership after renumber
+  hosts: vmhost03.network.reece.ai
+  become: true
+
+  tasks:
+    - name: Remap /tank file GIDs from old values to new canonical GIDs
+      ansible.builtin.shell: |
+        count=$(find /tank -gid {{ item.old }} | wc -l)
+        if [ "$count" -gt 0 ]; then
+          find /tank -gid {{ item.old }} -exec chgrp {{ item.new }} {} +
+          echo "fixed $count"
+        else
+          echo "none"
+        fi
+      register: _chgrp
+      changed_when: "'fixed' in _chgrp.stdout"
+      loop:
+        - { old: 1001, new: 3000, name: nas-users }
+        - { old: 1002, new: 3001, name: nas-family }
+        - { old: 1003, new: 3002, name: nas-reece-ai }
+        - { old: 1004, new: 3003, name: nas-work }
+        - { old: 1005, new: 3004, name: nas-misc }
+      loop_control:
+        label: "{{ item.name }}: {{ item.old }} → {{ item.new }}"

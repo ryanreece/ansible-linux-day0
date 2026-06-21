@@ -3,16 +3,24 @@ nas_smb_workgroup: "REECE_AI"
 nas_smb_server_string: "vmhost03 NAS"
 
 nas_linux_groups:
+  - name: nas-users
+    gid: 3000
+    members:
+      - reece
   - name: nas-family
+    gid: 3001
     members:
       - reece
   - name: nas-reece-ai
+    gid: 3002
     members:
       - reece
   - name: nas-work
+    gid: 3003
     members:
       - reece
   - name: nas-misc
+    gid: 3004
     members:
       - reece
 
