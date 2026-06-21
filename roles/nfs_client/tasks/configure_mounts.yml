@@ -4,9 +4,6 @@
   ansible.builtin.file:
     path: "{{ item.path }}"
     state: directory
-    owner: root
-    group: root
-    mode: '0755'
   loop: "{{ nfs_client_mounts }}"
   tags: nfs_client_mounts
 
