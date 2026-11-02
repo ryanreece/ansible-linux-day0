@@ -135,6 +135,29 @@ Server targets should be listed under `inventory/`.
 ansible-playbook -i inventory/server.yml day0-server.yml -K
 ```
 
+For a one-off host that should not be saved in the repository, pass an inline
+inventory. The trailing comma tells Ansible that the value is a host list:
+
+```bash
+ansible-playbook -i 'server01.lab.int.reece.ai,' day0-server.yml -K
+```
+
+On hosts where sudo-rs provides the default `sudo` command, select Ubuntu's
+traditional sudo executable for that run with `ansible_become_exe`:
+
+```bash
+ansible-playbook \
+  -i 'server01.lab.int.reece.ai,' \
+  day0-server.yml \
+  -K \
+  -e ansible_become_exe=/usr/bin/sudo.ws
+```
+
+This override applies only to the current invocation and does not change
+`ansible.cfg` or require a committed inventory file. If the setting needs to be
+reused, place it in an external variables file and pass that file with
+`-e @/path/to/server01.yml`.
+
 The server playbook applies:
 
 - `common`
