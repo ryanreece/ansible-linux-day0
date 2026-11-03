@@ -113,7 +113,8 @@ requirement.
 The following areas are known to need care when making the repo more
 cross-platform:
 
-- `bootstrap.sh` already branches for `ubuntu`, `rocky`, `rhel`, and `arch`.
+- `bootstrap.sh` already branches for `ubuntu`, `rocky`, `rhel`, `fedora`, and
+  `arch`.
   Keep bootstrap support aligned with playbook support.
 - `roles/common/tasks/install_packages.yml` mixes `package`, `apt`, and Snap.
   New baseline packages should use `package` when names match.

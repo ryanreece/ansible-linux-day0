@@ -42,7 +42,7 @@ cross-distro workstation bootstrap.
 | Debian family | Partial | Partial | Partial | Many tasks work, but Ubuntu-only PPAs/repos are guarded or still being refined. |
 | RHEL | Supported | Partial | Partial | Uses RPM/DNF paths where available. |
 | Rocky / AlmaLinux | Partial | Partial | Partial | Expected to follow RedHat-family paths; test per feature. |
-| Fedora Sway Spin | Not in bootstrap yet | Partial | Not verified | Common packages use DNF-compatible paths, and the desktop role supports Sway utilities plus Fedora RPM application paths; broader workstation-core coverage is still being refined. |
+| Fedora Sway Spin | Supported | Partial | Not verified | Common packages use DNF-compatible paths, and the desktop role supports Sway utilities plus Fedora RPM application paths; broader workstation-core coverage is still being refined. |
 | Arch Linux | Supported | Partial | Not verified | The tested Arch target is Omarchy, not a generic hand-rolled Arch install. |
 | [Omarchy](https://omarchy.org/) / Hyprland on Arch | N/A | Active support | N/A | Tested against the Omarchy spin by DHH. Install Omarchy first, then run this playbook to tune it. |
 
@@ -53,6 +53,8 @@ Desktop-environment assumptions are intentionally conservative:
 - Fedora Sway Spin detects the Sway installation provided by the spin and then
   installs only missing Sway-native supporting utilities; it does not install,
   replace, or configure the Sway session itself.
+- Fedora bootstrap support targets the standard DNF-based Sway Spin; immutable
+  Fedora Atomic variants require an rpm-ostree-specific workflow.
 - AUR-only applications are limited to explicit app tasks such as Chrome and
   Microsoft Edge on Arch.
 
