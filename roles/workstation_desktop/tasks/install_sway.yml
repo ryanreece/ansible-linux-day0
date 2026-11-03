@@ -5,32 +5,6 @@
   when: ansible_distribution == 'Fedora'
   tags: sway
 
-- name: Configure Alacritty as the Fedora Sway terminal
-  when:
-    - ansible_distribution == 'Fedora'
-    - "'sway' in ansible_facts.packages"
-    - install_alacritty | default(true) | bool
-  tags: sway
-  block:
-    - name: Ensure Alacritty is installed for the Fedora Sway terminal
-      become: true
-      ansible.builtin.dnf:
-        name: alacritty
-        state: present
-
-    - name: Create the Fedora Sway user configuration directory
-      ansible.builtin.file:
-        path: "{{ ansible_env.XDG_CONFIG_HOME | default(ansible_env.HOME ~ '/.config', true) }}/sway/config.d"
-        state: directory
-        mode: '0755'
-
-    - name: Set Alacritty for the Fedora Sway terminal shortcut and launcher
-      ansible.builtin.template:
-        src: sway-terminal.conf.j2
-        dest: "{{ ansible_env.XDG_CONFIG_HOME | default(ansible_env.HOME ~ '/.config', true) }}/sway/config.d/99-terminal.conf"
-        mode: '0644'
-        backup: true
-
 - name: Install missing Fedora Sway Spin supporting utilities
   become: true
   ansible.builtin.dnf:

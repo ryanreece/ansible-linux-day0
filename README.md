@@ -50,14 +50,11 @@ Desktop-environment assumptions are intentionally conservative:
 
 - KDE Plasma is opt-in only with `install_kde: true`.
 - Regolith is only attempted on Ubuntu.
-- Fedora Sway Spin detects the Sway installation provided by the spin and then
-  installs missing Sway-native supporting utilities. When `install_alacritty`
-  is enabled, it also sets Alacritty as the terminal for Super+Enter and Rofi
-  terminal applications using a user configuration drop-in; it does not install
-  or replace the Sway session itself. Run with `--tags sway` to apply this setup,
-  then press Super+Shift+C to reload Sway (or log in again). This uses the spin's
-  default layered configuration; custom Sway configs must include the user
-  `sway/config.d/*.conf` files to load the setting.
+- Fedora Sway Spin detects the Sway installation provided by the spin and
+  installs missing Sway-native supporting utilities. User settings (terminal,
+  keybindings, and monitor scaling) are managed by the dotfiles repository via
+  `install_dotfiles.sh`, not by the Sway tasks. The playbook does not install
+  or replace the Sway session itself.
 - Fedora bootstrap support targets the standard DNF-based Sway Spin; immutable
   Fedora Atomic variants require an rpm-ostree-specific workflow.
 - AUR-only applications are limited to explicit app tasks such as Chrome and
@@ -273,7 +270,7 @@ GUI applications and desktop-specific behavior.
 | Alacritty | [`install_alacritty.yml`](roles/workstation_desktop/tasks/install_alacritty.yml) | `install_alacritty` |
 | Flameshot | [`install_flameshot.yml`](roles/workstation_desktop/tasks/install_flameshot.yml) | `install_flameshot` |
 | Hyprland settings | [`install_hyprland_settings.yml`](roles/workstation_desktop/tasks/install_hyprland_settings.yml) | `install_hyprland_settings` |
-| Fedora Sway utilities and Alacritty terminal setting | [`install_sway.yml`](roles/workstation_desktop/tasks/install_sway.yml) | `install_sway` |
+| Fedora Sway utilities | [`install_sway.yml`](roles/workstation_desktop/tasks/install_sway.yml) | `install_sway` |
 | Regolith | [`install_regolith.yml`](roles/workstation_desktop/tasks/install_regolith.yml) | `install_regolith` |
 | KDE Plasma | [`install_kde.yml`](roles/workstation_desktop/tasks/install_kde.yml) | `install_kde` |
 | Chrome | [`install_chrome.yml`](roles/workstation_desktop/tasks/install_chrome.yml) | `install_chrome` |
