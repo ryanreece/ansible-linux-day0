@@ -1,9 +1,14 @@
 ---
-- name: Install Fedora Sway Spin desktop utilities
+- name: Gather installed package facts for Fedora Sway Spin
+  ansible.builtin.package_facts:
+    manager: auto
+  when: ansible_distribution == 'Fedora'
+  tags: sway
+
+- name: Install missing Fedora Sway Spin supporting utilities
   become: true
   ansible.builtin.dnf:
     name:
-      - sway
       - swayidle
       - swaylock
       - waybar
@@ -13,5 +18,7 @@
       - wl-clipboard
       - xdg-desktop-portal-wlr
     state: present
-  when: ansible_distribution == 'Fedora'
+  when:
+    - ansible_distribution == 'Fedora'
+    - "'sway' in ansible_facts.packages"
   tags: sway

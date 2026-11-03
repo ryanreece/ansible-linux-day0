@@ -50,8 +50,9 @@ Desktop-environment assumptions are intentionally conservative:
 
 - KDE Plasma is opt-in only with `install_kde: true`.
 - Regolith is only attempted on Ubuntu.
-- Fedora Sway Spin installs Sway-native utilities by default; it does not replace
-  the spin's Sway configuration or session selection.
+- Fedora Sway Spin detects the Sway installation provided by the spin and then
+  installs only missing Sway-native supporting utilities; it does not install,
+  replace, or configure the Sway session itself.
 - AUR-only applications are limited to explicit app tasks such as Chrome and
   Microsoft Edge on Arch.
 
