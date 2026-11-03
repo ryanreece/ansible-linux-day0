@@ -1,4 +1,10 @@
 ---
+- name: Install Nerd Fonts
+  ansible.builtin.include_tasks:
+    file: install_nerd_fonts.yml
+  when: install_nerd_fonts | default(true)
+  tags: nerd_fonts
+
 - name: Install Alacritty
   ansible.builtin.include_tasks:
     file: install_alacritty.yml

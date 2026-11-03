@@ -269,6 +269,7 @@ GUI applications, desktop-specific behavior, and desktop-only AI coding CLIs.
 | --- | --- | --- |
 | Codex CLI (npm global) | [`install_codex.yml`](roles/workstation_desktop/tasks/install_codex.yml) | `install_codex` |
 | Claude Code (npm global) | [`install_claude_code.yml`](roles/workstation_desktop/tasks/install_claude_code.yml) | `install_claude_code` |
+| JetBrainsMono Nerd Font Mono | [`install_nerd_fonts.yml`](roles/workstation_desktop/tasks/install_nerd_fonts.yml) | `install_nerd_fonts` |
 | Alacritty | [`install_alacritty.yml`](roles/workstation_desktop/tasks/install_alacritty.yml) | `install_alacritty` |
 | Flameshot | [`install_flameshot.yml`](roles/workstation_desktop/tasks/install_flameshot.yml) | `install_flameshot` |
 | Hyprland settings | [`install_hyprland_settings.yml`](roles/workstation_desktop/tasks/install_hyprland_settings.yml) | `install_hyprland_settings` |
@@ -281,6 +282,20 @@ GUI applications, desktop-specific behavior, and desktop-only AI coding CLIs.
 | Ulauncher | [`install_ulauncher.yml`](roles/workstation_desktop/tasks/install_ulauncher.yml) | `install_ulauncher` |
 | Remmina | [`install_remmina.yml`](roles/workstation_desktop/tasks/install_remmina.yml) | `install_remmina` |
 | KeePassXC | [`install_keepassxc.yml`](roles/workstation_desktop/tasks/install_keepassxc.yml) | `install_keepassxc` |
+
+Nerd Fonts are enabled by default for desktop installations. The `nerd_fonts`
+tag installs the regular, bold, italic, and bold italic JetBrainsMono Nerd Font
+Mono faces under `~/.local/share/fonts/JetBrainsMono` and refreshes the font
+cache only when extraction changes files. The architecture-independent upstream
+archive is pinned with `nerd_fonts_version` and verified against its published
+SHA-256 checksum. Debian, RedHat, and Arch use the same installation path.
+Set `install_nerd_fonts: false` to skip it. Alacritty's font selection is managed
+in the dotfiles repository. Check mode skips extraction and cache refresh.
+
+```bash
+ansible-playbook -i localhost, day0-workstation.yml --connection=local -K \
+  --tags nerd_fonts
+```
 
 Codex and Claude Code are enabled by default only in the desktop role. Both use
 `npm -g` through the existing user-local NVM installation without sudo, with the
