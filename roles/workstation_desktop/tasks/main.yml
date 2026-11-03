@@ -17,11 +17,20 @@
   when: install_hyprland_settings | default(true)
   tags: hyprland
 
+- name: Install Fedora Sway desktop utilities
+  ansible.builtin.include_tasks:
+    file: install_sway.yml
+  when:
+    - ansible_distribution == 'Fedora'
+    - install_sway | default(true)
+  tags: sway
+
 - name: Install Regolith
   ansible.builtin.include_tasks:
     file: install_regolith.yml
   when:
     - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == '24.04'
     - install_regolith | default(true)
   tags: regolith
 
@@ -54,7 +63,7 @@
   ansible.builtin.include_tasks:
     file: install_microsoft_edge.yml
   when:
-    - ansible_facts['os_family'] in ['Debian', 'Archlinux']
+    - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
     - install_microsoft_edge | default(true)
   tags: microsoft_edge
 

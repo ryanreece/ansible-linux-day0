@@ -72,6 +72,8 @@ Example pattern:
 - Do not rewrite unrelated roles or installer scripts while adding one feature.
 - Preserve user-local paths such as `{{ ansible_env.HOME }}` and existing
   conventions like `sources_dir`.
+- Use Conventional Commits for every commit (for example,
+  `feat(desktop): add Fedora Sway support`).
 
 ## Cross-Distro Rules
 

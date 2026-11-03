@@ -1,0 +1,17 @@
+---
+- name: Install Fedora Sway Spin desktop utilities
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - sway
+      - swayidle
+      - swaylock
+      - waybar
+      - wofi
+      - grim
+      - slurp
+      - wl-clipboard
+      - xdg-desktop-portal-wlr
+    state: present
+  when: ansible_distribution == 'Fedora'
+  tags: sway

@@ -42,7 +42,7 @@ cross-distro workstation bootstrap.
 | Debian family | Partial | Partial | Partial | Many tasks work, but Ubuntu-only PPAs/repos are guarded or still being refined. |
 | RHEL | Supported | Partial | Partial | Uses RPM/DNF paths where available. |
 | Rocky / AlmaLinux | Partial | Partial | Partial | Expected to follow RedHat-family paths; test per feature. |
-| Fedora | Not in bootstrap yet | Partial | Not verified | Many RedHat-family package tasks should work, but bootstrap coverage is not complete. |
+| Fedora Sway Spin | Not in bootstrap yet | Partial | Not verified | Desktop role supports the Sway utilities and Fedora RPM application paths; bootstrap and broader workstation-core coverage are still being refined. |
 | Arch Linux | Supported | Partial | Not verified | The tested Arch target is Omarchy, not a generic hand-rolled Arch install. |
 | [Omarchy](https://omarchy.org/) / Hyprland on Arch | N/A | Active support | N/A | Tested against the Omarchy spin by DHH. Install Omarchy first, then run this playbook to tune it. |
 
@@ -50,6 +50,8 @@ Desktop-environment assumptions are intentionally conservative:
 
 - KDE Plasma is opt-in only with `install_kde: true`.
 - Regolith is only attempted on Ubuntu.
+- Fedora Sway Spin installs Sway-native utilities by default; it does not replace
+  the spin's Sway configuration or session selection.
 - AUR-only applications are limited to explicit app tasks such as Chrome and
   Microsoft Edge on Arch.
 
@@ -261,6 +263,7 @@ GUI applications and desktop-specific behavior.
 | Alacritty | [`install_alacritty.yml`](roles/workstation_desktop/tasks/install_alacritty.yml) | `install_alacritty` |
 | Flameshot | [`install_flameshot.yml`](roles/workstation_desktop/tasks/install_flameshot.yml) | `install_flameshot` |
 | Hyprland settings | [`install_hyprland_settings.yml`](roles/workstation_desktop/tasks/install_hyprland_settings.yml) | `install_hyprland_settings` |
+| Fedora Sway utilities | [`install_sway.yml`](roles/workstation_desktop/tasks/install_sway.yml) | `install_sway` |
 | Regolith | [`install_regolith.yml`](roles/workstation_desktop/tasks/install_regolith.yml) | `install_regolith` |
 | KDE Plasma | [`install_kde.yml`](roles/workstation_desktop/tasks/install_kde.yml) | `install_kde` |
 | Chrome | [`install_chrome.yml`](roles/workstation_desktop/tasks/install_chrome.yml) | `install_chrome` |

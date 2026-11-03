@@ -12,5 +12,6 @@ install_keepassxc: true
 install_microsoft_edge: true
 install_regolith: true
 install_remmina: true
+install_sway: true
 install_ulauncher: true
 install_vscode: true
