@@ -26,20 +26,24 @@
   when: ansible_facts['os_family'] == 'Debian'
   tags: docker
 
-- name: Add dnf-plugins-core package for RedHat os families
+- name: Install Docker repository definition on Fedora
   become: true
-  ansible.builtin.package:
-    name:
-      - dnf-plugins-core
-    state: present
-  when: ansible_facts['os_family'] == 'RedHat'
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/fedora/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: '0644'
+  when: ansible_distribution == 'Fedora'
   tags: docker
 
-- name: Add docker repository for RedHat os families
+- name: Install Docker repository definition on RedHat Enterprise Linux derivatives
   become: true
-  ansible.builtin.command:
-    cmd: dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-  when: ansible_facts['os_family'] == 'RedHat'
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/rhel/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: '0644'
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - ansible_distribution != 'Fedora'
   tags: docker
 
 - name: Install docker packages for Archlinux os families
