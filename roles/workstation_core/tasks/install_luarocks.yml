@@ -18,14 +18,35 @@
   when: ansible_facts['os_family'] == 'Debian'
   tags: luarocks
   
-- name: Install lua libraries for RedHat os families
+- name: Install Lua and LuaRocks on Fedora
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - lua
+      - lua-devel
+      - lua-socket
+      - luarocks
+    state: present
+  when: ansible_distribution == 'Fedora'
+  tags: luarocks
+
+- name: Install Lua compatibility libraries for RedHat Enterprise Linux derivatives
   become: true
   ansible.builtin.package:
     name:
       - compat-lua-devel
       - compat-lua-libs
     state: present
-  when: ansible_facts['os_family'] == 'RedHat'
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - ansible_distribution != 'Fedora'
+  tags: luarocks
+
+- name: Verify the Lua interpreter on Fedora
+  ansible.builtin.command:
+    cmd: lua -v
+  changed_when: false
+  when: ansible_distribution == 'Fedora'
   tags: luarocks
 
 - name: Install lua and luarocks for Archlinux os families
