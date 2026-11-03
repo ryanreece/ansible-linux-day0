@@ -70,6 +70,12 @@
   when: install_cloud_utilities | default(true)
   tags: cloud_utilities
 
+- name: Install cloudflared
+  ansible.builtin.include_tasks:
+    file: install_cloudflared.yml
+  when: install_cloudflared | default(false)
+  tags: cloudflared
+
 - name: Install Cisco Secure Client
   ansible.builtin.include_tasks:
     file: install_cisco_secure_client.yml
