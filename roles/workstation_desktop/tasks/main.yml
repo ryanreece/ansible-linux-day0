@@ -78,7 +78,7 @@
   ansible.builtin.include_tasks:
     file: install_ulauncher.yml
   when:
-    - ansible_facts['os_family'] == 'Debian'
+    - ansible_distribution == 'Ubuntu' or ansible_distribution == 'Fedora'
     - install_ulauncher | default(true)
   tags: ulauncher
 

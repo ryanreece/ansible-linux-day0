@@ -1,8 +1,17 @@
 ---
-- name: Update the package cache
+- name: Update apt package cache
   become: true
-  ansible.builtin.package:
+  ansible.builtin.apt:
     update_cache: true
+    cache_valid_time: 3600
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: packages
+
+- name: Update DNF package cache
+  become: true
+  ansible.builtin.dnf:
+    update_cache: true
+  when: ansible_facts['os_family'] == 'RedHat'
   tags: packages
 
 - name: Upgrade apt packages
@@ -63,5 +72,4 @@
       - whois
       - zip
     state: present
-    update_cache: true
   tags: packages

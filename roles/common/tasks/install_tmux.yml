@@ -4,5 +4,4 @@
   ansible.builtin.package:
     name: tmux
     state: present
-    update_cache: true
   tags: tmux

@@ -1,9 +1,10 @@
 ---
-- name: Install snapd on RHEL
+- name: Install snapd on RedHat Enterprise Linux derivatives
   ansible.builtin.include_tasks:
     file: install_snapd.yml
   when:
     - ansible_facts['os_family'] == 'RedHat'
+    - ansible_distribution != 'Fedora'
     - install_packages | default(true)
   tags: packages
   

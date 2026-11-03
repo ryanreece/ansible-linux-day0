@@ -12,5 +12,4 @@
   ansible.builtin.package:
     name: keepassxc
     state: present
-    update_cache: true
   tags: keepassxc
