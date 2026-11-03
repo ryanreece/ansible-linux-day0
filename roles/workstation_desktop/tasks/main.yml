@@ -97,3 +97,15 @@
     - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
     - install_keepassxc | default(true)
   tags: keepassxc
+
+- name: Install Codex
+  ansible.builtin.include_tasks:
+    file: install_codex.yml
+  when: install_codex | default(true)
+  tags: codex
+
+- name: Install Claude Code
+  ansible.builtin.include_tasks:
+    file: install_claude_code.yml
+  when: install_claude_code | default(true)
+  tags: claude_code

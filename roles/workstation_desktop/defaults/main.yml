@@ -5,6 +5,8 @@ sources_dir: "{{ ansible_env.HOME }}/sources"
 # These variables define which include_tasks will run for the workstation role.
 install_alacritty: true
 install_chrome: true
+install_codex: true
+install_claude_code: true
 install_flameshot: true
 install_hyprland_settings: true
 install_kde: false

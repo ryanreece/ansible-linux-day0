@@ -263,10 +263,12 @@ Developer tooling and CLI applications.
 
 Role entry point: [`roles/workstation_desktop/tasks/main.yml`](roles/workstation_desktop/tasks/main.yml)
 
-GUI applications and desktop-specific behavior.
+GUI applications, desktop-specific behavior, and desktop-only AI coding CLIs.
 
 | Feature | Task file | Toggle |
 | --- | --- | --- |
+| Codex CLI (npm global) | [`install_codex.yml`](roles/workstation_desktop/tasks/install_codex.yml) | `install_codex` |
+| Claude Code (npm global) | [`install_claude_code.yml`](roles/workstation_desktop/tasks/install_claude_code.yml) | `install_claude_code` |
 | Alacritty | [`install_alacritty.yml`](roles/workstation_desktop/tasks/install_alacritty.yml) | `install_alacritty` |
 | Flameshot | [`install_flameshot.yml`](roles/workstation_desktop/tasks/install_flameshot.yml) | `install_flameshot` |
 | Hyprland settings | [`install_hyprland_settings.yml`](roles/workstation_desktop/tasks/install_hyprland_settings.yml) | `install_hyprland_settings` |
@@ -279,6 +281,21 @@ GUI applications and desktop-specific behavior.
 | Ulauncher | [`install_ulauncher.yml`](roles/workstation_desktop/tasks/install_ulauncher.yml) | `install_ulauncher` |
 | Remmina | [`install_remmina.yml`](roles/workstation_desktop/tasks/install_remmina.yml) | `install_remmina` |
 | KeePassXC | [`install_keepassxc.yml`](roles/workstation_desktop/tasks/install_keepassxc.yml) | `install_keepassxc` |
+
+Codex and Claude Code are enabled by default only in the desktop role. Both use
+`npm -g` through the existing user-local NVM installation without sudo, with the
+same installation tasks across Debian, RedHat, and Arch families. Keep
+`install_nodejs: true` enabled to provide the configured Node.js runtime.
+For a fresh host running only these tags, include Node.js setup:
+
+```bash
+ansible-playbook -i localhost, day0-workstation.yml --connection=local \
+  --tags nodejs,codex,claude_code
+```
+
+Disable them independently with `install_codex: false` or
+`install_claude_code: false`. Launch `codex` or `claude` after installation to
+complete authentication.
 
 ## Validation
 
