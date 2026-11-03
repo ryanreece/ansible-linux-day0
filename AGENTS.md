@@ -99,9 +99,11 @@ requirement.
 - Do not hard-code a release such as `noble` unless the upstream repository only
   supports that release and the task is guarded accordingly. Prefer
   `{{ ansible_distribution_release }}` when safe.
+- Do not use Snap on Fedora. Use Flatpak for Fedora desktop applications and
+  Fedora RPM packages for developer tools that need host integration.
 - Avoid Snap as the only cross-distro answer unless the application is truly
-  distributed that way here. RedHat-family Snap setup currently lives in
-  `roles/common/tasks/install_snapd.yml`.
+  distributed that way here. RedHat Enterprise Linux derivative Snap setup
+  currently lives in `roles/common/tasks/install_snapd.yml`.
 - For GitHub release binaries, verify asset naming across architecture and OS.
   `workstation_core` currently sets `system_arch` from `uname -s` and
   `uname -m`, producing values like `Linux_x86_64`.
@@ -116,7 +118,8 @@ cross-platform:
 - `bootstrap.sh` already branches for `ubuntu`, `rocky`, `rhel`, `fedora`, and
   `arch`.
   Keep bootstrap support aligned with playbook support.
-- `roles/common/tasks/install_packages.yml` mixes `package`, `apt`, and Snap.
+- `roles/common/tasks/install_packages.yml` mixes `package`, `apt`, and DNF
+  behavior.
   New baseline packages should use `package` when names match.
 - `roles/server_core/meta/main.yml` configures Ubuntu unattended-upgrades
   origins. Guard or replace this before claiming general RedHat support for

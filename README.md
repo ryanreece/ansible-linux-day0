@@ -202,6 +202,7 @@ Shared server and workstation setup.
 | Feature | Task file | Toggle |
 | --- | --- | --- |
 | Baseline packages | [`install_packages.yml`](roles/common/tasks/install_packages.yml) | `install_packages` |
+| Flatpak / Flathub (Fedora) | [`install_flatpak.yml`](roles/common/tasks/install_flatpak.yml) | `install_flatpak` |
 | tmux | [`install_tmux.yml`](roles/common/tasks/install_tmux.yml) | `install_tmux` |
 | zsh | [`install_zsh.yml`](roles/common/tasks/install_zsh.yml) | `install_zsh` |
 | SSH key | [`install_ssh_key.yml`](roles/common/tasks/install_ssh_key.yml) | `install_ssh_key` |
