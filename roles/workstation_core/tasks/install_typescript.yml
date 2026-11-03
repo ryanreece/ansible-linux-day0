@@ -1,21 +1,34 @@
 ---
+- name: Set TypeScript Node.js executable paths
+  ansible.builtin.set_fact:
+    typescript_node_bin_dir: "{{ nvm_dir }}/versions/node/v{{ nodejs_version }}/bin"
+  tags: typescript
+
+- name: Verify the NVM-managed npm executable
+  ansible.builtin.command:
+    argv:
+      - "{{ typescript_node_bin_dir }}/npm"
+      - --version
+  changed_when: false
+  tags: typescript
+
 - name: Install yarn using npm
   community.general.npm:
     name: yarn
     global: true
-  ignore_errors: true
+    executable: "{{ typescript_node_bin_dir }}/npm"
   tags: typescript
 
 - name: Install typescript
   community.general.yarn:
     name: typescript
     global: true
-  ignore_errors: true
+    executable: "{{ typescript_node_bin_dir }}/yarn"
   tags: typescript
 
 - name: Install typescript language server
   community.general.yarn:
     name: typescript-language-server
     global: true
-  ignore_errors: true
+    executable: "{{ typescript_node_bin_dir }}/yarn"
   tags: typescript
