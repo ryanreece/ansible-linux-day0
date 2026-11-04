@@ -1,0 +1,22 @@
+---
+- name: Install Qalculate GTK and Rofi clipboard integration
+  become: true
+  ansible.builtin.package:
+    name:
+      - qalculate-gtk
+      - rofi
+      - wl-clipboard
+    state: present
+  tags: qalculate
+
+- name: Install the Qalculate command-line engine for this OS family
+  become: true
+  ansible.builtin.package:
+    name: "{{ qalculate_cli_packages[ansible_facts['os_family']] }}"
+    state: present
+  vars:
+    qalculate_cli_packages:
+      Debian: qalc
+      RedHat: qalculate
+      Archlinux: libqalculate
+  tags: qalculate

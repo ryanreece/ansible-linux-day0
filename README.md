@@ -303,8 +303,22 @@ GUI applications, desktop-specific behavior, and desktop-only AI coding CLIs.
 | Microsoft Edge | [`install_microsoft_edge.yml`](roles/workstation_desktop/tasks/install_microsoft_edge.yml) | `install_microsoft_edge` |
 | VSCode / Code - OSS | [`install_vscode.yml`](roles/workstation_desktop/tasks/install_vscode.yml) | `install_vscode` |
 | Ulauncher (Ubuntu only) | [`install_ulauncher.yml`](roles/workstation_desktop/tasks/install_ulauncher.yml) | `install_ulauncher` |
+| Qalculate GTK and Rofi calculator dependencies | [`install_qalculate.yml`](roles/workstation_desktop/tasks/install_qalculate.yml) | `install_qalculate` |
 | Remmina | [`install_remmina.yml`](roles/workstation_desktop/tasks/install_remmina.yml) | `install_remmina` |
 | KeePassXC | [`install_keepassxc.yml`](roles/workstation_desktop/tasks/install_keepassxc.yml) | `install_keepassxc` |
+
+Qalculate is enabled by default on Debian, RedHat (including Fedora), and Arch
+families. The `qalculate` tag installs `qalculate-gtk`, the distro's `qalc`
+command-line engine, Rofi, and `wl-clipboard`. Set `install_qalculate: false` to
+skip it. The dotfiles installer deploys the Rofi calculator script and Sway's
+`Super+C` shortcut; `Super+Shift+Space` remains available for floating mode.
+Enter an expression and press Enter to calculate, then Enter again to copy the
+displayed result to the Wayland clipboard. Escape cancels without copying.
+
+```bash
+ansible-playbook -i localhost, day0-workstation.yml --connection=local -K \
+  --tags qalculate,dotfiles
+```
 
 Dark appearance is enabled by default on Debian, RedHat (including Fedora), and
 Arch families. The `dark_mode` tag installs the dconf dependencies and sets

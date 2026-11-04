@@ -112,6 +112,14 @@
     - install_keepassxc | default(true)
   tags: keepassxc
 
+- name: Install Qalculate and Rofi calculator dependencies
+  ansible.builtin.include_tasks:
+    file: install_qalculate.yml
+  when:
+    - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
+    - install_qalculate | default(true)
+  tags: qalculate
+
 - name: Install Codex
   ansible.builtin.include_tasks:
     file: install_codex.yml

@@ -16,6 +16,7 @@ install_flameshot: true
 install_hyprland_settings: true
 install_kde: false
 install_keepassxc: true
+install_qalculate: true
 install_microsoft_edge: true
 install_regolith: true
 install_remmina: true
