@@ -4,6 +4,7 @@
   ansible.builtin.apt_repository:
     repo: "deb http://archive.ubuntu.com/ubuntu/ {{ ansible_distribution_release }} universe"
     state: present
+  when: ansible_distribution == 'Ubuntu'
   tags: ulauncher
 
 - name: Add ulauncher repository
@@ -11,6 +12,7 @@
   ansible.builtin.apt_repository:
     repo: "ppa:agornostal/ulauncher"
     state: present
+  when: ansible_distribution == 'Ubuntu'
   tags: ulauncher
 
 - name: Install ulauncher
@@ -18,4 +20,13 @@
   ansible.builtin.apt:
     name: ulauncher
     state: present
+  when: ansible_distribution == 'Ubuntu'
+  tags: ulauncher
+
+- name: Install Ulauncher on Fedora
+  become: true
+  ansible.builtin.dnf:
+    name: ulauncher
+    state: present
+  when: ansible_distribution == 'Fedora'
   tags: ulauncher

@@ -1,0 +1,12 @@
+---
+# Install variables
+# These variables define which include_tasks will run for the server role.
+install_server_hostname: true
+install_server_package_upgrades: true
+install_server_unattended_updates: true
+install_server_tmux_config: true
+install_server_zsh_config: true
+
+# RedHat-family dnf-automatic supports "default" and "security". "default"
+# tracks normal package updates across RHEL-like derivatives more consistently.
+server_dnf_automatic_upgrade_type: default

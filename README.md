@@ -42,7 +42,7 @@ cross-distro workstation bootstrap.
 | Debian family | Partial | Partial | Partial | Many tasks work, but Ubuntu-only PPAs/repos are guarded or still being refined. |
 | RHEL | Supported | Partial | Partial | Uses RPM/DNF paths where available. |
 | Rocky / AlmaLinux | Partial | Partial | Partial | Expected to follow RedHat-family paths; test per feature. |
-| Fedora | Not in bootstrap yet | Partial | Not verified | Many RedHat-family package tasks should work, but bootstrap coverage is not complete. |
+| Fedora Sway Spin | Supported | Partial | Not verified | Common packages use DNF-compatible paths, and the desktop role supports Sway utilities plus Fedora RPM application paths; broader workstation-core coverage is still being refined. |
 | Arch Linux | Supported | Partial | Not verified | The tested Arch target is Omarchy, not a generic hand-rolled Arch install. |
 | [Omarchy](https://omarchy.org/) / Hyprland on Arch | N/A | Active support | N/A | Tested against the Omarchy spin by DHH. Install Omarchy first, then run this playbook to tune it. |
 
@@ -50,6 +50,13 @@ Desktop-environment assumptions are intentionally conservative:
 
 - KDE Plasma is opt-in only with `install_kde: true`.
 - Regolith is only attempted on Ubuntu.
+- Fedora Sway Spin detects the Sway installation provided by the spin and
+  installs missing Sway-native supporting utilities. User settings (terminal,
+  keybindings, and monitor scaling) are managed by the dotfiles repository via
+  `install_dotfiles.sh`, not by the Sway tasks. The playbook does not install
+  or replace the Sway session itself.
+- Fedora bootstrap support targets the standard DNF-based Sway Spin; immutable
+  Fedora Atomic variants require an rpm-ostree-specific workflow.
 - AUR-only applications are limited to explicit app tasks such as Chrome and
   Microsoft Edge on Arch.
 
@@ -135,6 +142,29 @@ Server targets should be listed under `inventory/`.
 ansible-playbook -i inventory/server.yml day0-server.yml -K
 ```
 
+For a one-off host that should not be saved in the repository, pass an inline
+inventory. The trailing comma tells Ansible that the value is a host list:
+
+```bash
+ansible-playbook -i 'server01.lab.int.reece.ai,' day0-server.yml -K
+```
+
+On hosts where sudo-rs provides the default `sudo` command, select Ubuntu's
+traditional sudo executable for that run with `ansible_become_exe`:
+
+```bash
+ansible-playbook \
+  -i 'server01.lab.int.reece.ai,' \
+  day0-server.yml \
+  -K \
+  -e ansible_become_exe=/usr/bin/sudo.ws
+```
+
+This override applies only to the current invocation and does not change
+`ansible.cfg` or require a committed inventory file. If the setting needs to be
+reused, place it in an external variables file and pass that file with
+`-e @/path/to/server01.yml`.
+
 The server playbook applies:
 
 - `common`
@@ -174,6 +204,7 @@ Shared server and workstation setup.
 | Feature | Task file | Toggle |
 | --- | --- | --- |
 | Baseline packages | [`install_packages.yml`](roles/common/tasks/install_packages.yml) | `install_packages` |
+| Flatpak / Flathub (Fedora) | [`install_flatpak.yml`](roles/common/tasks/install_flatpak.yml) | `install_flatpak` |
 | tmux | [`install_tmux.yml`](roles/common/tasks/install_tmux.yml) | `install_tmux` |
 | zsh | [`install_zsh.yml`](roles/common/tasks/install_zsh.yml) | `install_zsh` |
 | SSH key | [`install_ssh_key.yml`](roles/common/tasks/install_ssh_key.yml) | `install_ssh_key` |
@@ -186,12 +217,19 @@ Role entry point: [`roles/server_core/tasks/main.yml`](roles/server_core/tasks/m
 
 Server-only configuration.
 
-| Feature | Notes |
-| --- | --- |
-| Hostname | Sets hostname from inventory name. |
-| Package upgrades | Debian-family upgrade task. |
-| Unattended upgrades | Configured through the role dependency in `meta/main.yml`. |
-| tmux/zsh config | Deploys role templates for server sessions. |
+| Feature | Task file | Toggle | Notes |
+| --- | --- | --- | --- |
+| Hostname | [`set_hostname.yml`](roles/server_core/tasks/set_hostname.yml) | `install_server_hostname` | Sets hostname from inventory name. |
+| Package upgrades | [`upgrade_packages.yml`](roles/server_core/tasks/upgrade_packages.yml) | `install_server_package_upgrades` | Uses `apt`, `dnf`, or `pacman` based on OS family. |
+| Unattended updates | [`configure_unattended_updates.yml`](roles/server_core/tasks/configure_unattended_updates.yml) | `install_server_unattended_updates` | Uses Ubuntu unattended-upgrades, RedHat-family `dnf-automatic`, and Arch package cache maintenance. |
+| tmux config | [`deploy_tmux_config.yml`](roles/server_core/tasks/deploy_tmux_config.yml) | `install_server_tmux_config` | Deploys the server tmux template. |
+| zsh config | [`deploy_zsh_config.yml`](roles/server_core/tasks/deploy_zsh_config.yml) | `install_server_zsh_config` | Deploys the server zsh template. |
+
+Server package upgrades notify the `server_core` reboot handler when package
+changes are applied. Arch support intentionally avoids unattended full system
+upgrades by default; it enables `paccache.timer` for package cache maintenance
+instead. Run Arch package upgrades through the explicit package upgrade task or
+an operator-managed maintenance window.
 
 ### Workstation Core
 
@@ -211,7 +249,8 @@ Developer tooling and CLI applications.
 | Neovim | [`install_neovim.yml`](roles/workstation_core/tasks/install_neovim.yml) | `install_neovim` |
 | Fastfetch | [`install_fastfetch.yml`](roles/workstation_core/tasks/install_fastfetch.yml) | `install_fastfetch` |
 | Docker | [`install_docker.yml`](roles/workstation_core/tasks/install_docker.yml) | `install_docker` |
-| Cloud utilities | [`install_cloud_utilities.yml`](roles/workstation_core/tasks/install_cloud_utilities.yml) | `install_cloud_utilities` |
+| Rclone | [`install_cloud_utilities.yml`](roles/workstation_core/tasks/install_cloud_utilities.yml) | `install_cloud_utilities` |
+| Cloudflared | [`install_cloudflared.yml`](roles/workstation_core/tasks/install_cloudflared.yml) | `install_cloudflared` (off by default) |
 | Cisco Secure Client | [`install_cisco_secure_client.yml`](roles/workstation_core/tasks/install_cisco_secure_client.yml) | `install_cisco_secure_client` |
 | ProxyChains-NG | [`install_proxychains_ng.yml`](roles/workstation_core/tasks/install_proxychains_ng.yml) | `install_proxychains_ng` |
 | LazyDocker | [`install_lazydocker.yml`](roles/workstation_core/tasks/install_lazydocker.yml) | `install_lazydocker` |
@@ -224,13 +263,17 @@ Developer tooling and CLI applications.
 
 Role entry point: [`roles/workstation_desktop/tasks/main.yml`](roles/workstation_desktop/tasks/main.yml)
 
-GUI applications and desktop-specific behavior.
+GUI applications, desktop-specific behavior, and desktop-only AI coding CLIs.
 
 | Feature | Task file | Toggle |
 | --- | --- | --- |
+| Codex CLI (npm global) | [`install_codex.yml`](roles/workstation_desktop/tasks/install_codex.yml) | `install_codex` |
+| Claude Code (npm global) | [`install_claude_code.yml`](roles/workstation_desktop/tasks/install_claude_code.yml) | `install_claude_code` |
+| JetBrainsMono Nerd Font Mono | [`install_nerd_fonts.yml`](roles/workstation_desktop/tasks/install_nerd_fonts.yml) | `install_nerd_fonts` |
 | Alacritty | [`install_alacritty.yml`](roles/workstation_desktop/tasks/install_alacritty.yml) | `install_alacritty` |
 | Flameshot | [`install_flameshot.yml`](roles/workstation_desktop/tasks/install_flameshot.yml) | `install_flameshot` |
 | Hyprland settings | [`install_hyprland_settings.yml`](roles/workstation_desktop/tasks/install_hyprland_settings.yml) | `install_hyprland_settings` |
+| Fedora Sway utilities | [`install_sway.yml`](roles/workstation_desktop/tasks/install_sway.yml) | `install_sway` |
 | Regolith | [`install_regolith.yml`](roles/workstation_desktop/tasks/install_regolith.yml) | `install_regolith` |
 | KDE Plasma | [`install_kde.yml`](roles/workstation_desktop/tasks/install_kde.yml) | `install_kde` |
 | Chrome | [`install_chrome.yml`](roles/workstation_desktop/tasks/install_chrome.yml) | `install_chrome` |
@@ -239,6 +282,35 @@ GUI applications and desktop-specific behavior.
 | Ulauncher | [`install_ulauncher.yml`](roles/workstation_desktop/tasks/install_ulauncher.yml) | `install_ulauncher` |
 | Remmina | [`install_remmina.yml`](roles/workstation_desktop/tasks/install_remmina.yml) | `install_remmina` |
 | KeePassXC | [`install_keepassxc.yml`](roles/workstation_desktop/tasks/install_keepassxc.yml) | `install_keepassxc` |
+
+Nerd Fonts are enabled by default for desktop installations. The `nerd_fonts`
+tag installs the regular, bold, italic, and bold italic JetBrainsMono Nerd Font
+Mono faces under `~/.local/share/fonts/JetBrainsMono` and refreshes the font
+cache only when extraction changes files. The architecture-independent upstream
+archive is pinned with `nerd_fonts_version` and verified against its published
+SHA-256 checksum. Debian, RedHat, and Arch use the same installation path.
+Set `install_nerd_fonts: false` to skip it. Alacritty's font selection is managed
+in the dotfiles repository. Check mode skips extraction and cache refresh.
+
+```bash
+ansible-playbook -i localhost, day0-workstation.yml --connection=local -K \
+  --tags nerd_fonts
+```
+
+Codex and Claude Code are enabled by default only in the desktop role. Both use
+`npm -g` through the existing user-local NVM installation without sudo, with the
+same installation tasks across Debian, RedHat, and Arch families. Keep
+`install_nodejs: true` enabled to provide the configured Node.js runtime.
+For a fresh host running only these tags, include Node.js setup:
+
+```bash
+ansible-playbook -i localhost, day0-workstation.yml --connection=local \
+  --tags nodejs,codex,claude_code
+```
+
+Disable them independently with `install_codex: false` or
+`install_claude_code: false`. Launch `codex` or `claude` after installation to
+complete authentication.
 
 ## Validation
 
@@ -300,6 +372,9 @@ Important platform notes:
 - Ubuntu-only PPAs or repositories must be guarded with
   `ansible_distribution == 'Ubuntu'`.
 - RedHat-family work should use DNF/RPM paths where needed.
+- Server unattended updates are distro-specific: Ubuntu uses
+  `hifis.unattended_upgrades`, RedHat-family hosts use `dnf-automatic`, and
+  Arch only enables package cache maintenance by default.
 - Arch work should be tested against Omarchy unless a task explicitly targets
   generic Arch. Prefer official pacman packages where possible.
 - AUR support is limited to specific application tasks that need it.

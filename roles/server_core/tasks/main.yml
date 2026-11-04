@@ -1,34 +1,30 @@
 ---
-- name: Set hostname
-  become: true
-  ansible.builtin.hostname:
-    name: "{{ inventory_hostname }}"
+- name: Set server hostname
+  ansible.builtin.include_tasks:
+    file: set_hostname.yml
+  when: install_server_hostname | default(true)
   tags: hostname
 
-- name: Update all packages to the latest version
-  become: true
-  ansible.builtin.apt:
-    upgrade: dist
-  register: apt_upgrade_result
-  when: ansible_facts['os_family'] == 'Debian'
-  notify:
-    - Reboot system
-  tags: apt
+- name: Upgrade server packages
+  ansible.builtin.include_tasks:
+    file: upgrade_packages.yml
+  when: install_server_package_upgrades | default(true)
+  tags: packages
 
-- name: Deploy .tmux.conf
-  ansible.builtin.template:
-    src: templates/tmux.conf.j2
-    dest: ~/.tmux.conf
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-    mode: '0640'
+- name: Configure unattended server updates
+  ansible.builtin.include_tasks:
+    file: configure_unattended_updates.yml
+  when: install_server_unattended_updates | default(true)
+  tags: unattended_updates
+
+- name: Deploy server tmux config
+  ansible.builtin.include_tasks:
+    file: deploy_tmux_config.yml
+  when: install_server_tmux_config | default(true)
   tags: tmux
 
-- name: Deploy .zshrc
-  ansible.builtin.template:
-    src: templates/zshrc.j2
-    dest: ~/.zshrc
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-    mode: '0640'
+- name: Deploy server zsh config
+  ansible.builtin.include_tasks:
+    file: deploy_zsh_config.yml
+  when: install_server_zsh_config | default(true)
   tags: zsh

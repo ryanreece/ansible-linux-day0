@@ -1,0 +1,18 @@
+---
+- name: Install Flatpak on Fedora
+  become: true
+  ansible.builtin.dnf:
+    name: flatpak
+    state: present
+  when: ansible_distribution == 'Fedora'
+  tags: flatpak
+
+- name: Configure the Flathub remote on Fedora
+  become: true
+  community.general.flatpak_remote:
+    name: flathub
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    method: system
+    state: present
+  when: ansible_distribution == 'Fedora'
+  tags: flatpak

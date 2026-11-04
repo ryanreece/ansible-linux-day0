@@ -1,0 +1,18 @@
+---
+- name: Set Claude Code Node.js executable path
+  ansible.builtin.set_fact:
+    claude_code_node_bin_dir: >-
+      {{ nvm_dir | default(ansible_env.HOME ~
+          ('/.config/nvm' if ansible_facts['os_family'] == 'Archlinux' else '/.nvm')) }}/versions/node/v{{ nodejs_version }}/bin
+  tags: claude_code
+
+- name: Install Claude Code globally using npm
+  become: false
+  community.general.npm:
+    name: "@anthropic-ai/claude-code"
+    global: true
+    state: present
+    executable: "{{ claude_code_node_bin_dir }}/npm"
+  environment:
+    PATH: "{{ claude_code_node_bin_dir }}:{{ ansible_env.PATH }}"
+  tags: claude_code

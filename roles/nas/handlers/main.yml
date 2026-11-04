@@ -1,0 +1,24 @@
+---
+- name: Restart smb
+  become: true
+  ansible.builtin.systemd_service:
+    name: smb
+    state: restarted
+
+- name: Restart nmb
+  become: true
+  ansible.builtin.systemd_service:
+    name: nmb
+    state: restarted
+
+- name: Reload exports
+  become: true
+  ansible.builtin.command:
+    cmd: exportfs -ra
+  changed_when: false
+
+- name: Restart nfs-server
+  become: true
+  ansible.builtin.systemd_service:
+    name: nfs-server
+    state: restarted

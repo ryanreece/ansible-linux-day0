@@ -1,0 +1,72 @@
+---
+- name: Check if cloudflared is installed
+  ansible.builtin.command:
+    cmd: cloudflared --version
+  register: cloudflared_installed
+  ignore_errors: true
+  changed_when: false
+  tags: cloudflared
+
+- name: Install the Cloudflare package signing key on Debian os families
+  become: true
+  ansible.builtin.get_url:
+    url: https://pkg.cloudflare.com/cloudflare-main.gpg
+    dest: /usr/share/keyrings/cloudflare-main.gpg
+    mode: '0644'
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - cloudflared_installed.rc != 0
+  tags: cloudflared
+
+- name: Configure the Cloudflare apt repository
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared any main"
+    filename: cloudflared
+    state: present
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - cloudflared_installed.rc != 0
+  tags: cloudflared
+
+- name: Install cloudflared on Debian os families
+  become: true
+  ansible.builtin.apt:
+    name: cloudflared
+    state: present
+    update_cache: true
+  when:
+    - ansible_facts['os_family'] == 'Debian'
+    - cloudflared_installed.rc != 0
+  tags: cloudflared
+
+- name: Configure the Cloudflare RPM repository
+  become: true
+  ansible.builtin.get_url:
+    url: https://pkg.cloudflare.com/cloudflared.repo
+    dest: /etc/yum.repos.d/cloudflared.repo
+    mode: '0644'
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - cloudflared_installed.rc != 0
+  tags: cloudflared
+
+- name: Install cloudflared on RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: cloudflared
+    state: present
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - cloudflared_installed.rc != 0
+  tags: cloudflared
+
+- name: Install cloudflared on Archlinux os families
+  become: true
+  ansible.builtin.package:
+    name: cloudflared
+    state: present
+  when:
+    - ansible_facts['os_family'] == 'Archlinux'
+    - cloudflared_installed.rc != 0
+  tags: cloudflared

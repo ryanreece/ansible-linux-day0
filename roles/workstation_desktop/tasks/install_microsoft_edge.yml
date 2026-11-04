@@ -28,6 +28,32 @@
     - microsoft_edge_installed.rc != 0
   tags: microsoft_edge
 
+- name: Configure Microsoft Edge repository for RedHat os families
+  become: true
+  ansible.builtin.yum_repository:
+    name: microsoft-edge
+    description: Microsoft Edge
+    baseurl: https://packages.microsoft.com/yumrepos/edge
+    enabled: true
+    gpgcheck: true
+    gpgkey: https://packages.microsoft.com/keys/microsoft.asc
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - ansible_architecture == 'x86_64'
+    - microsoft_edge_installed.rc != 0
+  tags: microsoft_edge
+
+- name: Install Microsoft Edge on RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: microsoft-edge-stable
+    state: present
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - ansible_architecture == 'x86_64'
+    - microsoft_edge_installed.rc != 0
+  tags: microsoft_edge
+
 - name: Install AUR build dependencies for Microsoft Edge on Archlinux os families
   become: true
   ansible.builtin.package:

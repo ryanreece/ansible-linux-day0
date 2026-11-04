@@ -1,0 +1,4 @@
+linux:
+  hosts:
+    phantomd.network.reece.ai:
+      ansible_host: 10.0.5.22

@@ -1,0 +1,40 @@
+---
+zabbix_agent_version: "7.4"
+
+# Zabbix server connection
+zabbix_server: "10.128.0.40"
+zabbix_server_active: "10.128.0.40"
+
+# Agent configuration
+zabbix_agent_hostname: "{{ ansible_hostname }}"
+zabbix_agent_log_file: "/var/log/zabbix/zabbix_agent2.log"
+zabbix_agent_log_file_size: 0
+zabbix_agent_pid_file: "/run/zabbix/zabbix_agent2.pid"
+zabbix_agent_plugin_socket: "/run/zabbix/agent.plugin.sock"
+zabbix_agent_control_socket: "/run/zabbix/agent.sock"
+
+# Enable/disable tasks
+install_zabbix_agent: true
+register_zabbix_host: true
+
+# Zabbix API for host registration
+# Provide either an API token (preferred) or username + password
+zabbix_api_url: "https://zabbix.int.reece.ai/api_jsonrpc.php"
+zabbix_api_token: ""
+zabbix_api_user: ""
+zabbix_api_password: ""
+
+# Host configuration in Zabbix UI
+zabbix_host_groups:
+  - name: "Linux servers"
+zabbix_templates:
+  - name: "Linux by Zabbix agent"
+
+# ansible_distribution → Zabbix repo subdirectory mapping
+zabbix_redhat_dist_map:
+  Rocky: rocky
+  AlmaLinux: alma
+  RedHat: rhel
+  CentOS: centos
+  OracleLinux: oracle
+  Amazon: amazonlinux

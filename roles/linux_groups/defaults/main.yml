@@ -1,0 +1,7 @@
+---
+# List of groups to ensure exist. Configure via group_vars or role vars.
+# Each entry:
+#   name:    group name
+#   gid:     explicit GID (required for cross-host consistency)
+#   members: list of users to add (optional)
+linux_groups: []

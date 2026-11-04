@@ -1,0 +1,7 @@
+---
+# List of NFS shares to mount — configure per-host in host_vars/<host>/nfs.yml
+# Each entry:
+#   src:  NFS export path (e.g. vmhost03.network.reece.ai:/tank/reece_ai)
+#   path: local mount point (e.g. /mnt/nas/reece_ai)
+#   opts: mount options (e.g. vers=4.2,rw,hard,timeo=600,retrans=2,_netdev)
+nfs_client_mounts: []

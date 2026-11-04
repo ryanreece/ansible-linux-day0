@@ -1,0 +1,43 @@
+---
+zfs_pools:
+  - name: tank
+    vdev_type: mirror
+    devices:
+      - /dev/sda
+      - /dev/sdb
+      - /dev/sdc
+    wipe_devices: true
+    log_devices:
+      - /dev/rl/zfs_slog   # 16G LV on md127 (NVMe RAID-1: nvme0n1p3 + nvme1n1p3)
+    pool_options:
+      ashift: 12          # 4KB sector alignment (WD Red 4TB are 512e/4Kn drives)
+    filesystem_options:
+      compression: lz4    # transparent compression, minimal CPU overhead
+      atime: "off"        # no access-time updates on reads (NAS workloads)
+      xattr: sa           # store XATTRs in dnode (inline, avoids extra I/O)
+      dnodesize: auto     # allow ZFS to grow dnode up to 16 KiB as needed for xattr=sa
+    datasets:
+      - name: family
+        properties:
+          compression: lz4
+          atime: "off"
+          xattr: sa
+          dnodesize: auto
+      - name: reece_ai
+        properties:
+          compression: lz4
+          atime: "off"
+          xattr: sa
+          dnodesize: auto
+      - name: work
+        properties:
+          compression: lz4
+          atime: "off"
+          xattr: sa
+          dnodesize: auto
+      - name: misc
+        properties:
+          compression: lz4
+          atime: "off"
+          xattr: sa
+          dnodesize: auto

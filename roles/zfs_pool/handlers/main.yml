@@ -1,0 +1,6 @@
+---
+- name: Reload ZFS pools
+  become: true
+  ansible.builtin.command:
+    cmd: zpool import -a
+  changed_when: false

@@ -1,0 +1,43 @@
+---
+- name: Install Samba packages
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - samba
+      - samba-common
+      - samba-client
+    state: present
+  tags: nas_smb
+
+- name: Allow Samba to export any directory via SELinux
+  become: true
+  ansible.posix.seboolean:
+    name: samba_export_all_rw
+    state: true
+    persistent: true
+  tags: nas_smb
+
+- name: Deploy Samba configuration
+  become: true
+  ansible.builtin.template:
+    src: smb.conf.j2
+    dest: /etc/samba/smb.conf
+    owner: root
+    group: root
+    mode: '0644'
+    validate: testparm -s %s
+  notify:
+    - Restart smb
+    - Restart nmb
+  tags: nas_smb
+
+- name: Enable and start Samba services
+  become: true
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - smb
+    - nmb
+  tags: nas_smb

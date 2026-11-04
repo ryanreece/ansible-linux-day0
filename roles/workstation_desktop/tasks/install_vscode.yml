@@ -1,4 +1,12 @@
 ---
+- name: Check if VSCode is installed
+  ansible.builtin.command:
+    cmd: code --version
+  register: vscode_installed
+  ignore_errors: true
+  changed_when: false
+  tags: vscode
+
 - name: Install VSCode repository
   become: true
   ansible.builtin.apt_repository:
@@ -10,12 +18,13 @@
 
 - name: Install VSCode
   become: true
-  ansible.builtin.package:
+  ansible.builtin.apt:
     name: code
     state: present
     update_cache: true
   when:
     - ansible_facts['os_family'] == 'Debian'
+    - vscode_installed.rc != 0
   tags: vscode
 
 - name: Download VSCode rpm package
@@ -24,6 +33,8 @@
     dest: /tmp/vscode_current_x86_64.rpm
   when:
     - ansible_facts['os_family'] == 'RedHat'
+    - ansible_architecture == 'x86_64'
+    - vscode_installed.rc != 0
   tags: vscode
 
 - name: Install VSCode on RedHat os families
@@ -33,6 +44,18 @@
     state: present
   when:
     - ansible_facts['os_family'] == 'RedHat'
+    - ansible_architecture == 'x86_64'
+    - vscode_installed.rc != 0
+  tags: vscode
+
+- name: Remove VSCode rpm package
+  ansible.builtin.file:
+    path: /tmp/vscode_current_x86_64.rpm
+    state: absent
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - ansible_architecture == 'x86_64'
+    - vscode_installed.rc != 0
   tags: vscode
 
 - name: Install Code - OSS on Archlinux os families

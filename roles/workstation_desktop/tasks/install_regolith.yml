@@ -7,7 +7,9 @@
   args:
     executable: /bin/bash
   changed_when: false
-  when: ansible_distribution == 'Ubuntu'
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == '24.04'
   tags: regolith
 
 - name: Add Regolith repository to sources list
@@ -15,7 +17,9 @@
   ansible.builtin.apt_repository:
     repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/regolith-archive-keyring.gpg] https://regolith-desktop.org/release-3_2-ubuntu-noble-amd64 noble main"
     filename: regolith
-  when: ansible_distribution == 'Ubuntu'
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == '24.04'
   tags: regolith
 
 - name: Install Regolith desktop and related packages
@@ -27,14 +31,18 @@
       - regolith-look-lascaille
       - i3xrocks-battery
     state: present
-  when: ansible_distribution == 'Ubuntu'
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == '24.04'
   tags: regolith
 
 - name: Validate the regolith-x11.desktop session exists
   ansible.builtin.stat:
     path: "/usr/share/xsessions/regolith-x11.desktop"
   register: regolith_exists
-  when: ansible_distribution == 'Ubuntu'
+  when:
+    - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == '24.04'
   tags: regolith
 
 - name: Check if user session is already regolith-x11
@@ -46,6 +54,7 @@
   changed_when: false
   when:
     - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == '24.04'
     - regolith_exists.stat.exists | default(false)
   tags: regolith
 
@@ -57,6 +66,7 @@
     remote_src: true
   when:
     - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == '24.04'
     - regolith_session_set.rc | default(1) != 0
     - regolith_exists.stat.exists | default(false)
   tags: regolith
@@ -69,6 +79,7 @@
     line: 'Session=regolith-x11'
   when:
     - ansible_distribution == 'Ubuntu'
+    - ansible_distribution_version == '24.04'
     - regolith_session_set.rc | default(1) != 0
     - regolith_exists.stat.exists | default(false)
   tags: regolith

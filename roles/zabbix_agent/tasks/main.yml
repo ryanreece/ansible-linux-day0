@@ -1,0 +1,30 @@
+---
+- name: Install Zabbix Agent 2 on RedHat os families
+  ansible.builtin.include_tasks:
+    file: install_redhat.yml
+  when:
+    - install_zabbix_agent | default(true)
+    - ansible_facts['os_family'] == 'RedHat'
+  tags: zabbix_agent
+
+- name: Install Zabbix Agent 2 on Debian os families
+  ansible.builtin.include_tasks:
+    file: install_debian.yml
+  when:
+    - install_zabbix_agent | default(true)
+    - ansible_facts['os_family'] == 'Debian'
+  tags: zabbix_agent
+
+- name: Configure Zabbix Agent 2
+  ansible.builtin.include_tasks:
+    file: configure_zabbix_agent2.yml
+  when: install_zabbix_agent | default(true)
+  tags: zabbix_agent
+
+- name: Register host in Zabbix
+  ansible.builtin.include_tasks:
+    file: register_zabbix_host.yml
+  when:
+    - register_zabbix_host | default(true)
+    - zabbix_api_token | length > 0 or (zabbix_api_user | length > 0 and zabbix_api_password | length > 0)
+  tags: zabbix_register

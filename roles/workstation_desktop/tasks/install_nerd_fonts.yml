@@ -1,0 +1,57 @@
+---
+- name: Install font cache and ZIP extraction tools
+  become: true
+  ansible.builtin.package:
+    name:
+      - fontconfig
+      - unzip
+    state: present
+  tags: nerd_fonts
+
+- name: Create the user font and source directories
+  become: false
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ nerd_fonts_dir }}"
+    - "{{ sources_dir }}"
+  tags: nerd_fonts
+
+- name: Download the pinned JetBrainsMono Nerd Font archive
+  become: false
+  ansible.builtin.get_url:
+    url: "https://github.com/ryanoasis/nerd-fonts/releases/download/v{{ nerd_fonts_version }}/JetBrainsMono.zip"
+    dest: "{{ sources_dir }}/JetBrainsMono-{{ nerd_fonts_version }}.zip"
+    checksum: "sha256:https://github.com/ryanoasis/nerd-fonts/releases/download/v{{ nerd_fonts_version }}/SHA-256.txt"
+    mode: "0644"
+  tags: nerd_fonts
+
+# ZIP extraction requires the download to exist; a fresh check-mode run has no archive.
+- name: Install JetBrainsMono Nerd Font Mono for the current user
+  become: false
+  ansible.builtin.unarchive:
+    src: "{{ sources_dir }}/JetBrainsMono-{{ nerd_fonts_version }}.zip"
+    dest: "{{ nerd_fonts_dir }}"
+    remote_src: true
+    include:
+      - JetBrainsMonoNerdFontMono-Regular.ttf
+      - JetBrainsMonoNerdFontMono-Bold.ttf
+      - JetBrainsMonoNerdFontMono-Italic.ttf
+      - JetBrainsMonoNerdFontMono-BoldItalic.ttf
+    mode: "0644"
+  when: not ansible_check_mode
+  register: nerd_fonts_extracted
+  tags: nerd_fonts
+
+- name: Refresh the user font cache after installing Nerd Fonts
+  become: false
+  ansible.builtin.command:
+    argv:
+      - fc-cache
+      - -f
+      - "{{ nerd_fonts_dir }}"
+  when: nerd_fonts_extracted is changed
+  changed_when: true
+  tags: nerd_fonts

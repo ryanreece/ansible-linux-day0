@@ -1,0 +1,59 @@
+---
+- name: Install ZFS release RPM on RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: "https://zfsonlinux.org/epel/zfs-release-3-0.el{{ ansible_distribution_major_version }}.noarch.rpm"
+    state: present
+    disable_gpg_check: true
+  tags: zfs_install
+
+- name: Check if ZFS kmod repo is already enabled
+  become: true
+  ansible.builtin.command:
+    cmd: dnf repolist enabled
+  register: zfs_enabled_repos
+  changed_when: false
+  tags: zfs_install
+
+- name: Disable default ZFS DKMS repo on RedHat os families
+  become: true
+  ansible.builtin.command:
+    cmd: dnf config-manager --disable zfs
+  when: "'zfs-kmod' not in zfs_enabled_repos.stdout"
+  changed_when: true
+  tags: zfs_install
+
+- name: Enable ZFS kmod repo on RedHat os families
+  become: true
+  ansible.builtin.command:
+    cmd: dnf config-manager --enable zfs-kmod
+  when: "'zfs-kmod' not in zfs_enabled_repos.stdout"
+  changed_when: true
+  tags: zfs_install
+
+- name: Install ZFS package on RedHat os families
+  become: true
+  ansible.builtin.dnf:
+    name: zfs
+    state: present
+    update_cache: true
+  tags: zfs_install
+
+- name: Load ZFS kernel module
+  become: true
+  community.general.modprobe:
+    name: zfs
+    state: present
+  tags: zfs_install
+
+- name: Enable ZFS services on RedHat os families
+  become: true
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - zfs-import-cache
+    - zfs-mount
+    - zfs-zed
+  tags: zfs_install

@@ -23,6 +23,7 @@
     key: https://dl.google.com/linux/linux_signing_key.pub
   when:
     - ansible_facts['os_family'] == 'RedHat'
+    - ansible_architecture == 'x86_64'
     - chrome_installed.rc != 0
   tags: chrome
 
@@ -32,6 +33,7 @@
     dest: /tmp/google-chrome-stable_current_x86_64.rpm
   when:
     - ansible_facts['os_family'] == 'RedHat'
+    - ansible_architecture == 'x86_64'
     - chrome_installed.rc != 0
   tags: chrome
 
@@ -51,6 +53,7 @@
     state: present
   when:
     - ansible_facts['os_family'] == 'RedHat'
+    - ansible_architecture == 'x86_64'
     - chrome_installed.rc != 0
   tags: chrome
 
@@ -136,5 +139,6 @@
     state: absent
   when:
     - ansible_facts['os_family'] == 'RedHat'
+    - ansible_architecture == 'x86_64'
     - chrome_installed.rc != 0
   tags: chrome

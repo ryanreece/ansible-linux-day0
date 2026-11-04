@@ -1,0 +1,9 @@
+---
+- name: Deploy server .tmux.conf
+  ansible.builtin.template:
+    src: templates/tmux.conf.j2
+    dest: "{{ ansible_env.HOME }}/.tmux.conf"
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0640'
+  tags: tmux

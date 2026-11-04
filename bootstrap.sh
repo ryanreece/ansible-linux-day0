@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 # Color codes
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -27,7 +29,10 @@ case $ID in
         sudo dnf install ansible
         ;;
     rhel)
-        sudo dnf install ansible-core
+        sudo dnf install --assumeyes ansible-core
+        ;;
+    fedora)
+        sudo dnf install --assumeyes ansible-core
         ;;
     arch)
         sudo pacman -Syu

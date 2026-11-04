@@ -1,5 +1,12 @@
 #!/bin/bash
 
+set -euo pipefail
+
+if ! command -v ansible-playbook >/dev/null 2>&1; then
+    echo "Error: ansible-playbook is not installed. Run ./bootstrap.sh first."
+    exit 1
+fi
+
 echo -e "\nInitiating install-workstation.sh!"
 echo -e "\nSystem will ask for BECOME password. This is your sudo password!\n"
 

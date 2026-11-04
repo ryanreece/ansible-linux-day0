@@ -1,4 +1,55 @@
 ---
+- name: Ensure Neovim sources directory exists
+  ansible.builtin.file:
+    path: "{{ sources_dir }}"
+    state: directory
+    mode: '0755'
+  tags: neovim
+
+- name: Install Neovim build dependencies for Debian os families
+  become: true
+  ansible.builtin.package:
+    name:
+      - build-essential
+      - cmake
+      - curl
+      - gettext
+      - ninja-build
+      - unzip
+    state: present
+  when: ansible_facts['os_family'] == 'Debian'
+  tags: neovim
+
+- name: Install Neovim build dependencies for RedHat os families
+  become: true
+  ansible.builtin.package:
+    name:
+      - cmake
+      - curl
+      - gcc
+      - gcc-c++
+      - gettext
+      - make
+      - ninja-build
+      - unzip
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags: neovim
+
+- name: Install Neovim build dependencies for Archlinux os families
+  become: true
+  ansible.builtin.package:
+    name:
+      - base-devel
+      - cmake
+      - curl
+      - gettext
+      - ninja
+      - unzip
+    state: present
+  when: ansible_facts['os_family'] == 'Archlinux'
+  tags: neovim
+
 - name: Install Neovim dependencies for Debian and RedHat os families
   become: true
   ansible.builtin.package:
@@ -29,12 +80,15 @@
   register: neovim_installed
   ignore_errors: true
   changed_when: false
+  check_mode: false
   tags: neovim
 
 - name: Set the installed Neovim version
   ansible.builtin.set_fact:
     installed_neovim_version: "{{ neovim_installed.stdout_lines[0] | regex_search('NVIM v([0-9.]+)', '\\1') | first }}"
-  when: neovim_installed.rc == 0
+  when:
+    - neovim_installed.rc == 0
+    - neovim_installed.stdout_lines | length > 0
   tags: neovim
 
 - name: Fetch tags and force update if Neovim directory exists
@@ -55,6 +109,12 @@
     update: true
   tags: neovim
 
+- name: Check if the Neovim source checkout exists
+  ansible.builtin.stat:
+    path: "{{ sources_dir }}/neovim/.git"
+  register: neovim_source_checkout
+  tags: neovim
+
 - name: Get the latest stable version tag from the Neovim repo
   ansible.builtin.command:
     cmd: git describe --tags --abbrev=0
@@ -62,11 +122,14 @@
     chdir: "{{ sources_dir }}/neovim"
   register: latest_neovim_version
   changed_when: false
+  check_mode: false
+  when: neovim_source_checkout.stat.exists
   tags: neovim
 
 - name: Remove the leading 'v' from the latest_neovim_version
   ansible.builtin.set_fact:
     latest_neovim_version_clean: "{{ latest_neovim_version.stdout | regex_replace('^v', '') }}"
+  when: neovim_source_checkout.stat.exists
   tags: neovim
 
 - name: Build Neovim if not installed or version mismatch
@@ -74,7 +137,9 @@
     chdir: "{{ sources_dir }}/neovim"
     params:
       CMAKE_BUILD_TYPE: Release
-  when: installed_neovim_version is not defined or installed_neovim_version != latest_neovim_version_clean
+  when:
+    - neovim_source_checkout.stat.exists
+    - installed_neovim_version is not defined or installed_neovim_version != latest_neovim_version_clean
   tags: neovim
 
 - name: Install Neovim
@@ -82,7 +147,9 @@
   community.general.make:
     chdir: "{{ sources_dir }}/neovim"
     target: install
-  when: installed_neovim_version is not defined or installed_neovim_version != latest_neovim_version_clean
+  when:
+    - neovim_source_checkout.stat.exists
+    - installed_neovim_version is not defined or installed_neovim_version != latest_neovim_version_clean
   tags: neovim
 
 - name: Set Neovim config paths
@@ -113,6 +180,7 @@
   register: neovim_config_origin
   ignore_errors: true
   changed_when: false
+  check_mode: false
   when:
     - neovim_config_dir_stat.stat.exists
     - neovim_config_git_stat.stat.exists
