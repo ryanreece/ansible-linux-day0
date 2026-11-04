@@ -1,0 +1,37 @@
+---
+- name: Install Terragrunt from the Arch package repository
+  become: true
+  ansible.builtin.package:
+    name: terragrunt
+    state: present
+  when: ansible_facts['os_family'] == 'Archlinux'
+  tags: terragrunt
+
+- name: Install the pinned Terragrunt release on Debian and RedHat families
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+  tags: terragrunt
+  vars:
+    terragrunt_architectures:
+      x86_64: amd64
+      aarch64: arm64
+    terragrunt_release_url: "https://github.com/gruntwork-io/terragrunt/releases/download/v{{ terragrunt_version }}"
+  block:
+    - name: Verify the host has a supported Terragrunt release architecture
+      ansible.builtin.assert:
+        that: ansible_facts['architecture'] in terragrunt_architectures
+        fail_msg: "No Terragrunt binary is configured for {{ ansible_facts['architecture'] }}."
+
+    - name: Ensure the system-local executable directory exists
+      become: true
+      ansible.builtin.file:
+        path: /usr/local/bin
+        state: directory
+        mode: '0755'
+
+    - name: Download and verify the pinned Terragrunt executable
+      become: true
+      ansible.builtin.get_url:
+        url: "{{ terragrunt_release_url }}/terragrunt_linux_{{ terragrunt_architectures[ansible_facts['architecture']] }}"
+        dest: /usr/local/bin/terragrunt
+        checksum: "sha256:{{ terragrunt_release_url }}/SHA256SUMS"
+        mode: '0755'

@@ -116,6 +116,14 @@
   when: install_terraform | default(true)
   tags: terraform
 
+- name: Install Terragrunt
+  ansible.builtin.include_tasks:
+    file: install_terragrunt.yml
+  when:
+    - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
+    - install_terragrunt | default(true)
+  tags: terragrunt
+
 - name: Install PowerShell
   ansible.builtin.include_tasks:
     file: install_powershell.yml

@@ -257,7 +257,29 @@ Developer tooling and CLI applications.
 | LazyGit | [`install_lazygit.yml`](roles/workstation_core/tasks/install_lazygit.yml) | `install_lazygit` |
 | Minicom | [`install_minicom.yml`](roles/workstation_core/tasks/install_minicom.yml) | `install_minicom` |
 | Terraform | [`install_terraform.yml`](roles/workstation_core/tasks/install_terraform.yml) | `install_terraform` |
+| Terragrunt | [`install_terragrunt.yml`](roles/workstation_core/tasks/install_terragrunt.yml) | `install_terragrunt` |
 | PowerShell | [`install_powershell.yml`](roles/workstation_core/tasks/install_powershell.yml) | `install_powershell` |
+
+Terraform and Terragrunt are enabled by default in `day0-workstation.yml` through
+`workstation_core`. Run only these tools with:
+
+```bash
+ansible-playbook -i localhost, day0-workstation.yml --connection=local -K \
+  --tags terraform,terragrunt
+```
+
+Terraform and Terragrunt use SHA-256-verified upstream Linux binaries on Debian
+and RedHat families (including Fedora), supporting x86_64 and aarch64. Versions
+are pinned by `terraform_version` and `terragrunt_version`; update those defaults
+or override them in inventory to select another release. Terraform archives are
+cached under `sources_dir`. Both executables install under `/usr/local/bin`.
+This avoids depending on HashiCorp's release-specific APT/RPM repositories,
+which may not yet support a new distro release. Existing package-managed
+Terraform installations remain installed; `/usr/local/bin` normally takes
+precedence in PATH. Arch uses the official packages for both tools instead.
+Set `install_terraform: false` or `install_terragrunt: false` to disable either
+independently. Check mode skips Terraform extraction and binary copying because
+a fresh check-mode run does not download its archive.
 
 ### Workstation Desktop
 

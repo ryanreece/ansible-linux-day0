@@ -1,36 +1,73 @@
 ---
-- name: Download Hashicorp GPG key and add to keyring
-  become: true
-  shell: |
-    wget -qO - https://apt.releases.hashicorp.com/gpg | \
-    gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
-  args:
-    executable: /bin/bash
-  changed_when: false
-  when: ansible_facts['os_family'] == 'Debian'
-  tags: terraform
-
-- name: Add Hashicorp repository to sources list
-  become: true
-  ansible.builtin.apt_repository:
-    repo: "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com noble main"
-    filename: hashicorp
-  when: ansible_facts['os_family'] == 'Debian'
-  tags: terraform
-
-- name: Install terraform
-  become: true
-  ansible.builtin.apt:
-    name: terraform
-    state: present
-    update_cache: true
-  when: ansible_facts['os_family'] == 'Debian'
-  tags: terraform
-
-- name: Install terraform for Archlinux os families
+- name: Install Terraform from the Arch package repository
   become: true
   ansible.builtin.package:
     name: terraform
     state: present
   when: ansible_facts['os_family'] == 'Archlinux'
   tags: terraform
+
+- name: Install the pinned Terraform release on Debian and RedHat families
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+  tags: terraform
+  vars:
+    terraform_architectures:
+      x86_64: amd64
+      aarch64: arm64
+    terraform_release_url: "https://releases.hashicorp.com/terraform/{{ terraform_version }}"
+    terraform_archive: "terraform_{{ terraform_version }}_linux_{{ terraform_architectures[ansible_facts['architecture']] }}.zip"
+    terraform_extract_dir: "{{ sources_dir }}/terraform-{{ terraform_version }}-{{ ansible_facts['architecture'] }}"
+  block:
+    - name: Verify the host has a supported Terraform release architecture
+      ansible.builtin.assert:
+        that: ansible_facts['architecture'] in terraform_architectures
+        fail_msg: "No Terraform binary is configured for {{ ansible_facts['architecture'] }}."
+
+    - name: Install Terraform ZIP extraction tools
+      become: true
+      ansible.builtin.package:
+        name: unzip
+        state: present
+
+    - name: Create the user-local Terraform source directory
+      become: false
+      ansible.builtin.file:
+        path: "{{ terraform_extract_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Download and verify the pinned Terraform archive
+      become: false
+      ansible.builtin.get_url:
+        url: "{{ terraform_release_url }}/{{ terraform_archive }}"
+        dest: "{{ sources_dir }}/{{ terraform_archive }}"
+        checksum: "sha256:{{ terraform_release_url }}/terraform_{{ terraform_version }}_SHA256SUMS"
+        mode: '0644'
+
+    # A fresh check-mode run does not download the archive or extract the binary.
+    - name: Extract the pinned Terraform executable
+      become: false
+      ansible.builtin.unarchive:
+        src: "{{ sources_dir }}/{{ terraform_archive }}"
+        dest: "{{ terraform_extract_dir }}"
+        remote_src: true
+        include:
+          - terraform
+        creates: "{{ terraform_extract_dir }}/terraform"
+      when: not ansible_check_mode
+
+    - name: Ensure the system-local executable directory exists
+      become: true
+      ansible.builtin.file:
+        path: /usr/local/bin
+        state: directory
+        mode: '0755'
+
+    - name: Install the pinned Terraform executable system-wide
+      become: true
+      ansible.builtin.copy:
+        src: "{{ terraform_extract_dir }}/terraform"
+        dest: /usr/local/bin/terraform
+        remote_src: true
+        mode: '0755'
+      when: not ansible_check_mode
