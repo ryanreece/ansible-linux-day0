@@ -1,4 +1,12 @@
 ---
+- name: Configure dark appearance preference
+  ansible.builtin.include_tasks:
+    file: install_dark_mode.yml
+  when:
+    - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
+    - install_dark_mode | default(true)
+  tags: dark_mode
+
 - name: Install Nerd Fonts
   ansible.builtin.include_tasks:
     file: install_nerd_fonts.yml

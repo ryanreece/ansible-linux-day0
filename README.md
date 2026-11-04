@@ -268,6 +268,7 @@ GUI applications, desktop-specific behavior, and desktop-only AI coding CLIs.
 | Feature | Task file | Toggle |
 | --- | --- | --- |
 | Codex CLI (npm global) | [`install_codex.yml`](roles/workstation_desktop/tasks/install_codex.yml) | `install_codex` |
+| Dark appearance preference | [`install_dark_mode.yml`](roles/workstation_desktop/tasks/install_dark_mode.yml) | `install_dark_mode` |
 | Claude Code (npm global) | [`install_claude_code.yml`](roles/workstation_desktop/tasks/install_claude_code.yml) | `install_claude_code` |
 | JetBrainsMono Nerd Font Mono | [`install_nerd_fonts.yml`](roles/workstation_desktop/tasks/install_nerd_fonts.yml) | `install_nerd_fonts` |
 | Alacritty | [`install_alacritty.yml`](roles/workstation_desktop/tasks/install_alacritty.yml) | `install_alacritty` |
@@ -282,6 +283,43 @@ GUI applications, desktop-specific behavior, and desktop-only AI coding CLIs.
 | Ulauncher | [`install_ulauncher.yml`](roles/workstation_desktop/tasks/install_ulauncher.yml) | `install_ulauncher` |
 | Remmina | [`install_remmina.yml`](roles/workstation_desktop/tasks/install_remmina.yml) | `install_remmina` |
 | KeePassXC | [`install_keepassxc.yml`](roles/workstation_desktop/tasks/install_keepassxc.yml) | `install_keepassxc` |
+
+Dark appearance is enabled by default on Debian, RedHat (including Fedora), and
+Arch families. The `dark_mode` tag installs the dconf dependencies and sets
+`org.gnome.desktop.interface color-scheme` to `prefer-dark` for the user running
+Ansible. Run from your normal desktop account, without `sudo` on the playbook
+command; only dependency installation uses privilege escalation. Set
+`install_dark_mode: false` to skip it.
+
+```bash
+ansible-playbook -i localhost, day0-workstation.yml --connection=local -K \
+  --tags dark_mode
+```
+
+This sets the GNOME/GTK preference, including for Sway and Hyprland apps that
+consume it. It does not select a legacy GTK theme or configure KDE Plasma's
+native color scheme. Apps using the appearance portal need a Settings-capable
+portal backend, such as `xdg-desktop-portal-gtk` on Sway, configured by the
+desktop. Restart apps or log in again if they do not pick up the change.
+
+Query the stored preference from a terminal in your desktop session:
+
+```bash
+gsettings get org.gnome.desktop.interface color-scheme
+```
+
+To query the preference exposed to applications through the desktop portal:
+
+```bash
+gdbus call --session --dest org.freedesktop.portal.Desktop \
+  --object-path /org/freedesktop/portal/desktop \
+  --method org.freedesktop.portal.Settings.Read \
+  org.freedesktop.appearance color-scheme
+```
+
+The portal value is `0` for no preference, `1` for dark, and `2` for light.
+The stored setting and portal response can differ if the desktop's Settings
+backend uses another source.
 
 Nerd Fonts are enabled by default for desktop installations. The `nerd_fonts`
 tag installs the regular, bold, italic, and bold italic JetBrainsMono Nerd Font

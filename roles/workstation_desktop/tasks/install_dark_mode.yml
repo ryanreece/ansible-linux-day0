@@ -1,0 +1,37 @@
+---
+- name: Install dark appearance preference dependencies
+  become: true
+  ansible.builtin.package:
+    name: "{{ dark_mode_packages[ansible_facts['os_family']] }}"
+    state: present
+  vars:
+    dark_mode_packages:
+      Debian:
+        - dconf-cli
+        - dbus-daemon
+        - dbus-bin
+        - gsettings-desktop-schemas
+        - python3-gi
+        - python3-psutil
+      RedHat:
+        - dconf
+        - dbus-daemon
+        - dbus-tools
+        - gsettings-desktop-schemas
+        - python3-gobject
+        - python3-psutil
+      Archlinux:
+        - dconf
+        - dbus
+        - gsettings-desktop-schemas
+        - python-gobject
+        - python-psutil
+  tags: dark_mode
+
+- name: Set the current user's GNOME and GTK appearance preference to dark
+  become: false
+  community.general.dconf:
+    key: /org/gnome/desktop/interface/color-scheme
+    value: "'prefer-dark'"
+    state: present
+  tags: dark_mode
