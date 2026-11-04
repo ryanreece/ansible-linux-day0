@@ -302,7 +302,7 @@ GUI applications, desktop-specific behavior, and desktop-only AI coding CLIs.
 | Chrome | [`install_chrome.yml`](roles/workstation_desktop/tasks/install_chrome.yml) | `install_chrome` |
 | Microsoft Edge | [`install_microsoft_edge.yml`](roles/workstation_desktop/tasks/install_microsoft_edge.yml) | `install_microsoft_edge` |
 | VSCode / Code - OSS | [`install_vscode.yml`](roles/workstation_desktop/tasks/install_vscode.yml) | `install_vscode` |
-| Ulauncher | [`install_ulauncher.yml`](roles/workstation_desktop/tasks/install_ulauncher.yml) | `install_ulauncher` |
+| Ulauncher (Ubuntu only) | [`install_ulauncher.yml`](roles/workstation_desktop/tasks/install_ulauncher.yml) | `install_ulauncher` |
 | Remmina | [`install_remmina.yml`](roles/workstation_desktop/tasks/install_remmina.yml) | `install_remmina` |
 | KeePassXC | [`install_keepassxc.yml`](roles/workstation_desktop/tasks/install_keepassxc.yml) | `install_keepassxc` |
 

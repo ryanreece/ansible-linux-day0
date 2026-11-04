@@ -22,11 +22,3 @@
     state: present
   when: ansible_distribution == 'Ubuntu'
   tags: ulauncher
-
-- name: Install Ulauncher on Fedora
-  become: true
-  ansible.builtin.dnf:
-    name: ulauncher
-    state: present
-  when: ansible_distribution == 'Fedora'
-  tags: ulauncher
