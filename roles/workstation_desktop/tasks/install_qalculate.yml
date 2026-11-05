@@ -9,6 +9,78 @@
     state: present
   tags: qalculate
 
+- name: Install the packaged live Rofi calculator on Arch
+  become: true
+  ansible.builtin.package:
+    name: rofi-calc
+    state: present
+  when: ansible_facts['os_family'] == 'Archlinux'
+  tags: qalculate
+
+- name: Build the live Rofi calculator on Debian and RedHat families
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat']
+  tags: qalculate
+  vars:
+    rofi_calc_build_packages:
+      Debian: [gcc, git, meson, ninja-build, pkg-config, rofi-dev, libcairo2-dev, libglib2.0-dev]
+      RedHat: [gcc, git, meson, ninja-build, pkgconf-pkg-config, rofi-devel, cairo-devel, glib2-devel]
+  block:
+    - name: Install Rofi calculator build dependencies
+      become: true
+      ansible.builtin.package:
+        name: "{{ rofi_calc_build_packages[ansible_facts['os_family']] }}"
+        state: present
+
+    - name: Gather the installed Rofi version for plugin compatibility
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Set the versioned Rofi calculator build directory
+      ansible.builtin.set_fact:
+        rofi_calc_source_dir: >-
+          {{ sources_dir }}/rofi-calc-{{ rofi_calc_version }}-rofi-{{ ansible_facts.packages.get('rofi', [{'version': 'pending'}])[0].version }}
+
+    - name: Create the user-local Rofi calculator directories
+      become: false
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ sources_dir }}"
+        - "{{ ansible_env.HOME }}/.local/lib/rofi"
+
+    # Source checkout and compilation require dependencies from the real run.
+    - name: Build and deploy the user-local Rofi calculator plugin
+      when: not ansible_check_mode
+      become: false
+      block:
+        - name: Check out the pinned Rofi calculator release
+          ansible.builtin.git:
+            repo: https://github.com/svenstaro/rofi-calc.git
+            dest: "{{ rofi_calc_source_dir }}"
+            version: "v{{ rofi_calc_version }}"
+
+        - name: Configure the Rofi calculator build
+          ansible.builtin.command:
+            argv: [meson, setup, build]
+            chdir: "{{ rofi_calc_source_dir }}"
+            creates: "{{ rofi_calc_source_dir }}/build/build.ninja"
+
+        - name: Compile the Rofi calculator plugin
+          ansible.builtin.command:
+            argv: [meson, compile, -C, build]
+            chdir: "{{ rofi_calc_source_dir }}"
+          register: rofi_calc_compiled
+          changed_when: "'no work to do' not in rofi_calc_compiled.stdout"
+
+        - name: Deploy the live Rofi calculator plugin for the current user
+          ansible.builtin.copy:
+            src: "{{ rofi_calc_source_dir }}/build/src/libcalc.so"
+            dest: "{{ ansible_env.HOME }}/.local/lib/rofi/libcalc.so"
+            remote_src: true
+            mode: '0755'
+
 - name: Install the Qalculate command-line engine for this OS family
   become: true
   ansible.builtin.package:
