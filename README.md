@@ -309,11 +309,13 @@ GUI applications, desktop-specific behavior, and desktop-only AI coding CLIs.
 
 Qalculate is enabled by default on Debian, RedHat (including Fedora), and Arch
 families. The `qalculate` tag installs `qalculate-gtk`, the distro's `qalc`
-command-line engine, Rofi, `wl-clipboard`, and the native `rofi-calc` plugin.
-Set `install_qalculate: false` to skip it. The dotfiles installer deploys the Rofi calculator script and Sway's
-`Super+C` shortcut; `Super+Shift+Space` remains available for floating mode.
-Results update live as you type; Enter copies the current result to the Wayland
-clipboard, and Escape cancels. Arch uses its packaged `rofi-calc`; Debian and
+command-line engine, Rofi, and the native `rofi-calc` plugin.
+Set `install_qalculate: false` to skip it. The dotfiles configure Sway's
+`Super+C` shortcut to launch the plugin directly, with no calculator wrapper.
+`Super+Shift+Space` remains available for floating mode. Results update live as
+you type, using the plugin's native history and keybindings. Enter adds the
+current result to history; Escape closes the calculator.
+Arch uses its packaged `rofi-calc`; Debian and
 RedHat families build the pinned `rofi_calc_version` into `~/.local/lib/rofi`
 using distro development packages. Build sources are cached under `sources_dir`.
 Rerun the tag after upgrading Rofi to rebuild for its plugin ABI. Check mode

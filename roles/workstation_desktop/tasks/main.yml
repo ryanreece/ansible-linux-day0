@@ -112,7 +112,7 @@
     - install_keepassxc | default(true)
   tags: keepassxc
 
-- name: Install Qalculate and Rofi calculator dependencies
+- name: Install Qalculate and the native Rofi calculator
   ansible.builtin.include_tasks:
     file: install_qalculate.yml
   when:

@@ -1,11 +1,10 @@
 ---
-- name: Install Qalculate GTK and Rofi clipboard integration
+- name: Install Qalculate GTK and Rofi
   become: true
   ansible.builtin.package:
     name:
       - qalculate-gtk
       - rofi
-      - wl-clipboard
     state: present
   tags: qalculate
 
