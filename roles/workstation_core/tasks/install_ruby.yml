@@ -1,8 +1,12 @@
 ---
-- name: Install Ruby on Fedora
+- name: Install Ruby and native gem build dependencies on Fedora
   become: true
   ansible.builtin.package:
-    name: ruby
+    name:
+      - ruby
+      - ruby-devel
+      - gcc
+      - make
     state: present
   when: ansible_distribution == 'Fedora'
   tags: ruby
