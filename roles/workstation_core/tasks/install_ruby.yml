@@ -1,4 +1,12 @@
 ---
+- name: Install Ruby on Fedora
+  become: true
+  ansible.builtin.package:
+    name: ruby
+    state: present
+  when: ansible_distribution == 'Fedora'
+  tags: ruby
+
 - name: Install rbenv
   ansible.builtin.git:
     repo: https://github.com/rbenv/rbenv.git
@@ -13,7 +21,8 @@
     depth: 1
   tags: ruby
 
-- name: Initalize rbenv
+- name: List available Ruby versions from rbenv
   ansible.builtin.command:
     cmd: zsh -lc "~/.rbenv/bin/rbenv install -l"
+  changed_when: false
   tags: ruby

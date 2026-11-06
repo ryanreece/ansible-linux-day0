@@ -260,6 +260,9 @@ Developer tooling and CLI applications.
 | Terragrunt | [`install_terragrunt.yml`](roles/workstation_core/tasks/install_terragrunt.yml) | `install_terragrunt` |
 | PowerShell | [`install_powershell.yml`](roles/workstation_core/tasks/install_powershell.yml) | `install_powershell` |
 
+Ruby is enabled by default with `install_ruby`. On Fedora, the `ruby` tag
+installs the system Ruby package as well as the existing user-local rbenv tooling.
+
 Terraform and Terragrunt are enabled by default in `day0-workstation.yml` through
 `workstation_core`. Run only these tools with:
 
