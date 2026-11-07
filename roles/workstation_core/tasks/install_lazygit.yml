@@ -36,6 +36,7 @@
 - name: Unarchive and install the lazygit binary
   ansible.builtin.unarchive:
     src: /tmp/lazygit.tar.gz
+    remote_src: true
     dest: "{{ ansible_env.HOME }}/.local/bin"
   when: installed_lazygit_version is not defined or installed_lazygit_version != lazygit_tag
   tags: lazygit

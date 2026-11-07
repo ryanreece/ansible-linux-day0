@@ -36,6 +36,7 @@
 - name: Unarchive and install the lazydocker binary
   ansible.builtin.unarchive:
     src: /tmp/lazydocker.tar.gz
+    remote_src: true
     dest: "{{ ansible_env.HOME }}/.local/bin"
   when: installed_lazydocker_version is not defined or installed_lazydocker_version != lazydocker_tag
   tags: lazydocker
