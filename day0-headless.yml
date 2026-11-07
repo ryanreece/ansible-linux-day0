@@ -1,0 +1,10 @@
+---
+- name: Day 0 Config for Headless Workstations
+  hosts: all
+  vars:
+    ohmyzsh_theme: robbyrussell
+    install_snapd: false
+
+  roles:
+    - common
+    - workstation_core
