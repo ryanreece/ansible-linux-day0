@@ -41,7 +41,7 @@ cross-distro workstation bootstrap.
 | Ubuntu | Supported | Best supported | Supported | Primary historical target. Regolith is Ubuntu-only. |
 | Debian family | Partial | Partial | Partial | Many tasks work, but Ubuntu-only PPAs/repos are guarded or still being refined. |
 | RHEL | Supported | Partial | Partial | Uses RPM/DNF paths where available. |
-| Rocky / AlmaLinux | Partial | Partial | Partial | Expected to follow RedHat-family paths; test per feature. |
+| Rocky / AlmaLinux | Partial | Partial | Supported (Rocky 9.8 verified) | `day0-server.yml` verified end to end on Rocky 9.8 (idempotent on rerun). EPEL is installed automatically for `btop`, `fzf`, and `ripgrep`. AlmaLinux and workstation paths: test per feature. |
 | Fedora Sway Spin | Supported | Partial | Not verified | Common packages use DNF-compatible paths, and the desktop role supports Sway utilities plus Fedora RPM application paths; broader workstation-core coverage is still being refined. |
 | Arch Linux | Supported | Partial | Not verified | The tested Arch target is Omarchy, not a generic hand-rolled Arch install. |
 | [Omarchy](https://omarchy.org/) / Hyprland on Arch | N/A | Active support | N/A | Tested against the Omarchy spin by DHH. Install Omarchy first, then run this playbook to tune it. |
