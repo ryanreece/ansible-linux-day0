@@ -13,3 +13,5 @@ install_zsh: true
 install_ssh_key: true
 install_nodejs: true
 install_aws_cli: true
+install_codex: true
+install_claude_code: true

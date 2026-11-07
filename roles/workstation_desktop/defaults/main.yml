@@ -10,8 +10,6 @@ rofi_calc_version: "2.5.1"
 install_alacritty: true
 install_nerd_fonts: true
 install_chrome: true
-install_codex: true
-install_claude_code: true
 install_dark_mode: true
 install_flameshot: true
 install_hyprland_settings: true
