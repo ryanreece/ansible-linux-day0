@@ -3,6 +3,7 @@
   hosts: all
   vars:
     ohmyzsh_theme: jispwoso
+    install_snapd: false
 
   roles:
     - common

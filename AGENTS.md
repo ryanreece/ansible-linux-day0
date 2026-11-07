@@ -103,7 +103,8 @@ requirement.
   Fedora RPM packages for developer tools that need host integration.
 - Avoid Snap as the only cross-distro answer unless the application is truly
   distributed that way here. RedHat Enterprise Linux derivative Snap setup
-  currently lives in `roles/common/tasks/install_snapd.yml`.
+  currently lives in `roles/common/tasks/install_snapd.yml` and is disabled for
+  servers via `install_snapd: false` in `day0-server.yml`.
 - For GitHub release binaries, verify asset naming across architecture and OS.
   `workstation_core` currently sets `system_arch` from `uname -s` and
   `uname -m`, producing values like `Linux_x86_64`.
