@@ -1,20 +1,11 @@
 ---
-- name: Install the EPEL repository
-  ansible.builtin.include_role:
-    name: geerlingguy.repo-epel
-  vars:
-    ansible_become: true
-
-- name: Update the package cache
-  become: true
-  ansible.builtin.package:
-    update_cache: true
-
-- name: Install snapd
+- name: Install snapd on RedHat Enterprise Linux derivatives
   become: true
   ansible.builtin.dnf:
     name: snapd
     state: present
+    update_cache: true
+  tags: packages
 
 - name: Enable snapd socket
   become: true
@@ -22,10 +13,12 @@
     name: snapd.socket
     state: started
     enabled: true
+  tags: packages
 
-- name: Create class snap symlink
+- name: Create classic snap symlink
   become: true
   ansible.builtin.file:
     src: /var/lib/snapd/snap
     dest: /snap
     state: link
+  tags: packages

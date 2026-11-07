@@ -9,6 +9,17 @@
     - packages
     - flatpak
 
+- name: Install EPEL on RedHat Enterprise Linux derivatives
+  ansible.builtin.include_tasks:
+    file: install_epel.yml
+  when:
+    - ansible_facts['os_family'] == 'RedHat'
+    - ansible_distribution != 'Fedora'
+    - install_epel | default(true)
+  tags:
+    - packages
+    - epel
+
 - name: Install snapd on RedHat Enterprise Linux derivatives
   ansible.builtin.include_tasks:
     file: install_snapd.yml
@@ -17,7 +28,7 @@
     - ansible_distribution != 'Fedora'
     - install_packages | default(true)
   tags: packages
-  
+
 - name: Install packages
   ansible.builtin.include_tasks:
     file: install_packages.yml

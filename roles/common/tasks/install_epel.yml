@@ -1,0 +1,12 @@
+---
+- name: Install the EPEL repository on RedHat Enterprise Linux derivatives
+  ansible.builtin.include_role:
+    name: geerlingguy.repo-epel
+    apply:
+      become: true
+      tags:
+        - packages
+        - epel
+  tags:
+    - packages
+    - epel
