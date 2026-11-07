@@ -30,12 +30,13 @@
   when: ansible_distribution == 'Fedora'
   tags: luarocks
 
-- name: Install Lua compatibility libraries for RedHat Enterprise Linux derivatives
+- name: Install LuaRocks and Lua compatibility libraries for RedHat Enterprise Linux derivatives
   become: true
   ansible.builtin.package:
     name:
       - compat-lua-devel
       - compat-lua-libs
+      - luarocks
     state: present
   when:
     - ansible_facts['os_family'] == 'RedHat'
