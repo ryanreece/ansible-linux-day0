@@ -1,2 +1,5 @@
 .idea/
 ansible-linux-day0.wiki/
+
+# Local secrets
+.env
