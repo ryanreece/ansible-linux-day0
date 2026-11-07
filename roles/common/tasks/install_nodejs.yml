@@ -32,7 +32,7 @@
   args:
     executable: /bin/bash
     chdir: "{{ ansible_env.HOME }}"
-    creates: "{{ nvm_dir }}/versions/node/v{{ nodejs_version }}"
+    creates: "{{ nvm_dir }}/versions/node/v{{ nodejs_version }}/bin/node"
   environment:
     NVM_DIR: "{{ nvm_dir }}"
   tags: nodejs
