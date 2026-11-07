@@ -10,3 +10,13 @@
   tags:
     - packages
     - epel
+
+- name: Enable the CodeReady Builder (CRB) repository on Rocky and AlmaLinux
+  become: true
+  community.general.dnf_config_manager:
+    name: crb
+    state: enabled
+  when: ansible_distribution in ['Rocky', 'AlmaLinux']
+  tags:
+    - packages
+    - epel
