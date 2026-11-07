@@ -1,7 +1,7 @@
 ---
 - name: Check if lazydocker is installed
   ansible.builtin.command:
-    cmd: lazydocker --version
+    cmd: "{{ ansible_env.HOME }}/.local/bin/lazydocker --version"
   register: lazydocker_installed
   ignore_errors: true
   changed_when: false

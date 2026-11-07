@@ -1,7 +1,7 @@
 ---
 - name: Check if lazygit is installed
   ansible.builtin.command:
-    cmd: lazygit --version
+    cmd: "{{ ansible_env.HOME }}/.local/bin/lazygit --version"
   register: lazygit_installed
   ignore_errors: true
   changed_when: false
