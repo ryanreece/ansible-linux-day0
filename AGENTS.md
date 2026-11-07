@@ -13,8 +13,12 @@ cross-distro behavior without breaking the existing Ubuntu workstation flow.
 
 - `day0-workstation.yml` is the workstation entry point. It applies `common`,
   `workstation_core`, and `workstation_desktop`.
+- `day0-headless.yml` is the headless workstation entry point for remote hosts
+  with developer tooling but no desktop. It applies `common` and
+  `workstation_core`.
 - `day0-server.yml` is the server entry point. It applies `common` and
-  `server_core`.
+  `server_core`. Servers must not receive developer tools (Neovim, Node.js,
+  LLM CLIs); put those in `workstation_core`.
 - `install-workstation.sh` runs the workstation playbook locally against
   `localhost,` with `--connection=local`.
 - `bootstrap.sh` installs Ansible and Galaxy requirements for supported host
@@ -137,7 +141,7 @@ cross-platform:
 ## Adding A New Feature
 
 1. Decide which role owns the feature:
-   - Shared server/workstation package: `common`
+   - Shared server/workstation package (no developer tooling): `common`
    - Server-only behavior: `server_core`
    - Workstation CLI/developer tool: `workstation_core`
    - GUI app or desktop environment: `workstation_desktop`

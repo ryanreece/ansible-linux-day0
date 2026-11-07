@@ -134,6 +134,24 @@ Run a single feature by tag:
 ansible-playbook -i localhost, day0-workstation.yml --connection=local -K --tags docker
 ```
 
+### Headless Workstation
+
+Headless workstations are remote hosts with developer tooling (Neovim, Node.js,
+Claude Code, Codex, Docker, and the rest of `workstation_core`) but no desktop
+environment or GUI applications. List them under `inventory/` and run:
+
+```bash
+ansible-playbook -i inventory/headless.yml day0-headless.yml -K
+```
+
+The headless playbook applies:
+
+- `common`
+- `workstation_core`
+
+It disables the RedHat-derivative snapd install. The same `install_*` toggles
+apply, for example `-e '{"install_docker": false}'`.
+
 ### Server
 
 Server targets should be listed under `inventory/`.
@@ -169,6 +187,10 @@ The server playbook applies:
 
 - `common`
 - `server_core`
+
+Servers intentionally exclude developer tooling such as Neovim, Node.js, and
+the Codex and Claude Code CLIs. Use the headless workstation playbook for
+remote hosts that should have them.
 
 ## Feature Toggles
 
@@ -208,7 +230,6 @@ Shared server and workstation setup.
 | tmux | [`install_tmux.yml`](roles/common/tasks/install_tmux.yml) | `install_tmux` |
 | zsh | [`install_zsh.yml`](roles/common/tasks/install_zsh.yml) | `install_zsh` |
 | SSH key | [`install_ssh_key.yml`](roles/common/tasks/install_ssh_key.yml) | `install_ssh_key` |
-| NodeJS via nvm | [`install_nodejs.yml`](roles/common/tasks/install_nodejs.yml) | `install_nodejs` |
 | AWS CLI | [`install_aws_cli.yml`](roles/common/tasks/install_aws_cli.yml) | `install_aws_cli` |
 
 ### Server Core
@@ -235,11 +256,15 @@ an operator-managed maintenance window.
 
 Role entry point: [`roles/workstation_core/tasks/main.yml`](roles/workstation_core/tasks/main.yml)
 
-Developer tooling and CLI applications.
+Developer tooling and CLI applications, shared by workstations and headless
+workstations.
 
 | Feature | Task file | Toggle |
 | --- | --- | --- |
 | Dotfiles | [`install_dotfiles.yml`](roles/workstation_core/tasks/install_dotfiles.yml) | `install_dotfiles` |
+| NodeJS via nvm | [`install_nodejs.yml`](roles/workstation_core/tasks/install_nodejs.yml) | `install_nodejs` |
+| Codex CLI (npm global) | [`install_codex.yml`](roles/workstation_core/tasks/install_codex.yml) | `install_codex` |
+| Claude Code (npm global) | [`install_claude_code.yml`](roles/workstation_core/tasks/install_claude_code.yml) | `install_claude_code` |
 | Build libraries | [`install_libraries.yml`](roles/workstation_core/tasks/install_libraries.yml) | `install_libraries` |
 | Python | [`install_python.yml`](roles/workstation_core/tasks/install_python.yml) | `install_python` |
 | Go | [`install_go.yml`](roles/workstation_core/tasks/install_go.yml) | `install_go` |
@@ -289,13 +314,11 @@ a fresh check-mode run does not download its archive.
 
 Role entry point: [`roles/workstation_desktop/tasks/main.yml`](roles/workstation_desktop/tasks/main.yml)
 
-GUI applications, desktop-specific behavior, and desktop-only AI coding CLIs.
+GUI applications and desktop-specific behavior.
 
 | Feature | Task file | Toggle |
 | --- | --- | --- |
-| Codex CLI (npm global) | [`install_codex.yml`](roles/workstation_desktop/tasks/install_codex.yml) | `install_codex` |
 | Dark appearance preference | [`install_dark_mode.yml`](roles/workstation_desktop/tasks/install_dark_mode.yml) | `install_dark_mode` |
-| Claude Code (npm global) | [`install_claude_code.yml`](roles/workstation_desktop/tasks/install_claude_code.yml) | `install_claude_code` |
 | JetBrainsMono Nerd Font Mono | [`install_nerd_fonts.yml`](roles/workstation_desktop/tasks/install_nerd_fonts.yml) | `install_nerd_fonts` |
 | Alacritty | [`install_alacritty.yml`](roles/workstation_desktop/tasks/install_alacritty.yml) | `install_alacritty` |
 | Flameshot | [`install_flameshot.yml`](roles/workstation_desktop/tasks/install_flameshot.yml) | `install_flameshot` |
@@ -382,7 +405,8 @@ ansible-playbook -i localhost, day0-workstation.yml --connection=local -K \
   --tags nerd_fonts
 ```
 
-Codex and Claude Code are enabled by default only in the desktop role. Both use
+Codex and Claude Code are installed by `workstation_core`, so they are enabled by
+default for workstations and headless workstations but not for servers. Both use
 `npm -g` through the existing user-local NVM installation without sudo, with the
 same installation tasks across Debian, RedHat, and Arch families. Keep
 `install_nodejs: true` enabled to provide the configured Node.js runtime.
