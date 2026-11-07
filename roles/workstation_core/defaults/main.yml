@@ -1,6 +1,9 @@
 ---
 sources_dir: "{{ ansible_env.HOME }}/sources"
 
+nodejs_version: 26.13.0
+nvm_version: v0.40.1
+
 terraform_version: "1.17.1"
 terragrunt_version: "1.2.1"
 
@@ -8,6 +11,9 @@ terragrunt_version: "1.2.1"
 # These variables define which include_tasks will run for the workstation role.
 install_dotfiles: true
 install_libraries: true
+install_nodejs: true
+install_codex: true
+install_claude_code: true
 install_luarocks: true
 install_neovim: true
 install_python: true

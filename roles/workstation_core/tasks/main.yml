@@ -22,11 +22,29 @@
   when: install_go | default(true)
   tags: go
 
+- name: Install NodeJS via nvm
+  ansible.builtin.include_tasks:
+    file: install_nodejs.yml
+  when: install_nodejs | default(true)
+  tags: nodejs
+
 - name: Install TypeScript
   ansible.builtin.include_tasks:
     file: install_typescript.yml
   when: install_typescript | default(true)
   tags: typescript
+
+- name: Install Codex
+  ansible.builtin.include_tasks:
+    file: install_codex.yml
+  when: install_codex | default(true)
+  tags: codex
+
+- name: Install Claude Code
+  ansible.builtin.include_tasks:
+    file: install_claude_code.yml
+  when: install_claude_code | default(true)
+  tags: claude_code
 
 - name: Install Ruby
   ansible.builtin.include_tasks:

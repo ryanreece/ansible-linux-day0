@@ -54,26 +54,8 @@
   when: install_ssh_key | default(true)
   tags: ssh
 
-- name: Install NodeJS via nvm
-  ansible.builtin.include_tasks:
-    file: install_nodejs.yml
-  when: install_nodejs | default(true)
-  tags: nodejs
-
 - name: Install AWS CLI
   ansible.builtin.include_tasks:
     file: install_aws_cli.yml
   when: install_aws_cli | default(true)
   tags: aws
-
-- name: Install Codex
-  ansible.builtin.include_tasks:
-    file: install_codex.yml
-  when: install_codex | default(true)
-  tags: codex
-
-- name: Install Claude Code
-  ansible.builtin.include_tasks:
-    file: install_claude_code.yml
-  when: install_claude_code | default(true)
-  tags: claude_code
