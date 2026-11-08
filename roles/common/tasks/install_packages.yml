@@ -68,6 +68,7 @@
       - git
       - git-lfs
       - net-tools
+      - rsync
       - tar
       - unzip
       - vim
