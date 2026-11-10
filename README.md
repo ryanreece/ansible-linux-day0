@@ -149,6 +149,13 @@ The headless playbook applies:
 - `common`
 - `workstation_core`
 
+Baseline packages include network diagnostics: IP routing tools, ping,
+traceroute, netcat, curl, wget, tcpdump, and DNS lookup tools. RedHat-family
+targets install `iproute`, `iputils`, `traceroute`, `nmap-ncat`, `curl`, `wget`,
+`tcpdump`, and `bind-utils`; Debian and Arch use their equivalent packages.
+These packages are shared through `common` with servers and desktop workstations
+and controlled by `install_packages` and the `packages` tag.
+
 It disables the RedHat-derivative snapd install. The same `install_*` toggles
 apply, for example `-e '{"install_docker": false}'`.
 

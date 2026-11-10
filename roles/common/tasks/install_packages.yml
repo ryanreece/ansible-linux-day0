@@ -29,6 +29,10 @@
       - btop
       - fzf
       - gnupg2
+      - iproute2
+      - iputils-ping
+      - dnsutils
+      - ncat
       - ripgrep
       #- zoxide
     state: present
@@ -41,6 +45,10 @@
     name:
       - btop
       - fzf
+      - iproute
+      - iputils
+      - nmap-ncat
+      - bind-utils
       - ripgrep
       - libatomic
       - xz
@@ -55,6 +63,9 @@
       - btop
       - dnsutils
       - fzf
+      - iproute2
+      - iputils
+      - openbsd-netcat
       - ripgrep
     state: present
   when: ansible_facts['os_family'] == 'Archlinux'
@@ -70,6 +81,8 @@
       - net-tools
       - rsync
       - tar
+      - tcpdump
+      - traceroute
       - unzip
       - vim
       - wget
