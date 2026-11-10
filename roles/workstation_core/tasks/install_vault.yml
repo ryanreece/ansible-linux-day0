@@ -1,0 +1,94 @@
+---
+- name: Validate Vault SSH signing configuration
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
+      - vault_addr is string and vault_addr | length > 0
+      - vault_valid_principals is sequence and vault_valid_principals is not string and vault_valid_principals is not mapping
+      - vault_valid_principals | length > 0
+      - vault_valid_principals | select('string') | list | length == vault_valid_principals | length
+      - vault_valid_principals | select('match', '^.+$') | list | length == vault_valid_principals | length
+    fail_msg: "Set vault_addr and vault_valid_principals (a nonempty list of names) in your local inventory."
+  tags: vault
+
+- name: Install the pinned Vault release on supported Linux families
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
+  tags: vault
+  vars:
+    vault_architectures:
+      x86_64: amd64
+      aarch64: arm64
+    vault_release_url: "https://releases.hashicorp.com/vault/{{ vault_version }}"
+    vault_archive: "vault_{{ vault_version }}_linux_{{ vault_architectures[ansible_facts['architecture']] }}.zip"
+    vault_extract_dir: "{{ sources_dir }}/vault-{{ vault_version }}-{{ ansible_facts['architecture'] }}"
+  block:
+    - name: Verify the host has a supported Vault release architecture
+      ansible.builtin.assert:
+        that: ansible_facts['architecture'] in vault_architectures
+        fail_msg: "No Vault binary is configured for {{ ansible_facts['architecture'] }}."
+
+    - name: Install Vault ZIP extraction tools
+      become: true
+      ansible.builtin.package:
+        name: unzip
+        state: present
+
+    - name: Create the user-local Vault source directory
+      become: false
+      ansible.builtin.file:
+        path: "{{ vault_extract_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Download and verify the pinned Vault archive
+      become: false
+      ansible.builtin.get_url:
+        url: "{{ vault_release_url }}/{{ vault_archive }}"
+        dest: "{{ sources_dir }}/{{ vault_archive }}"
+        checksum: "sha256:{{ vault_release_url }}/vault_{{ vault_version }}_SHA256SUMS"
+        mode: '0644'
+
+    # A fresh check-mode run does not download the archive or extract the binary.
+    - name: Extract the pinned Vault executable
+      become: false
+      ansible.builtin.unarchive:
+        src: "{{ sources_dir }}/{{ vault_archive }}"
+        dest: "{{ vault_extract_dir }}"
+        remote_src: true
+        include:
+          - vault
+        creates: "{{ vault_extract_dir }}/vault"
+      when: not ansible_check_mode
+
+    - name: Ensure the system-local executable directory exists
+      become: true
+      ansible.builtin.file:
+        path: /usr/local/bin
+        state: directory
+        mode: '0755'
+
+    - name: Install the pinned Vault executable system-wide
+      become: true
+      ansible.builtin.copy:
+        src: "{{ vault_extract_dir }}/vault"
+        dest: /usr/local/bin/vault
+        remote_src: true
+        mode: '0755'
+      when: not ansible_check_mode
+
+- name: Create the user-local executable directory
+  become: false
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.local/bin"
+    state: directory
+    mode: '0755'
+  tags: vault
+
+- name: Install the sign-ssh-key helper
+  become: false
+  ansible.builtin.template:
+    src: sign-ssh-key.sh.j2
+    dest: "{{ ansible_env.HOME }}/.local/bin/sign-ssh-key"
+    mode: '0700'
+    validate: /bin/bash -n %s
+  tags: vault

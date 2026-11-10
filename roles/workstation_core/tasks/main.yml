@@ -149,3 +149,9 @@
     - ansible_facts['os_family'] == 'Debian'
     - install_powershell | default(true)
   tags: pwsh
+
+- name: Install Vault CLI and SSH signing helper
+  ansible.builtin.include_tasks:
+    file: install_vault.yml
+  when: install_vault | default(false)
+  tags: vault

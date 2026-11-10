@@ -1,0 +1,28 @@
+#!/bin/bash
+# Managed by Ansible. Sign the configured SSH public key using Vault.
+set -euo pipefail
+
+export VAULT_ADDR={{ vault_addr | quote }}
+export VAULT_SKIP_VERIFY={{ (vault_skip_verify | bool) | ternary('true', 'false') | quote }}
+public_key={{ vault_ssh_public_key | quote }}
+principals={{ vault_valid_principals | join(',') | quote }}
+signing_path={{ vault_ssh_signing_path | quote }}
+certificate="${public_key%.pub}-cert.pub"
+
+command -v vault >/dev/null || { echo "Vault CLI is missing from PATH." >&2; exit 1; }
+[[ -r "$public_key" ]] || { echo "Cannot read public key: $public_key" >&2; exit 1; }
+if [[ -z "${VAULT_TOKEN:-}" ]]; then
+    read -r -s -p "Vault token: " VAULT_TOKEN
+    printf '\n' >&2
+    [[ -n "$VAULT_TOKEN" ]] || { echo "Vault token must not be empty." >&2; exit 1; }
+fi
+export VAULT_TOKEN
+
+umask 077
+temporary_certificate=$(mktemp "${certificate}.XXXXXX")
+trap 'rm -f -- "$temporary_certificate"' EXIT
+vault write -field=signed_key "$signing_path" \
+    "valid_principals=$principals" "public_key=@$public_key" > "$temporary_certificate"
+[[ -s "$temporary_certificate" ]] || { echo "Vault returned an empty certificate." >&2; exit 1; }
+mv -- "$temporary_certificate" "$certificate"
+printf 'Signed SSH certificate saved to %s\n' "$certificate"

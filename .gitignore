@@ -3,3 +3,6 @@ ansible-linux-day0.wiki/
 
 # Local secrets
 .env
+
+# Private per-host inventory
+/inventory/hosts.yml

@@ -32,3 +32,12 @@ install_minicom: true
 install_terraform: true
 install_terragrunt: true
 install_powershell: true
+
+# Optional Vault CLI and SSH certificate signing helper.
+install_vault: false
+vault_version: "2.2.1"
+vault_addr: ""
+vault_valid_principals: []
+vault_ssh_signing_path: ssh-client-signer/sign/default
+vault_ssh_public_key: "{{ ansible_env.HOME }}/.ssh/id_rsa.pub"
+vault_skip_verify: false

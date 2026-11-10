@@ -288,6 +288,7 @@ workstations.
 | LazyDocker | [`install_lazydocker.yml`](roles/workstation_core/tasks/install_lazydocker.yml) | `install_lazydocker` |
 | LazyGit | [`install_lazygit.yml`](roles/workstation_core/tasks/install_lazygit.yml) | `install_lazygit` |
 | Minicom | [`install_minicom.yml`](roles/workstation_core/tasks/install_minicom.yml) | `install_minicom` |
+| Vault CLI and SSH signing helper (opt-in) | [`install_vault.yml`](roles/workstation_core/tasks/install_vault.yml) | `install_vault` |
 | Terraform | [`install_terraform.yml`](roles/workstation_core/tasks/install_terraform.yml) | `install_terraform` |
 | Terragrunt | [`install_terragrunt.yml`](roles/workstation_core/tasks/install_terragrunt.yml) | `install_terragrunt` |
 | PowerShell | [`install_powershell.yml`](roles/workstation_core/tasks/install_powershell.yml) | `install_powershell` |
@@ -316,6 +317,30 @@ precedence in PATH. Arch uses the official packages for both tools instead.
 Set `install_terraform: false` or `install_terragrunt: false` to disable either
 independently. Check mode skips Terraform extraction and binary copying because
 a fresh check-mode run does not download its archive.
+
+### Optional Vault SSH signing
+
+Copy the example inventory to the ignored local hosts file and edit its Vault
+address and valid principals for this computer:
+
+```bash
+cp inventory/hosts.example.yml inventory/hosts.yml
+ansible-playbook -i inventory/hosts.yml day0-workstation.yml -K --tags vault
+```
+
+`install_vault` defaults to `false`. Enabling it installs the pinned,
+SHA-256-verified upstream Vault CLI under `/usr/local/bin` on Debian, RedHat,
+and Arch families (x86_64 and aarch64), and creates
+`~/.local/bin/sign-ssh-key`. No Vault server service is configured.
+The same inventory works with `day0-headless.yml`.
+
+Run `~/.local/bin/sign-ssh-key` to enter a Vault token silently, or use an
+existing `VAULT_TOKEN` environment variable. The helper signs `~/.ssh/id_rsa.pub`
+through `ssh-client-signer/sign/default` and writes `~/.ssh/id_rsa-cert.pub`.
+Override `vault_ssh_public_key` or `vault_ssh_signing_path` in the hosts file as
+needed. TLS verification is enabled; `vault_skip_verify: true` explicitly
+opts out. No token is stored in inventory or the generated script.
+Add `~/.local/bin` to your PATH to invoke it as `sign-ssh-key`.
 
 ### Workstation Desktop
 
