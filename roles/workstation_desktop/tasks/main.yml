@@ -119,3 +119,11 @@
     - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
     - install_qalculate | default(true)
   tags: qalculate
+
+- name: Install Bruno API client
+  ansible.builtin.include_tasks:
+    file: install_bruno.yml
+  when:
+    - ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
+    - install_bruno | default(true)
+  tags: bruno

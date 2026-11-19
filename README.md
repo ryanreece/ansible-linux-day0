@@ -365,6 +365,7 @@ GUI applications and desktop-specific behavior.
 | Qalculate GTK and Rofi calculator dependencies | [`install_qalculate.yml`](roles/workstation_desktop/tasks/install_qalculate.yml) | `install_qalculate` |
 | Remmina | [`install_remmina.yml`](roles/workstation_desktop/tasks/install_remmina.yml) | `install_remmina` |
 | KeePassXC | [`install_keepassxc.yml`](roles/workstation_desktop/tasks/install_keepassxc.yml) | `install_keepassxc` |
+| Bruno API client (Flatpak) | [`install_bruno.yml`](roles/workstation_desktop/tasks/install_bruno.yml) | `install_bruno` |
 
 Qalculate is enabled by default on Debian, RedHat (including Fedora), and Arch
 families. The `qalculate` tag installs `qalculate-gtk`, the distro's `qalc`

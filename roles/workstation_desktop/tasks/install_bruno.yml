@@ -1,0 +1,47 @@
+---
+# Bruno is installed from Flathub on every supported family. Upstream has no
+# RPM repository and no official Arch package, and its Debian apt repository
+# needs a keyserver-fetched key, so one Flatpak path keeps all distros aligned.
+- name: Install Flatpak for Bruno
+  become: true
+  ansible.builtin.package:
+    name: flatpak
+    state: present
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
+  tags: bruno
+
+- name: Add the Flathub remote for Bruno
+  become: true
+  community.general.flatpak_remote:
+    name: flathub
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    state: present
+    method: system
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
+  tags: bruno
+
+- name: Install Bruno API client from Flathub
+  become: true
+  community.general.flatpak:
+    name: "{{ bruno_flatpak_id }}"
+    remote: flathub
+    state: present
+    method: system
+  when: ansible_facts['os_family'] in ['Debian', 'RedHat', 'Archlinux']
+  tags: bruno
+
+- name: Ensure local bin directory exists for Bruno launcher
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.local/bin"
+    state: directory
+    mode: '0755'
+  tags: bruno
+
+- name: Install bruno launcher wrapper
+  ansible.builtin.copy:
+    dest: "{{ ansible_env.HOME }}/.local/bin/bruno"
+    mode: '0755'
+    content: |
+      #!/bin/sh
+      exec flatpak run {{ bruno_flatpak_id }} "$@"
+  tags: bruno
