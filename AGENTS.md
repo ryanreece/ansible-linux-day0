@@ -19,6 +19,11 @@ cross-distro behavior without breaking the existing Ubuntu workstation flow.
 - `day0-server.yml` is the server entry point. It applies `common` and
   `server_core`. Servers must not receive developer tools (Neovim, Node.js,
   LLM CLIs); put those in `workstation_core`.
+- `playbooks/storage/` holds homelab storage and NAS playbooks (`zfs-pool.yml`,
+  `nas.yml`, `nfs-client.yml`, `nas-groups.yml`). Their variables live in
+  `inventory/group_vars/` and `inventory/host_vars/`; run them with `-i`.
+  The repo root is reserved for day-0 entry points and supporting scripts;
+  do not add other playbooks there.
 - `install-workstation.sh` runs the workstation playbook locally against
   `localhost,` with `--connection=local`.
 - `bootstrap.sh` installs Ansible and Galaxy requirements for supported host

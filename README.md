@@ -28,6 +28,7 @@ or inventory.
 - [Feature Toggles](#feature-toggles)
 - [Roles](#roles)
 - [Validation](#validation)
+- [Storage and NAS Playbooks](#storage-and-nas-playbooks)
 - [Repository Layout](#repository-layout)
 - [Cross-Distro Development](#cross-distro-development)
 
@@ -478,16 +479,38 @@ If available, run:
 ansible-lint
 ```
 
+## Storage and NAS Playbooks
+
+Homelab storage playbooks live in `playbooks/storage/`, outside the day-0
+entry points. Variables come from `inventory/group_vars/` and
+`inventory/host_vars/`, so always pass an inventory file with `-i`.
+
+| Playbook | Role | Purpose |
+| --- | --- | --- |
+| `zfs-pool.yml` | `zfs_pool` | Create ZFS pools from `zfs_pools` |
+| `nas.yml` | `nas` | Samba and NFS shares from `nas_shares` |
+| `nfs-client.yml` | `nfs_client` | NFS mounts from `nfs_client_mounts` |
+| `nas-groups.yml` | `linux_groups` | Common NAS groups with fixed GIDs |
+
+```bash
+ansible-playbook -i inventory/vmhost03.yml playbooks/storage/zfs-pool.yml
+```
+
 ## Repository Layout
 
 ```text
 .
 ├── ansible.cfg
 ├── bootstrap.sh
+├── day0-headless.yml
 ├── day0-server.yml
 ├── day0-workstation.yml
 ├── install-workstation.sh
 ├── inventory/
+│   ├── group_vars/
+│   └── host_vars/
+├── playbooks/
+│   └── storage/
 └── roles/
     ├── common/
     ├── server_core/

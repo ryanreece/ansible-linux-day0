@@ -1,0 +1,8 @@
+---
+- name: Provision common NAS groups
+  hosts: all
+
+  roles:
+    - role: linux_groups
+      vars:
+        linux_groups: "{{ nas_common_groups }}"
