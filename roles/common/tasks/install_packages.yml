@@ -56,6 +56,14 @@
   when: ansible_facts['os_family'] == 'RedHat'
   tags: packages
 
+- name: Install the Telnet client on Fedora
+  become: true
+  ansible.builtin.package:
+    name: telnet
+    state: present
+  when: ansible_distribution == 'Fedora'
+  tags: packages
+
 - name: Install terminal packages for Archlinux os families
   become: true
   ansible.builtin.package:
